@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32407.343
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XVNML", "HanaSkriptrProj\XVNML.csproj", "{7C20702F-67FA-4C6A-A8A8-369956F6003D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8742FB8E-5AEC-488D-B8CD-7637D3B90E8E}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7C20702F-67FA-4C6A-A8A8-369956F6003D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C20702F-67FA-4C6A-A8A8-369956F6003D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C20702F-67FA-4C6A-A8A8-369956F6003D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C20702F-67FA-4C6A-A8A8-369956F6003D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D5723635-77CE-4AB8-BF08-D846F2C3BF00}
+	EndGlobalSection
+EndGlobal
