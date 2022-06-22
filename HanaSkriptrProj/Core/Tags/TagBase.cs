@@ -35,6 +35,7 @@ namespace XVNML.Core.Tags
         /// <returns></returns>
         public T GetElement<T>(string tagName) where T : TagBase
         {
+            if (elements == null) return null;
             T element = (T)elements.Find(e => e.tagName == tagName);
             return element;
         }
@@ -46,6 +47,7 @@ namespace XVNML.Core.Tags
         /// <returns></returns>
         public T GetElement<T>() where T : TagBase
         {
+            if (elements == null) return null;
             T element = (T)elements.Find(e=> e.GetType() == typeof(T));
             return element;
         }
@@ -58,6 +60,7 @@ namespace XVNML.Core.Tags
         /// <returns></returns>
         public T GetElement<T>(int index) where T : TagBase
         {
+            if (elements == null) return null;
             int i = 0;
             T element = (T)elements.Find(e => (e.GetType() == typeof(T) && i == index));
             return element;
@@ -86,26 +89,33 @@ namespace XVNML.Core.Tags
         {
             var validTagType = DefinedTagsCollection.ValidTagTypes[tagTypeName];
             var config = validTagType.Item2;
-            var existanceFlag = validTagType.Item3;
+            var appearanceLocation = validTagType.Item3;
 
-            //Check config pragmaonce
+            //Check config pragmaOnce
+            //One tag should exist in a scope
+            /*For example
+             <test
+             
+             
+             */
             if (config.PragmaOnce == true)
             {
-                if (existanceFlag == true || (existanceFlag && config.DependingTag == parentTag.GetType().Name))
+                if (appearanceLocation.Contains(parentTag))
                 {
-                    Console.WriteLine("This tag already exists within the document. There can only be 1");
+                    Console.WriteLine($"This tag already exists within the document. There can only be 1: Tag Name {tagName}");
                     Parser.Parser.Abort();
                     return;
                 }
 
-                validTagType.Item3 = config.PragmaOnce;
+                validTagType.Item3.Add(parentTag);
+                DefinedTagsCollection.ValidTagTypes[tagTypeName] = validTagType;
             }
 
             //Check that the Parent tag matches the depending tag
             //If there is a parent tag, but doesn't match the depending tag
             if(parentTag != null && config.DependingTag != null && parentTag.GetType().Name != config.DependingTag)
             {
-                Console.WriteLine($"Invalid Depending Tag. The tag {tagTypeName} depends on {config.DependingTag}");
+                Console.WriteLine($"Invalid Depending Tag {parentTag}. The tag {tagTypeName} depends on {config.DependingTag}");
                 Parser.Parser.Abort();
                 return;
             }

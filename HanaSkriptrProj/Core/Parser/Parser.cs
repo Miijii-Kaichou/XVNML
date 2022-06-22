@@ -358,7 +358,7 @@ namespace XVNML.Core.Parser
 
         public static void Abort()
         {
-            _Conflict = true;
+            throw new Exception("Parser has aborted.");
         }
 
         private static void CloseCurrentTag()

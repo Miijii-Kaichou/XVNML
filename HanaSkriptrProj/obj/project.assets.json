@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\tclte\\Desktop\\HanaSkriptr\\HanaSkriptrProj\\HanaSkriptrProj\\XVNML.csproj",
+      "projectUniqueName": "C:\\Users\\tclte\\Desktop\\XVNML\\HanaSkriptrProj\\XVNML.csproj",
       "projectName": "XVNML",
-      "projectPath": "C:\\Users\\tclte\\Desktop\\HanaSkriptr\\HanaSkriptrProj\\HanaSkriptrProj\\XVNML.csproj",
+      "projectPath": "C:\\Users\\tclte\\Desktop\\XVNML\\HanaSkriptrProj\\XVNML.csproj",
       "packagesPath": "C:\\Users\\tclte\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\tclte\\Desktop\\HanaSkriptr\\HanaSkriptrProj\\HanaSkriptrProj\\obj\\",
+      "outputPath": "C:\\Users\\tclte\\Desktop\\XVNML\\HanaSkriptrProj\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -11,7 +11,11 @@
 
         public object this[string name]
         {
-            get { return paramters[name].value; }
+            get
+            {
+                if (paramters.ContainsKey(name) == false) return null;
+                return paramters[name].value;
+            }
         }
     }
 

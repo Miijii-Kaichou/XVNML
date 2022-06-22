@@ -15,6 +15,9 @@ namespace XVNML.XVNMLUtility.Tags
         public override void OnResolve()
         {
             base.OnResolve();
+
+            if (parameterInfo == null) return;
+
             title = GetElement<Title>().parameterInfo["name"].ToString();
             author = GetElement<Author>().parameterInfo["name"].ToString();
             date = GetElement<Date>().parameterInfo["value"].ToString();
