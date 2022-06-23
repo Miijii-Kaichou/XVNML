@@ -16,13 +16,11 @@ namespace XVNML.XVNMLUtility.Tags
         {
             base.OnResolve();
 
-            if (parameterInfo == null) return;
-
             title = GetElement<Title>().parameterInfo["name"].ToString();
             author = GetElement<Author>().parameterInfo["name"].ToString();
             date = GetElement<Date>().parameterInfo["value"].ToString();
             description = GetElement<Description>().parameterInfo["text"].ToString();
-            copyright = GetElement<Copyright>().parameterInfo["year"].ToString();
+            copyright = GetElement<Copyright>().parameterInfo["year"].sToString();
             url = GetElement<Url>().parameterInfo["href"].ToString();
             tags = GetElement<Tags>().parameterInfo["list"].ToString();
         }

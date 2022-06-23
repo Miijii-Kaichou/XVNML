@@ -1,7 +1,7 @@
 ﻿using XVNML.Core.Tags;
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("title", typeof(Metadata), TagOccurance.PragmaLocalOnce)]
+    [AssociateWithTag("title", TagOccurance.PragmaLocalOnce)]
     public class Title : TagBase
     {
 
