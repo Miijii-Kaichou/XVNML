@@ -2,7 +2,7 @@
 
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("copyright", typeof(Metadata), TagOccurance.Once)]
+    [AssociateWithTag("copyright", typeof(Metadata), TagOccurance.PragmaOnce)]
     public class Copyright : TagBase
     {
 

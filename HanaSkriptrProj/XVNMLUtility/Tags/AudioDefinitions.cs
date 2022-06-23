@@ -2,7 +2,7 @@
 
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("audioDefinitions", TagOccurance.Once)]
+    [AssociateWithTag("audioDefinitions", TagOccurance.PragmaOnce)]
     public class AudioDefinitions : TagBase
     {
 

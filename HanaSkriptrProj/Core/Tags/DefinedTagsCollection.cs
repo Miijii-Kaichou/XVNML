@@ -10,7 +10,7 @@ namespace XVNML.Core.Tags
     /// </summary>
     internal static class DefinedTagsCollection
     {
-        public static SortedDictionary<string, (Type, TagConfiguration, List<TagBase> ValidTagTypes;
+        public static SortedDictionary<string, (Type, TagConfiguration, List<TagBase>)> ValidTagTypes;
 
         private static Assembly Assembly;
         
@@ -42,13 +42,13 @@ namespace XVNML.Core.Tags
                 {
                     LinkedTag = attribute.Tag,
                     DependingTag = attribute.ParentTag?.Name,
-                    PragmaOnce = attribute.Occurance == TagOccurance.Once ? true : false,
+                    TagOccurance = attribute.Occurance,
                     UserDefined = attribute.IsUserDefined
                 };
 
                 //Add to validated tagTypes. This means when
                 //parsing the XVNML, this type will be resolved.
-                ValidTagTypes.Add(attribute.Tag, (type, tagConfig, new List<TagBase>());
+                ValidTagTypes.Add(attribute.Tag, (type, tagConfig, new List<TagBase>()));
             }
 
             var tagCount = ValidTagTypes.Count;

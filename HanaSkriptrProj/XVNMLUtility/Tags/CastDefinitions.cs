@@ -2,7 +2,7 @@
 
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("castDefinitions", typeof(Proxy), TagOccurance.Once)]
+    [AssociateWithTag("castDefinitions", typeof(Proxy), TagOccurance.PragmaOnce)]
     public  class CastDefinitions : TagBase
     {
 

@@ -2,7 +2,7 @@
 
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("keycodeDefinitions", typeof(Proxy), TagOccurance.Once)]
+    [AssociateWithTag("keycodeDefinitions", typeof(Proxy), TagOccurance.PragmaOnce)]
     public class KeycodeDefinitions : TagBase
     {
 

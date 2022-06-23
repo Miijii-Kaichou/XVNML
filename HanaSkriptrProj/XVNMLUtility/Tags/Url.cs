@@ -2,7 +2,7 @@
 
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("url", typeof(Metadata), TagOccurance.Once)]
+    [AssociateWithTag("url", typeof(Metadata), TagOccurance.PragmaOnce)]
     public class Url : TagBase
     {
 

@@ -2,7 +2,7 @@
 
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("date", typeof(Metadata), TagOccurance.Once)]
+    [AssociateWithTag("date", typeof(Metadata), TagOccurance.PragmaOnce)]
     public class Date : TagBase
     {
 

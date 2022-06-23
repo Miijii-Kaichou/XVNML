@@ -91,24 +91,30 @@ namespace XVNML.Core.Tags
             var config = validTagType.Item2;
             var appearanceLocation = validTagType.Item3;
 
-            //Check config pragmaOnce
-            //One tag should exist in a scope
-            /*For example
-             <test
-             
-             
-             */
-            if (config.PragmaOnce == true)
+            if (config.TagOccurance == TagOccurance.PragmaLocalOnce)
             {
                 if (appearanceLocation.Contains(parentTag))
                 {
-                    Console.WriteLine($"This tag already exists within the document. There can only be 1: Tag Name {tagName}");
+                    Console.WriteLine($"This tag already exists within the scope {parentTag.tagName}. There can only be 1: Tag Name {tagName}");
                     Parser.Parser.Abort();
                     return;
                 }
 
                 validTagType.Item3.Add(parentTag);
                 DefinedTagsCollection.ValidTagTypes[tagTypeName] = validTagType;
+            }
+
+            if(config.TagOccurance == TagOccurance.PragmaOnce)
+            {
+                if(appearanceLocation.Count > 0)
+                {
+                    if (appearanceLocation.Contains(parentTag))
+                    {
+                        Console.WriteLine($"This tag already exists within the document. There can only be 1: Tag Name {tagName}");
+                        Parser.Parser.Abort();
+                        return;
+                    }
+                }
             }
 
             //Check that the Parent tag matches the depending tag
@@ -127,8 +133,6 @@ namespace XVNML.Core.Tags
                 Parser.Parser.Abort();
                 return;
             }
-
-            //Parser can continue at this point.
         }
     }
 }

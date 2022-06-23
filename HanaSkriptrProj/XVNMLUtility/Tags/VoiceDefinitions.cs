@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using XVNML.Core.Tags;
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("voiceDefinitions", typeof(Cast), TagOccurance.Once)]
+    [AssociateWithTag("voiceDefinitions", typeof(Cast), TagOccurance.PragmaOnce)]
     public class VoiceDefinitions : TagBase
     {
 

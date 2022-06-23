@@ -2,7 +2,8 @@
 {
     public enum TagOccurance
     {
-        Once,
+        PragmaOnce,
+        PragmaLocalOnce,
         Multiple
     }
 

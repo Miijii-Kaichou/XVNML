@@ -2,7 +2,7 @@
 
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("description", typeof(Metadata), TagOccurance.Once)]
+    [AssociateWithTag("description", typeof(Metadata), TagOccurance.PragmaOnce)]
     public class Description : TagBase
     {
 

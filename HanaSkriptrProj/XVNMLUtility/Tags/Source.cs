@@ -2,7 +2,7 @@
 
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("source", TagOccurance.Once)]
+    [AssociateWithTag("source", TagOccurance.PragmaOnce)]
     public class Source : TagBase
     {
 

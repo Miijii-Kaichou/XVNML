@@ -2,7 +2,7 @@
 
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("dependencyDefinitions", typeof(Proxy), TagOccurance.Once)]
+    [AssociateWithTag("dependencyDefinitions", typeof(Proxy), TagOccurance.PragmaOnce)]
     public class DependencyDefinitions : TagBase
     {
 

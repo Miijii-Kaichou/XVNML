@@ -3,7 +3,7 @@ using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("proxy", TagOccurance.Once)]
+    [AssociateWithTag("proxy", TagOccurance.PragmaOnce)]
     public class Proxy : TagBase
     {
         public string engine;
