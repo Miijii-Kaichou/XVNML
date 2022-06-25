@@ -106,12 +106,26 @@ namespace XVNML.Core.Parser
             AnalyzeTokens();
         }
 
-        private static SyntaxToken? Peek(int offset)
+        private static SyntaxToken? Peek(int offset, bool includeSpaces = false)
         {
             if (Tokenizer == null) return null;
             try
             {
-                return Tokenizer[_position + offset];
+                var token = Tokenizer[_position + offset];
+                while (true)
+                {
+                    token = Tokenizer[_position + offset];
+
+                    if ((token.Type == TokenType.WhiteSpace && includeSpaces == false) ||
+                        token.Type == TokenType.SingleLineComment ||
+                        token.Type == TokenType.MultilineComment)
+                    {
+                        _position++;
+                        continue;
+                    }
+                    return token;
+                }
+
             }
             catch
             {
@@ -125,15 +139,6 @@ namespace XVNML.Core.Parser
             return Current;
         }
 
-
-        private static void RemoveAllWhiteSpaces()
-        {
-            Tokenizer.definedTokens.RemoveAll(t => t.Type == TokenType.WhiteSpace);
-            Tokenizer.definedTokens.RemoveAll(t => t.Type == TokenType.SingleLineComment);
-            Tokenizer.definedTokens.RemoveAll(t => t.Type == TokenType.MultilineComment);
-            Tokenizer.definedTokens.TrimExcess();
-        }
-
         private static void AnalyzeTokens()
         {
             //Find starting of tags. With each tag found,
@@ -142,9 +147,6 @@ namespace XVNML.Core.Parser
             if (Tokenizer == null) return;
 
             List<SyntaxToken> buffer = new List<SyntaxToken>();
-
-            //Remove all redundant tokens
-            RemoveAllWhiteSpaces();
 
             for (int i = 0; i < Tokenizer.Length; i++)
             {
@@ -155,7 +157,7 @@ namespace XVNML.Core.Parser
 
                 SyntaxToken token = Current;
 
-                if(EvaluationState == ParserEvaluationState.TagValue)
+                if (EvaluationState == ParserEvaluationState.TagValue)
                 {
                     //if(_TagValueStringBuilder.Length == 0 && Current.Type == TokenType.At)
                     //{
@@ -165,9 +167,9 @@ namespace XVNML.Core.Parser
 
                     //Start building the string
                     var buildingString = true;
-                    while(buildingString)
+                    while (buildingString)
                     {
-                        if(Current.Type == TokenType.OpenBracket && Peek(1).Type == TokenType.ForwardSlash)
+                        if (Current.Type == TokenType.OpenBracket && Peek(1).Type == TokenType.ForwardSlash)
                         {
                             ChangeEvaluationState(ParserEvaluationState.Tag);
                             buildingString = false;
@@ -444,13 +446,13 @@ namespace XVNML.Core.Parser
             cachedTagParameterInfo = null;
             cachedTagName = string.Empty;
 
-            if(_TagValueStringBuilder.Length > 0)
+            if (_TagValueStringBuilder.Length > 0)
             {
                 TopOfStack.value = _TagValueStringBuilder.ToString();
                 _TagValueStringBuilder.Clear();
             }
 
-            if(_DialougeSetOutput != null)
+            if (_DialougeSetOutput != null)
             {
                 TopOfStack.value = _DialougeSetOutput;
                 _DialougeSetOutput = null;

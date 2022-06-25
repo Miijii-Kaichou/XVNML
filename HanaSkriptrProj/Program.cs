@@ -23,6 +23,7 @@ namespace XVNML
             {
                 Console.WriteLine(metadata.author["name"]);
                 Console.WriteLine(metadata.title["name"]);
+                Console.WriteLine(xvnml.proxy.GetElement<Title>().value);
                 Console.ReadKey();
                 Active = false;
             }
