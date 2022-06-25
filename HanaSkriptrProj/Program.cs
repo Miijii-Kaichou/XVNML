@@ -17,10 +17,12 @@ namespace XVNML
             //Create XVNML File
             XVNMLObj xvnml = XVNMLObj.Create(@"C:\Users\tclte\Desktop\TestXVNML.xvnml");
             if (xvnml.proxy == null) return -1;
-            var title = xvnml.proxy.GetElement<Title>();;
+            var metadata = xvnml.proxy.GetElement<Metadata>();
+            var castDefinitions = xvnml.proxy.GetElement<CastDefinitions>();
             while (Active)
             {
-                Console.WriteLine(title.value);
+                Console.WriteLine(metadata.author["name"]);
+                Console.WriteLine(metadata.title["name"]);
                 Console.ReadKey();
                 Active = false;
             }

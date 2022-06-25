@@ -128,6 +128,7 @@ namespace XVNML.Core.Parser
 
         private static void RemoveAllWhiteSpaces()
         {
+            Tokenizer.definedTokens.RemoveAll(t => t.Type == TokenType.WhiteSpace);
             Tokenizer.definedTokens.RemoveAll(t => t.Type == TokenType.SingleLineComment);
             Tokenizer.definedTokens.RemoveAll(t => t.Type == TokenType.MultilineComment);
             Tokenizer.definedTokens.TrimExcess();

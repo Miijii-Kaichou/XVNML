@@ -219,12 +219,14 @@ namespace XVNML.Core.Lexer
                 return new SyntaxToken(TokenType.DoubleColon, _Line, start, "::", null);
             }
 
+            //Check for DoubleCloseBrackets
             if (Peek(_position, "<<"))
             {
                 var start = _position;
                 JumpPosition(2);
                 return new SyntaxToken(TokenType.DoubleCloseBracket, _Line, start, "<<", null);
             }
+
             //Find EmptyString
             if (Peek(_position, "\"\""))
             {

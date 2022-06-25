@@ -26,6 +26,11 @@ namespace XVNML.Core.Tags
 
         internal TagEvaluationState tagState;
 
+        public object this[string name]
+        {
+            get { return parameterInfo[name]; }
+        }
+
         /// <summary>
         /// Will find the tag of type with a
         /// parameter called "name"
