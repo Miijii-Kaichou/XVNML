@@ -157,7 +157,6 @@ namespace XVNML.Core.Lexer
 
                 var length = _position - start;
                 var text = SourceText.Substring(start, length);
-                text = text.Trim('\n', '\r');
 
                 return new SyntaxToken(TokenType.WhiteSpace, _Line, start, text, null);
             }

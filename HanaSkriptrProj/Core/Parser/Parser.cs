@@ -75,7 +75,7 @@ namespace XVNML.Core.Parser
 
         public static void SetTarget(ReadOnlySpan<char> fileTarget) => _FileTarget = fileTarget.ToString();
 
-        private static SyntaxToken? Current => Peek(0);
+        private static SyntaxToken? Current => Peek(0, true);
 
         public static bool ExpectingMoreTagParameters { get; private set; }
 
@@ -112,6 +112,7 @@ namespace XVNML.Core.Parser
             try
             {
                 var token = Tokenizer[_position + offset];
+
                 while (true)
                 {
                     token = Tokenizer[_position + offset];
@@ -123,6 +124,7 @@ namespace XVNML.Core.Parser
                         _position++;
                         continue;
                     }
+
                     return token;
                 }
 
@@ -159,27 +161,15 @@ namespace XVNML.Core.Parser
 
                 if (EvaluationState == ParserEvaluationState.TagValue)
                 {
-                    //if(_TagValueStringBuilder.Length == 0 && Current.Type == TokenType.At)
-                    //{
-                    //    ChangeEvaluationState(ParserEvaluationState.Dialogue);
-                    //    continue;
-                    //}
 
-                    //Start building the string
-                    var buildingString = true;
-                    while (buildingString)
+                    if (Current.Type == TokenType.OpenBracket && Peek(1, true).Type == TokenType.ForwardSlash)
                     {
-                        if (Current.Type == TokenType.OpenBracket && Peek(1).Type == TokenType.ForwardSlash)
-                        {
                             ChangeEvaluationState(ParserEvaluationState.Tag);
-                            buildingString = false;
                             _position--;
                             continue;
-                        }
-                        _TagValueStringBuilder.Append(Current.Text);
-                        Next();
                     }
-                    continue;
+
+                    _TagValueStringBuilder.Append(Current.Text);
                 }
 
                 if (EvaluationState == ParserEvaluationState.Tag)
