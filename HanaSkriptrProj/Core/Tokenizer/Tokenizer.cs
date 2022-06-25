@@ -19,6 +19,7 @@ namespace XVNML.Core.Lexer
         public string Text { get; }
         public object Value { get; }
     }
+
     public class Tokenizer
     {
         private int _position = 0;
@@ -72,12 +73,13 @@ namespace XVNML.Core.Lexer
             }
         }
 
+        private bool _isThereConflict = false;
 
         internal List<SyntaxToken> definedTokens = new List<SyntaxToken>();
 
         private FileInfo _fileTargetInfo;
 
-        public Tokenizer(string fileTarget)
+        public Tokenizer(string fileTarget, out bool conflictResult)
         {
             _fileTargetInfo = new FileInfo(fileTarget);
             try
@@ -90,18 +92,17 @@ namespace XVNML.Core.Lexer
                 }
 
                 //Tokenize
-                Tokenize();
+                Tokenize(out conflictResult);
             }
             catch (IOException io)
             {
                 Console.Write($"Could not launch tokenizer. REASON: {io.Message}");
+                conflictResult = true;
                 return;
             }
         }
 
-
-
-        public void Tokenize()
+        public void Tokenize(out bool conflictResult)
         {
             Console.WriteLine($"Tokenization of {_fileTargetInfo.Name} starting...\n" +
                 $"----------------------------------------------------------------------\n\n");
@@ -109,8 +110,11 @@ namespace XVNML.Core.Lexer
             {
                 var token = NextToken();
                 definedTokens.Add(token);
-                if (token.Type == TokenType.EOF)
+                if (token.Type == TokenType.EOF || _isThereConflict)
+                {
+                    conflictResult = _isThereConflict;
                     break;
+                }
 
                 //Uncomment to debug
                 Console.WriteLine($"{token.Type}: '{token.Text}'{(token.Value != null ? $" {token.Value}" : string.Empty)}");
@@ -172,7 +176,7 @@ namespace XVNML.Core.Lexer
             }
 
             //Comments
-            if (PeakFor(_position, "$>"))
+            if (Peek(_position, "$>"))
             {
                 JumpPosition(2);
 
@@ -189,13 +193,13 @@ namespace XVNML.Core.Lexer
             }
 
             //Multiline Comments
-            if (PeakFor(_position, "$/"))
+            if (Peek(_position, "$/"))
             {
                 JumpPosition(2);
 
                 var start = _position;
 
-                while (PeakFor(_position, "/$") == false)
+                while (Peek(_position, "/$") == false)
                     Next();
 
                 var length = _position - start;
@@ -208,15 +212,21 @@ namespace XVNML.Core.Lexer
             }
 
             //DoubleColon (Equivalent to = for tags)
-            if (PeakFor(_position, "::"))
+            if (Peek(_position, "::"))
             {
                 var start = _position;
                 JumpPosition(2);
                 return new SyntaxToken(TokenType.DoubleColon, _Line, start, "::", null);
             }
 
+            if (Peek(_position, "<<"))
+            {
+                var start = _position;
+                JumpPosition(2);
+                return new SyntaxToken(TokenType.DoubleCloseBracket, _Line, start, "<<", null);
+            }
             //Find EmptyString
-            if (PeakFor(_position, "\"\""))
+            if (Peek(_position, "\"\""))
             {
                 //This is an empty string
                 var start = _position;
@@ -242,24 +252,8 @@ namespace XVNML.Core.Lexer
                 return new SyntaxToken(TokenType.String, _Line, _position++, text, text);
             }
 
-            // Find normal char
-            if (_Current == '\'')
-            {
-                Next();
-
-                var start = _position;
-                var end = 0;
-                while (end == 0 || _Current != '\'')
-                {
-                    Next();
-                    end++;
-                }
-
-                var text = SourceText.Substring(start, end);
-
-                return new SyntaxToken(TokenType.Char, _Line, _position++, text, text);
-            }
-
+            // Any Punctuations
+            if (_Current == '\'') return new SyntaxToken(TokenType.Apostraphe, _Line, _position++, "'", null);
             if (_Current == '<') return new SyntaxToken(TokenType.OpenBracket, _Line, _position++, "<", null);
             if (_Current == '>') return new SyntaxToken(TokenType.CloseBracket, _Line, _position++, ">", null);
             if (_Current == ',') return new SyntaxToken(TokenType.Comma, _Line, _position++, ",", null);
@@ -274,8 +268,24 @@ namespace XVNML.Core.Lexer
             if (_Current == '/') return new SyntaxToken(TokenType.ForwardSlash, _Line, _position++, "/", null);
             if (_Current == '\\') return new SyntaxToken(TokenType.BackwardSlash, _Line, _position++, "\\", null);
             if (_Current == '#') return new SyntaxToken(TokenType.Pound, _Line, _position++, "#", null);
-            if (_Current == '@') return new SyntaxToken(TokenType.Ampersand, _Line, _position++, "@", null);
+            if (_Current == '@') return new SyntaxToken(TokenType.At, _Line, _position++, "@", null);
+            if (_Current == '?') return new SyntaxToken(TokenType.Prompt, _Line, _position++, "?", null);
+            if (_Current == '$') return new SyntaxToken(TokenType.DollarSign, _Line, _position++, "$", null);
+            if (_Current == '!') return new SyntaxToken(TokenType.Exclamation, _Line, _position++, "!", null);
+            if (_Current == '*') return new SyntaxToken(TokenType.Star, _Line, _position++, "*", null);
+            if (_Current == '.') return new SyntaxToken(TokenType.Period, _Line, _position++, ".", null);
+            if (_Current == ';') return new SyntaxToken(TokenType.SemiColon, _Line, _position++, ";", null);
+            if (_Current == '-') return new SyntaxToken(TokenType.Dash, _Line, _position++, "-", null);
+            if (_Current == '_') return new SyntaxToken(TokenType.Equal, _Line, _position++, "_", null);
+            if (_Current == '~') return new SyntaxToken(TokenType.Tilda, _Line, _position++, "_", null);
+            if (_Current == '`') return new SyntaxToken(TokenType.InverseComma, _Line, _position++, "_", null);
+            if (_Current == '%') return new SyntaxToken(TokenType.Percent, _Line, _position++, "_", null);
+            if (_Current == '^') return new SyntaxToken(TokenType.Peak, _Line, _position++, "_", null);
+            if (_Current == '&') return new SyntaxToken(TokenType.Ampersand, _Line, _position++, "_", null);
+            if (_Current == '+') return new SyntaxToken(TokenType.Plus, _Line, _position++, "_", null);
+            if (_Current == '=') return new SyntaxToken(TokenType.Equal, _Line, _position++, "_", null);
 
+            _isThereConflict = true;
             return new SyntaxToken(TokenType.Invalid, _Line, _position++, SourceText.Substring(_position - 1, 1), null);
         }
 
@@ -285,7 +295,7 @@ namespace XVNML.Core.Lexer
             return result;
         }
 
-        bool PeakFor(int position, string stringSet)
+        bool Peek(int position, string stringSet)
         {
             try
             {

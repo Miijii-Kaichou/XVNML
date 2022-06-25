@@ -7,7 +7,6 @@ namespace XVNML
 {
     public static class EntryPoint
     {
-        public static string TargetFile = @"C:\Users\tclte\Desktop\TestXVNML.xvnml";
         static bool Active = false;
         static int Main(string[] args)
         {
@@ -16,11 +15,12 @@ namespace XVNML
             DefinedTagsCollection.ManifestTagTypes();
 
             //Create XVNML File
-            XVNMLObj xvnml = XVNMLObj.Create(TargetFile);
-            var metadata = xvnml.proxy.GetElement<Metadata>();
+            XVNMLObj xvnml = XVNMLObj.Create(@"C:\Users\tclte\Desktop\TestXVNML.xvnml");
+            if (xvnml.proxy == null) return -1;
+            var title = xvnml.proxy.GetElement<Title>();;
             while (Active)
             {
-                Console.WriteLine(metadata.title);
+                Console.WriteLine(title.value);
                 Console.ReadKey();
                 Active = false;
             }

@@ -10,8 +10,11 @@
     [AttributeUsage(AttributeTargets.Class)]
     public class AssociateWithTagAttribute : Attribute
     {
+        private const int FirstParent = 0;
+
         public string Tag { get; }
-        public Type ParentTag { get; }
+
+        public Type[] ParentTags { get; private set; } = new Type[1];
         public TagOccurance Occurance { get; }
         public bool IsUserDefined { get; }
 
@@ -74,7 +77,22 @@
         public AssociateWithTagAttribute(string tag, Type parentTag, TagOccurance occurance, bool isUserDefined)
         {
             Tag = tag;
-            ParentTag = parentTag;
+            ParentTags[FirstParent] = parentTag;
+            Occurance = occurance;
+            IsUserDefined = isUserDefined;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="parentTag"></param>
+        /// <param name="occurance"></param>
+        /// <param name="isUserDefined"></param>
+        public AssociateWithTagAttribute(string tag, Type[] parentTags, TagOccurance occurance, bool isUserDefined)
+        {
+            Tag = tag;
+            ParentTags = parentTags;
             Occurance = occurance;
             IsUserDefined = isUserDefined;
         }
@@ -89,7 +107,20 @@
         public AssociateWithTagAttribute(string tag, Type parentTag, TagOccurance occurance)
         {
             Tag = tag;
-            ParentTag = parentTag;
+            ParentTags[FirstParent] = parentTag;
+            Occurance = occurance;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="parentTag"></param>
+        /// <param name="occurance"></param>
+        public AssociateWithTagAttribute(string tag, Type[] parentTags, TagOccurance occurance)
+        {
+            Tag = tag;
+            ParentTags = parentTags;
             Occurance = occurance;
         }
 
@@ -103,7 +134,20 @@
         public AssociateWithTagAttribute(string tag, Type parentTag, bool isUserDefined)
         {
             Tag = tag;
-            ParentTag = parentTag;
+            ParentTags[FirstParent] = parentTag;
+            IsUserDefined = isUserDefined;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="parentTag"></param>
+        /// <param name="isUserDefined"></param>
+        public AssociateWithTagAttribute(string tag, Type[] parentTags, bool isUserDefined)
+        {
+            Tag = tag;
+            ParentTags = parentTags;
             IsUserDefined = isUserDefined;
         }
     }

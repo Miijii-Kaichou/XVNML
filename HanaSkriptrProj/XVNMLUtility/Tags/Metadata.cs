@@ -20,7 +20,7 @@ namespace XVNML.XVNMLUtility.Tags
             author = GetElement<Author>().parameterInfo["name"].ToString();
             date = GetElement<Date>().parameterInfo["value"].ToString();
             description = GetElement<Description>().parameterInfo["text"].ToString();
-            copyright = GetElement<Copyright>().parameterInfo["year"].sToString();
+            copyright = GetElement<Copyright>().parameterInfo["year"].ToString();
             url = GetElement<Url>().parameterInfo["href"].ToString();
             tags = GetElement<Tags>().parameterInfo["list"].ToString();
         }

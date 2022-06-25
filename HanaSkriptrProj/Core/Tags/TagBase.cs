@@ -119,17 +119,17 @@ namespace XVNML.Core.Tags
 
             //Check that the Parent tag matches the depending tag
             //If there is a parent tag, but doesn't match the depending tag
-            if(parentTag != null && config.DependingTag != null && parentTag.GetType().Name != config.DependingTag)
+            if(parentTag != null && config.DependingTags != null && config.DependingTags.Contains(parentTag.GetType().Name) == false)
             {
-                Console.WriteLine($"Invalid Depending Tag {parentTag}. The tag {tagTypeName} depends on {config.DependingTag}");
+                Console.WriteLine($"Invalid Depending Tag {parentTag}. The tag {tagTypeName} depends on {config.DependingTags}");
                 Parser.Parser.Abort();
                 return;
             }
 
             //If there is no parent tag, but it depends on a tag
-            if(parentTag == null && config.DependingTag != null)
+            if(parentTag == null && config.DependingTags != null)
             {
-                Console.WriteLine($"The tag {tagTypeName} depends on {config.DependingTag}, but there is nothing.");
+                Console.WriteLine($"The tag {tagTypeName} depends on {config.DependingTags}, but there is nothing.");
                 Parser.Parser.Abort();
                 return;
             }

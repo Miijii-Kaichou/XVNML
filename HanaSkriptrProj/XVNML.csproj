@@ -11,4 +11,8 @@
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="XVNMLUtility\Extensions\" />
+  </ItemGroup>
+
 </Project>

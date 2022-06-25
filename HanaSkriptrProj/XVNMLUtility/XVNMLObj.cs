@@ -15,6 +15,8 @@ namespace XVNML.XVNMLUtility
 
         XVNMLObj()
         {
+            if (Parser.RootTag == null) return;
+
             var root = Parser.RootTag;
 
             //Valid root names are "proxy" and "source"

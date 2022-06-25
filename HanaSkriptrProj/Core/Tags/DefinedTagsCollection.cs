@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Linq;
+using XVNML.Core.Extensions;
 
 namespace XVNML.Core.Tags
 {
@@ -41,7 +42,7 @@ namespace XVNML.Core.Tags
                 var tagConfig = new TagConfiguration
                 {
                     LinkedTag = attribute.Tag,
-                    DependingTag = attribute.ParentTag?.Name,
+                    DependingTags = attribute.ParentTags?.Names(),
                     TagOccurance = attribute.Occurance,
                     UserDefined = attribute.IsUserDefined
                 };
