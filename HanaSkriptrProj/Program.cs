@@ -18,12 +18,10 @@ namespace XVNML
             XVNMLObj xvnml = XVNMLObj.Create(@"C:\Users\tclte\Desktop\TestXVNML.xvnml");
             if (xvnml.proxy == null) return -1;
             var metadata = xvnml.proxy.GetElement<Metadata>();
-            var castDefinitions = xvnml.proxy.GetElement<CastDefinitions>();
+            var dialogueGroup= xvnml.proxy.GetElement<DialogueGroup>("XVNML Tutorial Basics");
             while (Active)
             {
-                Console.WriteLine(metadata.author["name"]);
-                Console.WriteLine(metadata.title["name"]);
-                Console.WriteLine(xvnml.proxy.GetElement<Title>().value);
+                Console.WriteLine(dialogueGroup["Chapter 1"]);
                 Console.ReadKey();
                 Active = false;
             }

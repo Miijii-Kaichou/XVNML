@@ -438,7 +438,7 @@ namespace XVNML.Core.Parser
 
             if (_TagValueStringBuilder.Length > 0)
             {
-                TopOfStack.value = _TagValueStringBuilder.ToString();
+                TopOfStack.value = _TagValueStringBuilder.ToString().Trim('\n');
                 _TagValueStringBuilder.Clear();
             }
 

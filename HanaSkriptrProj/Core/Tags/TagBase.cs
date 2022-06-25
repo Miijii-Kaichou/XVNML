@@ -67,6 +67,14 @@ namespace XVNML.Core.Tags
         {
             if (elements == null) return null;
             int i = 0;
+
+            //Check if id's are already provided
+            foreach(T? e in elements)
+            {
+                if ((int)e.parameterInfo["id"] == index) return e;
+            }
+
+            //Then we do normal Find method
             T element = (T)elements.Find(e => (e.GetType() == typeof(T) && i == index));
             return element;
         }
