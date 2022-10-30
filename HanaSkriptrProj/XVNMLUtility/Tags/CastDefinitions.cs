@@ -5,9 +5,9 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("castDefinitions", typeof(Proxy), TagOccurance.PragmaOnce)]
     public  class CastDefinitions : TagBase
     {
-        public Cast this[string name]
+        public new Cast this[string name]
         {
-            get { return GetElement<Cast>(name); }
+            get { return GetElement<Cast>(name)!; }
         }
 
         public override void OnResolve()

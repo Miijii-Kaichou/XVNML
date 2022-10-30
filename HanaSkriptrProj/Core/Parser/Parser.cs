@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using XVNML.Core.Dialogue;
 using XVNML.Core.Lexer;
 using XVNML.Core.Tags;
 
@@ -44,9 +45,9 @@ namespace XVNML.Core.Parser
     internal class Parser
     {
         #region Fields and Properties
-        private static int _position = -1;
+        protected static int Position = -1;
 
-        private static string _FileTarget;
+        protected static string? FileTarget;
 
         private static bool _Conflict;
 
@@ -58,7 +59,7 @@ namespace XVNML.Core.Parser
         static Stack<TagBase> TagStackFrame = new Stack<TagBase>();
         static int TagLevel => TagStackFrame.Count - 1;
 
-        static TagBase TopOfStack
+        static TagBase? TopOfStack
         {
             get
             {
@@ -67,33 +68,28 @@ namespace XVNML.Core.Parser
             }
         }
 
-        internal static TagBase RootTag;
+        internal static TagBase? RootTag;
 
         //Temporary Cache
-        static TagParameterInfo cachedTagParameterInfo;
-        static string cachedTagName;
+        static TagParameterInfo? cachedTagParameterInfo;
+        static string? cachedTagName;
 
-        public static void SetTarget(ReadOnlySpan<char> fileTarget) => _FileTarget = fileTarget.ToString();
+        public static void SetTarget(ReadOnlySpan<char> fileTarget) => FileTarget = fileTarget.ToString();
 
         private static SyntaxToken? Current => Peek(0, true);
 
         public static bool ExpectingMoreTagParameters { get; private set; }
 
-        private static bool CreatingObjectBody = true;
-
         //This is important for anything in between tags (for example) <title>Hi</title>
         private static StringBuilder _TagValueStringBuilder = new StringBuilder();
-
-        //This is also important for getting Dialogue Data
-        private static DialogueSetOuput _DialougeSetOutput;
-
-        //And have 1 version without whitespaces
-        private static SyntaxToken[] DefinedTokensWithWhiteSpaces;
         #endregion
 
         public static void Parse()
         {
-            Tokenizer ??= new Tokenizer(_FileTarget, out _Conflict);
+            if (FileTarget == null)
+                throw new NullReferenceException("FileTarget cannot be null when parsing.");
+
+            Tokenizer ??= new Tokenizer(FileTarget, TokenizerReadState.IO, out _Conflict);
 
 
             if (_Conflict)
@@ -111,17 +107,17 @@ namespace XVNML.Core.Parser
             if (Tokenizer == null) return null;
             try
             {
-                var token = Tokenizer[_position + offset];
+                var token = Tokenizer[Position + offset];
 
                 while (true)
                 {
-                    token = Tokenizer[_position + offset];
+                    token = Tokenizer[Position + offset] ?? default!;
 
                     if ((token.Type == TokenType.WhiteSpace && includeSpaces == false) ||
                         token.Type == TokenType.SingleLineComment ||
                         token.Type == TokenType.MultilineComment)
                     {
-                        _position++;
+                        Position++;
                         continue;
                     }
 
@@ -137,7 +133,7 @@ namespace XVNML.Core.Parser
 
         private static SyntaxToken? Next()
         {
-            _position++;
+            Position++;
             return Current;
         }
 
@@ -148,8 +144,6 @@ namespace XVNML.Core.Parser
             //it's children elements, and its values
             if (Tokenizer == null) return;
 
-            List<SyntaxToken> buffer = new List<SyntaxToken>();
-
             for (int i = 0; i < Tokenizer.Length; i++)
             {
                 //If there was a conflict in resolving types, stop parsing;
@@ -157,19 +151,19 @@ namespace XVNML.Core.Parser
 
                 Next();
 
-                SyntaxToken token = Current;
+                SyntaxToken? token = Current;
 
                 if (EvaluationState == ParserEvaluationState.TagValue)
                 {
 
-                    if (Current.Type == TokenType.OpenBracket && Peek(1, true).Type == TokenType.ForwardSlash)
+                    if (Current?.Type == TokenType.OpenBracket && Peek(1, true)?.Type == TokenType.ForwardSlash)
                     {
                             ChangeEvaluationState(ParserEvaluationState.Tag);
-                            _position--;
+                            Position--;
                             continue;
                     }
 
-                    _TagValueStringBuilder.Append(Current.Text);
+                    _TagValueStringBuilder.Append(Current?.Text);
                 }
 
                 if (EvaluationState == ParserEvaluationState.Tag)
@@ -204,9 +198,9 @@ namespace XVNML.Core.Parser
                                     }
 
                                     //Expect matching name
-                                    if (Current.Text != TopOfStack.tagTypeName)
+                                    if (Current.Text != TopOfStack?.tagTypeName)
                                     {
-                                        Console.WriteLine($"Tag Leveling for {TopOfStack.tagTypeName} does not match with closing tag " +
+                                        Console.WriteLine($"Tag Leveling for {TopOfStack?.tagTypeName} does not match with closing tag " +
                                             $"{Current.Text}");
                                         return;
                                     }
@@ -239,8 +233,8 @@ namespace XVNML.Core.Parser
                                     }
 
                                     //This means that we are creating a tag
-                                    var newTag = (TagBase)TagConverter.Convert(Current.Text);
-                                    newTag.tagTypeName = Current.Text;
+                                    var newTag = (TagBase?)TagConverter.Convert(Current.Text!);
+                                    newTag!.tagTypeName = Current.Text;
 
                                     //If top is still open, it means we're nesting
                                     if (TopOfStack != null &&
@@ -261,7 +255,7 @@ namespace XVNML.Core.Parser
 
                         case TokenType.CloseBracket:
                             //Change the stat of the tag if there is any
-                            if (TopOfStack.isSelfClosing)
+                            if (TopOfStack!.isSelfClosing)
                             {
                                 CloseCurrentTag();
                                 continue;
@@ -271,7 +265,7 @@ namespace XVNML.Core.Parser
                             TopOfStack.parameterInfo = cachedTagParameterInfo;
                             cachedTagParameterInfo = null;
 
-                            if (Peek(1).Type == TokenType.OpenBracket) continue;
+                            if (Peek(1)?.Type == TokenType.OpenBracket) continue;
 
                             ChangeEvaluationState(ParserEvaluationState.TagValue);
                             continue;
@@ -281,47 +275,21 @@ namespace XVNML.Core.Parser
 
                         case TokenType.Line:
                             //We expect an identifier
-                            if (Peek(1).Type != TokenType.Identifier)
+                            if (Peek(1)?.Type != TokenType.Identifier)
                             {
-                                Console.WriteLine($"Expected Identifier at Line {Current.Line} Position {Current.Position}");
+                                Console.WriteLine($"Expected Identifier at Line {Current?.Line} Position {Current?.Position}");
                                 return;
                             }
                             ExpectingMoreTagParameters = true;
                             continue;
 
-                        //Starting of an object
-                        case TokenType.OpenSquareBracket:
-                            continue;
-
-                        //Ending of an object
-                        case TokenType.CloseSquareBracket:
-                            continue;
-
-                        //Don't know what this does
-                        case TokenType.Colon:
-                            continue;
-
-                        //If used inside object [], it defines a collection
-                        case TokenType.OpenCurlyBracket:
-                            continue;
-
-                        //End of collection
-                        case TokenType.CloseCurlyBracket:
-                            continue;
-
-                        case TokenType.OpenParentheses:
-                            continue;
-
-                        case TokenType.CloseParentheses:
-                            continue;
-
                         case TokenType.ForwardSlash:
                             //Check if a CloseBracket exceeds that
                             //If it is, mark as SelfClosing
-                            if (Peek(1).Type == TokenType.CloseBracket)
+                            if (Peek(1)?.Type == TokenType.CloseBracket)
                             {
                                 //The tag is self-closing
-                                TopOfStack.isSelfClosing = true;
+                                TopOfStack!.isSelfClosing = true;
                             }
                             continue;
 
@@ -334,7 +302,7 @@ namespace XVNML.Core.Parser
 
                         case TokenType.Identifier:
                             //After a tag has been set, check it's status
-                            if (TopOfStack.tagState == TagEvaluationState.OnParameters)
+                            if (TopOfStack!.tagState == TagEvaluationState.OnParameters)
                             {
 
                                 //Set off ExpectingMoreParameters
@@ -344,22 +312,22 @@ namespace XVNML.Core.Parser
                                     cachedTagParameterInfo = new TagParameterInfo();
 
                                 //Check if flag
-                                if (Peek(1).Type != TokenType.DoubleColon)
+                                if (Peek(1)?.Type != TokenType.DoubleColon)
                                 {
                                     //This means this is a Flag for the tag
-                                    cachedTagParameterInfo.flagParameters.Add(Current.Text);
+                                    cachedTagParameterInfo.flagParameters.Add(Current?.Text!);
                                     continue;
                                 }
 
-                                TagParameter newParameter = new TagParameter()
+                                TagParameter? newParameter = new TagParameter()
                                 {
-                                    name = Current.Value.ToString()
+                                    name = Current?.Value?.ToString()
                                 };
 
                                 //Cache string name
-                                cachedTagName = newParameter.name;
+                                cachedTagName = newParameter?.name;
 
-                                cachedTagParameterInfo.paramters.Add(cachedTagName, newParameter);
+                                cachedTagParameterInfo.paramters.Add(cachedTagName!, newParameter!);
                             }
                             continue;
 
@@ -368,8 +336,8 @@ namespace XVNML.Core.Parser
                             return;
 
                         case TokenType.DoubleColon:
-                            int length = cachedTagParameterInfo.totalParameters;
-                            var parameterName = cachedTagParameterInfo.paramters[cachedTagName].name;
+                            int length = cachedTagParameterInfo!.totalParameters;
+                            var parameterName = cachedTagParameterInfo.paramters[cachedTagName!].name;
 
                             //Go next, and grab the value for the TagParameter
                             Next();
@@ -382,7 +350,7 @@ namespace XVNML.Core.Parser
                                 Current?.Type == TokenType.EmptyString ||
                                 Current?.Type == TokenType.Identifier)
                             {
-                                cachedTagParameterInfo.paramters[cachedTagName].value = Current.Value;
+                                cachedTagParameterInfo.paramters[cachedTagName!].value = Current.Value;
                                 continue;
                             }
 
@@ -393,21 +361,21 @@ namespace XVNML.Core.Parser
                                 //Expect Identifer
                                 if (Current?.Type != TokenType.Identifier)
                                 {
-                                    Console.WriteLine($"Reference Error at Line {Current.Line} Position {Current.Position}: Expected Identifier");
+                                    Console.WriteLine($"Reference Error at Line {Current?.Line} Position {Current?.Position}: Expected Identifier");
                                     return;
                                 }
-                                cachedTagParameterInfo.paramters[cachedTagName].value = Current.Value;
+                                cachedTagParameterInfo.paramters[cachedTagName!].value = Current.Value;
                                 continue;
                             }
 
-                            Console.WriteLine($"Invalid assignment to parameter: {parameterName} at Line {Current.Line} Position {Current.Position}");
+                            Console.WriteLine($"Invalid assignment to parameter: {parameterName} at Line {Current?.Line} Position {Current?.Position}");
                             return;
 
                         case TokenType.String:
-                            if (TopOfStack.tagState == TagEvaluationState.Open)
+                            if (TopOfStack?.tagState == TagEvaluationState.Open)
                             {
                                 //Add as tag value
-                                TopOfStack.value = Current.Value;
+                                TopOfStack.value = Current?.Value;
                             }
                             continue;
 
@@ -430,8 +398,8 @@ namespace XVNML.Core.Parser
         private static void CloseCurrentTag()
         {
             //Now the object can be closed
-            TopOfStack.tagState = TagEvaluationState.Close;
-            TopOfStack.parameterInfo ??= cachedTagParameterInfo;
+            TopOfStack!.tagState = TagEvaluationState.Close;
+            TopOfStack!.parameterInfo ??= cachedTagParameterInfo;
 
             cachedTagParameterInfo = null;
             cachedTagName = string.Empty;
@@ -440,12 +408,6 @@ namespace XVNML.Core.Parser
             {
                 TopOfStack.value = _TagValueStringBuilder.ToString().Trim('\n');
                 _TagValueStringBuilder.Clear();
-            }
-
-            if (_DialougeSetOutput != null)
-            {
-                TopOfStack.value = _DialougeSetOutput;
-                _DialougeSetOutput = null;
             }
 
             TopOfStack.OnResolve();

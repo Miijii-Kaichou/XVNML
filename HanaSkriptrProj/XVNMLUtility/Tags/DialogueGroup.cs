@@ -6,12 +6,12 @@ namespace XVNML.XVNMLUtility.Tags
     {
         public object? this[int index]
         {
-            get { return GetDialogue(index).value; }
+            get { return GetDialogue(index)?.Script; }
         }
 
         public new object? this[string name]
         {
-            get { return GetDialogue(name).value; }
+            get { return GetDialogue(name)?.Script; }
         }
 
         public Dialogue? GetDialogue(string name) => GetElement<Dialogue>(name);

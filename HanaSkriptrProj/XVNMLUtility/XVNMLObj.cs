@@ -6,12 +6,10 @@ namespace XVNML.XVNMLUtility
 {
     public class XVNMLObj
     {
-        private static XVNMLObj Instance => new XVNMLObj();
-        public Proxy proxy;
-        public Source source;
-        public bool IsBeingUsedAsSource => source != null;
-
-        internal Proxy test;
+        private static XVNMLObj? Instance => new XVNMLObj();
+        public Proxy? proxy;
+        public Source? source;
+        public bool? IsBeingUsedAsSource => source != null;
 
         XVNMLObj()
         {
@@ -33,7 +31,7 @@ namespace XVNML.XVNMLUtility
             }
         }
 
-        internal static XVNMLObj Create(ReadOnlySpan<char> fileTarget)
+        internal static XVNMLObj? Create(ReadOnlySpan<char> fileTarget)
         {
             Parser.SetTarget(fileTarget);
             Parser.Parse();

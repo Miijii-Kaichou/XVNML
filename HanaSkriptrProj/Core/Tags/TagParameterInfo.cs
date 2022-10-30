@@ -9,7 +9,7 @@
 
         internal TagParameter GetParameter(string name) => paramters[name];
 
-        public object this[string name]
+        public object? this[string name]
         {
             get
             {
@@ -21,8 +21,8 @@
 
     public class TagParameter
     {
-        internal string name;
-        internal object value;
-        internal Type type => value.GetType();
+        internal string? name;
+        internal object? value;
+        internal Type? type => value?.GetType();
     }
 }

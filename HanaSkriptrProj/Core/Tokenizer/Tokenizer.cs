@@ -2,9 +2,15 @@
 
 namespace XVNML.Core.Lexer
 {
+    public enum TokenizerReadState
+    {
+        Local,
+        IO
+    }
+
     public class SyntaxToken
     {
-        public SyntaxToken(TokenType type, int line, int position, string text, object value)
+        public SyntaxToken(TokenType type, int line, int position, string? text, object? value)
         {
             Type = type;
             Line = line;
@@ -13,18 +19,16 @@ namespace XVNML.Core.Lexer
             Value = value;
         }
 
-        public TokenType Type { get; }
-        public int Line { get; }
-        public int Position { get; }
-        public string Text { get; }
-        public object Value { get; }
+        public TokenType? Type { get; }
+        public int? Line { get; }
+        public int? Position { get; }
+        public string? Text { get; }
+        public object? Value { get; }
     }
 
     public class Tokenizer
     {
         private int _position = 0;
-
-        private Action OnNext;
 
         public int Length
         {
@@ -38,13 +42,13 @@ namespace XVNML.Core.Lexer
         {
             get
             {
-                if (_position >= SourceText.Length)
+                if (_position >= SourceText?.Length)
                     return '\0';
-                return SourceText[_position];
+                return SourceText![_position];
             }
         }
 
-        public string SourceText { get; private set; }
+        public string? SourceText { get; private set; }
 
         public SyntaxToken? this[int index]
         {
@@ -68,7 +72,7 @@ namespace XVNML.Core.Lexer
             get
             {
                 Regex returns = new Regex("\r");
-                string substring = SourceText.Substring(0, _position);
+                string substring = SourceText?.Substring(0, _position)!;
                 return substring == string.Empty ? 1 : returns.Matches(substring).Count() + 1;
             }
         }
@@ -79,19 +83,28 @@ namespace XVNML.Core.Lexer
 
         private FileInfo _fileTargetInfo;
 
-        public Tokenizer(string fileTarget, out bool conflictResult)
+        public Tokenizer(string sourceText, TokenizerReadState state, out bool conflictResult)
         {
-            _fileTargetInfo = new FileInfo(fileTarget);
+            _fileTargetInfo = new FileInfo(sourceText);
             try
             {
-                //Read the file only once. This will later be replace by an IO class that will
-                //hold the fileTarget's contents prior to Tokenizer and Parser initiation
-                using (StreamReader sr = new StreamReader(fileTarget))
+                switch (state)
                 {
-                    SourceText = sr.ReadToEnd();
+                    case TokenizerReadState.Local:
+                        SourceText = sourceText;
+                        break;
+
+                    case TokenizerReadState.IO:
+                        //Read the file only once. This will later be replace by an IO class that will
+                        //hold the fileTarget's contents prior to Tokenizer and Parser initiation
+                        using (StreamReader sr = new StreamReader(sourceText))
+                        {
+                            SourceText = sr.ReadToEnd();
+                        }
+                        break;
                 }
 
-                //Tokenize
+                //Now tokenize
                 Tokenize(out conflictResult);
             }
             catch (IOException io)
@@ -104,7 +117,7 @@ namespace XVNML.Core.Lexer
 
         public void Tokenize(out bool conflictResult)
         {
-            Console.WriteLine($"Tokenization of {_fileTargetInfo.Name} starting...\n" +
+            Console.WriteLine($"Tokenization of {_fileTargetInfo?.Name} starting...\n" +
                 $"----------------------------------------------------------------------\n\n");
             while (true)
             {
@@ -124,11 +137,10 @@ namespace XVNML.Core.Lexer
         public void Next()
         {
             JumpPosition(1);
-            OnNext?.Invoke();
         }
         public SyntaxToken NextToken()
         {
-            if (_position >= SourceText.Length)
+            if (_position >= SourceText?.Length)
             {
                 return new SyntaxToken(TokenType.EOF, _Line, _position, "\0", null);
             }
@@ -141,7 +153,7 @@ namespace XVNML.Core.Lexer
                     Next();
 
                 var length = _position - start;
-                var text = SourceText.Substring(start, length);
+                var text = SourceText?.Substring(start, length);
 
                 int.TryParse(text, out var value);
 
@@ -156,7 +168,7 @@ namespace XVNML.Core.Lexer
                     Next();
 
                 var length = _position - start;
-                var text = SourceText.Substring(start, length);
+                var text = SourceText?.Substring(start, length);
 
                 return new SyntaxToken(TokenType.WhiteSpace, _Line, start, text, null);
             }
@@ -169,7 +181,7 @@ namespace XVNML.Core.Lexer
                     Next();
 
                 var length = _position - start;
-                var text = SourceText.Substring(start, length);
+                var text = SourceText?.Substring(start, length);
 
                 return new SyntaxToken(TokenType.Identifier, _Line, start, text, text);
             }
@@ -185,8 +197,8 @@ namespace XVNML.Core.Lexer
                     Next();
 
                 var length = _position - start;
-                var text = SourceText.Substring(start, length);
-                text = text.Trim(' ', '\n', '\r', '\t');
+                var text = SourceText?.Substring(start, length);
+                text = text?.Trim(' ', '\n', '\r', '\t');
 
                 return new SyntaxToken(TokenType.SingleLineComment, _Line, start, text, text);
             }
@@ -202,8 +214,8 @@ namespace XVNML.Core.Lexer
                     Next();
 
                 var length = _position - start;
-                var text = SourceText.Substring(start, length);
-                text = text.Trim(' ', '\n', '\r', '\t');
+                var text = SourceText?.Substring(start, length);
+                text = text?.Trim(' ', '\n', '\r', '\t');
 
                 JumpPosition(2);
 
@@ -218,12 +230,27 @@ namespace XVNML.Core.Lexer
                 return new SyntaxToken(TokenType.DoubleColon, _Line, start, "::", null);
             }
 
-            //Check for DoubleCloseBrackets
+            //Check for DoubleOpenBrackets
             if (Peek(_position, "<<"))
             {
                 var start = _position;
                 JumpPosition(2);
-                return new SyntaxToken(TokenType.DoubleCloseBracket, _Line, start, "<<", null);
+                return new SyntaxToken(TokenType.DoubleOpenBracket, _Line, start, "<<", null);
+            }
+
+            //Check for DoubleCloseBrackets
+            if (Peek(_position, ">>"))
+            {
+                var start = _position;
+                JumpPosition(2);
+                return new SyntaxToken(TokenType.DoubleCloseBracket, _Line, start, ">>", null);
+            }
+
+            if(Peek(_position, "???"))
+            {
+                var start = _position;
+                JumpPosition(3);
+                return new SyntaxToken(TokenType.AnonymousCastSymbol, _Line, start, "???", null);
             }
 
             //Find EmptyString
@@ -248,7 +275,7 @@ namespace XVNML.Core.Lexer
                     end++;
                 }
 
-                var text = SourceText.Substring(start, end);
+                var text = SourceText?.Substring(start, end);
 
                 return new SyntaxToken(TokenType.String, _Line, _position++, text, text);
             }
@@ -287,7 +314,7 @@ namespace XVNML.Core.Lexer
             if (_Current == '=') return new SyntaxToken(TokenType.Equal, _Line, _position++, "_", null);
 
             _isThereConflict = true;
-            return new SyntaxToken(TokenType.Invalid, _Line, _position++, SourceText.Substring(_position - 1, 1), null);
+            return new SyntaxToken(TokenType.Invalid, _Line, _position++, SourceText?.Substring(_position - 1, 1), null);
         }
 
         bool CheckIfEscape(char symbol, out bool result)
@@ -302,8 +329,8 @@ namespace XVNML.Core.Lexer
             {
                 var start = position;
                 var length = stringSet.Length;
-                var proceedingString = SourceText.Substring(start, length);
-                return proceedingString.Equals(stringSet);
+                var proceedingString = SourceText?.Substring(start, length);
+                return proceedingString!.Equals(stringSet);
             }
             catch
             {

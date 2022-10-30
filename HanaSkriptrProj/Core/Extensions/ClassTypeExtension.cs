@@ -8,7 +8,7 @@ namespace XVNML.Core.Extensions
 {
     internal static class ClassTypeExtension
     {
-        public static string[] Names(this Type[] types)
+        public static string[]? Names(this Type[] types)
         {
             if (types == null || types[0] == null) return null;
 

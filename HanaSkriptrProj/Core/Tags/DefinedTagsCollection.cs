@@ -11,9 +11,9 @@ namespace XVNML.Core.Tags
     /// </summary>
     internal static class DefinedTagsCollection
     {
-        public static SortedDictionary<string, (Type, TagConfiguration, List<TagBase>)> ValidTagTypes;
+        public static SortedDictionary<string, (Type, TagConfiguration, List<TagBase>)>? ValidTagTypes;
 
-        private static Assembly Assembly;
+        private static Assembly? Assembly;
         
         public static void ManifestTagTypes()
         {

@@ -46,5 +46,7 @@
         Plus,
         Dialogue,
         DoubleCloseBracket,
+        DoubleOpenBracket,
+        AnonymousCastSymbol,
     }
 }
