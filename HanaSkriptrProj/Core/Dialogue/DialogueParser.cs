@@ -29,6 +29,8 @@ namespace XVNML.Core.Dialogue
 
         private static SyntaxToken? Current => Peek(0, true);
 
+        public bool ReadyToBuild { get; private set; }
+
         private bool _evaluatingCast = false;
 
         public DialogueParser(string dialogueSource, out DialogueScript output)
@@ -68,10 +70,13 @@ namespace XVNML.Core.Dialogue
 
                 if (IsReadingLineContent ?? false)
                 {
+                    ReadyToBuild = false;
                     line?.AppendContent(token?.Text!);
                     IsReadingLineContent = token?.Type != TokenType.OpenBracket;
                     continue;
                 }
+
+                ReadyToBuild = true;
 
                 switch (token?.Type)
                 {
@@ -195,6 +200,7 @@ namespace XVNML.Core.Dialogue
                             if(definedSignature.IsPrimitive == true) Cache = cachedData;
                             continue;
                         }
+                        if (!ReadyToBuild) continue;
                         line?.FinalizeBuilder();
                         output.ComposeNewLine(line);
                         continue;
@@ -267,7 +273,7 @@ namespace XVNML.Core.Dialogue
                 //We expect a voice on this one.
                 //It's okay to have nothing, but whatever is there is always a voice.
                 // For this, signatures are always partial
-                signature.IsPartial = queue[evaluationPos + 1].Type == TokenType.WhiteSpace;
+                signature.IsPartial = characterSymbol.Type == TokenType.WhiteSpace;
                 signature.IsFull = characterSymbol.Type == TokenType.CloseBracket;
 
                 if (signature.IsPartial == true)
@@ -279,6 +285,12 @@ namespace XVNML.Core.Dialogue
                 }
 
                 Next();
+
+                if (queue[evaluationPos].Text == VoiceCode.First().ToString()
+                    && queue[evaluationPos+1].Type == TokenType.DoubleColon) { Next(); Next(); }
+                if (queue[evaluationPos].Text == ExpressionCode.First().ToString()
+                    && queue[evaluationPos + 1].Type == TokenType.DoubleColon)
+                    throw new NotSupportedException("A Narrative Cast does not support Expressions");
 
                 output.Voice = queue[evaluationPos]?.Text;
                 output.Expression = null;
@@ -386,6 +398,7 @@ namespace XVNML.Core.Dialogue
                                 signature.IsPersistent == true ? Cache.Character : characterSymbol.Text;
             signature.IsPartial = (output.Expression != null && output.Voice == null) ||
                                     (output.Expression == null && output.Voice != null);
+            signature.IsFull = !signature.IsPartial;
             signatureDataOutput = signature;
             return;
         }
