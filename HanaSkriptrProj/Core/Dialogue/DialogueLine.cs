@@ -53,7 +53,7 @@ namespace XVNML.Core.Dialogue
 
         private StringBuilder _ContentStringBuilder = new StringBuilder();
         public string? Content { get; private set; }
-        public string?[] PromptContent { get; private set; } = new string[_DefaultPromptCapacity];
+        public SortedDictionary<string, (int,int)> PromptContent { get; private set; } = new();
 
         public DialogueLineMode Mode { get; set; }
         internal CastMemberSignature SignatureInfo { get; set; }
@@ -88,18 +88,17 @@ namespace XVNML.Core.Dialogue
         }
 
         internal void AppendContent(string text) => _ContentStringBuilder.Append(text);
-        internal void CreatePrompt(params string[]? choices)
+        internal void SetNewChoice(string choice, int lineID)
         {
-            var size = choices?.Length;
-            if(size == PromptContent.Length)
-            {
-                PromptContent = choices ?? Array.Empty<string>();
-                return;
-            }
-
-            PromptContent = new string[(size ?? 0)];
-            PromptContent = choices ?? Array.Empty<string>();
+            PromptContent.Add(choice, (lineID, int.MaxValue));
         }
+        internal void SetEndPointOnAllChoices(int lineID)
+        {
+            var update = PromptContent;
+            for(int i = 0; i < PromptContent.Count(); i++)
+                PromptContent[PromptContent.Keys.ToArray()[i]] = new(PromptContent[PromptContent.Keys.ToArray()[i]].Item1, lineID);
+        }
+
         internal void FinalizeBuilder() => Content = _ContentStringBuilder.ToString().TrimEnd('<', '>');
     }
 }

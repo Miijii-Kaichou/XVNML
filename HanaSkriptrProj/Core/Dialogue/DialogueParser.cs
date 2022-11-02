@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.SymbolStore;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Lexer;
@@ -20,6 +21,7 @@ namespace XVNML.Core.Dialogue
         //private CommandState? CommandState;
 
         private bool? IsReadingLineContent = false;
+        private bool? IsCreatingPromptChoices = false;
 
         private int castStateValue = 0;
 
@@ -30,6 +32,7 @@ namespace XVNML.Core.Dialogue
         private static SyntaxToken? Current => Peek(0, true);
 
         public bool ReadyToBuild { get; private set; }
+        public bool FindFirstLine { get; private set; }
 
         private bool _evaluatingCast = false;
 
@@ -51,7 +54,8 @@ namespace XVNML.Core.Dialogue
             if (Tokenizer == null) return null;
             DialogueScript output = new DialogueScript();
             DialogueLine line = new DialogueLine();
-
+            int linesCollected = -1;
+            Stack<((DialogueLine, int), Stack<string?>)> promptCacheStack = new();
             // Used to define a Cast Signature (based on documentation)
             var castSignatureCollection = new List<SyntaxToken>();
             var castSignatureString = new StringBuilder();
@@ -68,20 +72,38 @@ namespace XVNML.Core.Dialogue
 
                 Console.WriteLine(token?.Text);
 
-                if (IsReadingLineContent ?? false)
+                if (IsReadingLineContent.Value && CurrentMode == DialogueParserMode.Dialogue)
                 {
+
                     ReadyToBuild = false;
                     line?.AppendContent(token?.Text!);
-                    IsReadingLineContent = token?.Type != TokenType.OpenBracket;
-                    continue;
+                    IsReadingLineContent = token?.Type != TokenType.DoubleOpenBracket &&
+                    token?.Type != TokenType.OpenBracket;
+                    ReadyToBuild = !IsReadingLineContent.Value;
+                    if (IsReadingLineContent.Value) 
+                        continue;
+
                 }
 
-                ReadyToBuild = true;
+                if (IsReadingLineContent.Value && CurrentMode == DialogueParserMode.Prompt)
+                {
+
+                    ReadyToBuild = false;
+                    line?.AppendContent(token?.Text!);
+                    IsReadingLineContent = token?.Type != TokenType.DoubleCloseBracket;
+                    ReadyToBuild = !IsReadingLineContent.Value;
+                    if (IsReadingLineContent.Value)
+                        continue;
+                }
 
                 switch (token?.Type)
                 {
                     //Denote the start of a dialoge
                     case TokenType.At:
+                        if (FindFirstLine) FindFirstLine = !FindFirstLine;
+
+                        TryPopFromPromptCacheStack(promptCacheStack, linesCollected + 1, ref output);
+
                         castSignatureCollection = new List<SyntaxToken>();
                         castSignatureString = new StringBuilder();
                         ChangeDialogueParserMode(DialogueParserMode.Dialogue);
@@ -91,6 +113,9 @@ namespace XVNML.Core.Dialogue
 
                     //Denote the start of a prompt
                     case TokenType.Prompt:
+                        if (FindFirstLine) FindFirstLine = !FindFirstLine;
+                        TryPopFromPromptCacheStack(promptCacheStack, linesCollected + 1, ref output);
+
                         castSignatureCollection = new List<SyntaxToken>();
                         castSignatureString = new StringBuilder();
                         ChangeDialogueParserMode(DialogueParserMode.Prompt);
@@ -102,22 +127,32 @@ namespace XVNML.Core.Dialogue
                     //> (which should only be Cast>Expression>Voice)
                     // or (Cast>Expression/Voice)
                     case TokenType.OpenBracket:
-                        if (Peek(1)?.Type == TokenType.WhiteSpace)
-                        {
-                            //Invalid order
-                            return output;
-                        }
+                        if (!_evaluatingCast) continue;
+                        ConsumeCastSigData(castSignatureCollection, castSignatureString, token);
                         continue;
 
                     //Only validate at the start or in between {} delimiters
                     case TokenType.Identifier:
-                        if (!_evaluatingCast) continue;
+                        if (!_evaluatingCast)
+                        {
+                            if (promptCacheStack.Count() != 0 &&
+                                promptCacheStack.Peek().Item1.Item1.SignatureInfo.CurrentRole == Role.Interrogative &&
+                                IsCreatingPromptChoices == true)
+                            {
+                                var expectedType = Peek(1)?.Type;
+                                if (expectedType != TokenType.CloseParentheses)
+                                    throw new InvalidDataException($"Expected a {TokenType.CloseParentheses} at Line {token?.Line}, Position {token?.Position + 1}");
+                                promptCacheStack.Peek().Item2.Push(token?.Text);
+                            }
+                            continue;
+                        }
                         ConsumeCastSigData(castSignatureCollection, castSignatureString, token);
                         //Otherwise, the identifier will be in-between brackets
                         continue;
 
                     //Starting of internal method call, reference, or macro
                     case TokenType.OpenCurlyBracket:
+
                         continue;
 
                     //Acts as delimiter to known dependencies (like the dot operator .)
@@ -156,7 +191,13 @@ namespace XVNML.Core.Dialogue
                     //Leap out of the prompt or dialogue set (this denotes that this is the end of
                     //of dialogue.
                     case TokenType.DoubleOpenBracket:
+                        if (_evaluatingCast) throw new InvalidDataException($"{token.Text} not expected");
+                        if (promptCacheStack.Count == 0) continue;
+                        if (promptCacheStack.Peek().Item1.Item1.SignatureInfo.CurrentRole != Role.Interrogative) continue;
+                        if (promptCacheStack.Peek().Item2.Count != 0 && promptCacheStack.Peek().Item2.Peek() != null)
+                            _ = promptCacheStack.Peek().Item2.Pop();
                         continue;
+
 
                     //This during a cast definition is for setting an expression (or voice) as null
                     //This can also bee used to put a pause, and have the dialogue continue playing after
@@ -178,14 +219,57 @@ namespace XVNML.Core.Dialogue
                     case TokenType.Line:
                         continue;
 
+                    //You will mainly find a string within curly brackets, or being
+                    //used as a choice for a prompt.
+                    case TokenType.String:
+                        if (promptCacheStack.Count != 0 &&
+                            promptCacheStack.Peek().Item1.Item1.SignatureInfo.CurrentRole == Role.Interrogative &&
+                            IsCreatingPromptChoices == true)
+                        {
+                            var expectedType = Peek(1)?.Type;
+                            if (expectedType != TokenType.CloseParentheses)
+                                throw new InvalidDataException($"Expected a {TokenType.CloseParentheses} at Line {token?.Line}, Position {token?.Position + 1}");
+                            promptCacheStack.Peek().Item2?.Push(token?.Text);
+                        }
+                        continue;
+
+                    case TokenType.OpenParentheses:
+                        if (!_evaluatingCast)
+                        {
+                            if (promptCacheStack.Count != 0 &&
+                            promptCacheStack.Peek().Item1.Item1.SignatureInfo.CurrentRole == Role.Interrogative)
+                            {
+                                var expected = Peek(1)?.Type;
+                                IsCreatingPromptChoices = expected == TokenType.Identifier || expected == TokenType.String;
+                                if (promptCacheStack.Peek().Item2.Count != 0 && promptCacheStack.Peek().Item2.Peek() != null)
+                                    _ = promptCacheStack.Peek().Item2.Pop();
+                                continue;
+                            }
+                            if(!IsCreatingPromptChoices == true) throw new InvalidDataException($"Expected a {TokenType.String} or {TokenType.Identifier} at Line {token?.Line}, Position {token?.Position + 1}");
+                        }
+                        throw new InvalidDataException($"Invalid Token at Line {token?.Line}, Position {token?.Position}");
+
+                    case TokenType.CloseParentheses:
+                        if (!_evaluatingCast)
+                        {
+                            if (promptCacheStack.Count != 0 &&
+                            promptCacheStack.Peek().Item1.Item1.SignatureInfo.CurrentRole == Role.Interrogative &&
+                            IsCreatingPromptChoices == true)
+                            {
+                                promptCacheStack.Peek().Item1.Item1.SetNewChoice(promptCacheStack.Peek().Item2.Peek()!, linesCollected + 1);
+                                FindFirstLine = true;
+                            }
+                            continue;
+                        }
+                        throw new InvalidDataException($"Invalid Token at Line {token?.Line}, Position {token?.Position}");
+
                     case TokenType.WhiteSpace:
                         if (_evaluatingCast)
                         {
                             ConsumeCastSigData(castSignatureCollection, castSignatureString, token);
                             DefineCastSignature(castSignatureString, castSignatureCollection, CurrentMode, out (string? Character, string? Expression, string? Voice) cachedData, out CastMemberSignature definedSignature);
 
-
-                            //Create a Prompt Line
+                            //Create a line
                             line = new DialogueLine()
                             {
                                 Mode = (DialogueLineMode)CurrentMode,
@@ -197,17 +281,32 @@ namespace XVNML.Core.Dialogue
                             _evaluatingCast = false;
                             IsReadingLineContent = line != null;
 
-                            if(definedSignature.IsPrimitive == true) Cache = cachedData;
+                            if (definedSignature.IsPrimitive == true) Cache = cachedData;
                             continue;
                         }
-                        if (!ReadyToBuild) continue;
+                        if (!ReadyToBuild || FindFirstLine) continue;
                         line?.FinalizeBuilder();
+
                         output.ComposeNewLine(line);
+
+                        linesCollected++;
+                        if (line?.SignatureInfo.CurrentRole != Role.Interrogative) continue;
+                        promptCacheStack.Push(((line, linesCollected), new Stack<string?>()));
                         continue;
                 }
             }
-
             return output;
+        }
+
+        private static void TryPopFromPromptCacheStack(Stack<((DialogueLine, int), Stack<string>)> promptCacheStack, int linePos, ref DialogueScript output)
+        {
+            if (promptCacheStack.Count != 0 &&
+                                        promptCacheStack.Peek().Item1.Item1 != null &&
+                                        promptCacheStack.Peek().Item2.Count == 0)
+            {
+                var prompt = promptCacheStack.Pop();
+                output.Lines[prompt.Item1.Item2].SetEndPointOnAllChoices(linePos);
+            }
         }
 
         private static void ConsumeCastSigData(List<SyntaxToken>? castSignatureCollection, StringBuilder castSignatureString, SyntaxToken? token)
@@ -287,7 +386,7 @@ namespace XVNML.Core.Dialogue
                 Next();
 
                 if (queue[evaluationPos].Text == VoiceCode.First().ToString()
-                    && queue[evaluationPos+1].Type == TokenType.DoubleColon) { Next(); Next(); }
+                    && queue[evaluationPos + 1].Type == TokenType.DoubleColon) { Next(); Next(); }
                 if (queue[evaluationPos].Text == ExpressionCode.First().ToString()
                     && queue[evaluationPos + 1].Type == TokenType.DoubleColon)
                     throw new NotSupportedException("A Narrative Cast does not support Expressions");
@@ -393,7 +492,7 @@ namespace XVNML.Core.Dialogue
                     continue;
                 }
             }
-            output.Character = (signature.IsAnonymous == true || 
+            output.Character = (signature.IsAnonymous == true ||
                                 signature.IsNarrative == true) ? string.Empty :
                                 signature.IsPersistent == true ? Cache.Character : characterSymbol.Text;
             signature.IsPartial = (output.Expression != null && output.Voice == null) ||
@@ -438,6 +537,12 @@ namespace XVNML.Core.Dialogue
         private static SyntaxToken? Next()
         {
             _position++;
+            return Current;
+        }
+
+        private static SyntaxToken? StepBack()
+        {
+            _position--;
             return Current;
         }
     }

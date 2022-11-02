@@ -153,7 +153,7 @@ namespace XVNML.Core.Parser
 
                 SyntaxToken? token = Current;
 
-                if (EvaluationState == ParserEvaluationState.TagValue)
+                if (EvaluationState == ParserEvaluationState.TagValue || EvaluationState == ParserEvaluationState.Dialogue)
                 {
 
                     if (Current?.Type == TokenType.OpenBracket && Peek(1, true)?.Type == TokenType.ForwardSlash)
@@ -163,7 +163,10 @@ namespace XVNML.Core.Parser
                             continue;
                     }
 
-                    _TagValueStringBuilder.Append(Current?.Text);
+                    _TagValueStringBuilder.Append(Current?.Type == TokenType.String ? 
+                        $"\"{Current?.Text}\"" : 
+                        Current?.Text);
+                    var resultTest = _TagValueStringBuilder.ToString();
                 }
 
                 if (EvaluationState == ParserEvaluationState.Tag)
