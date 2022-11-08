@@ -13,7 +13,7 @@
             }
 
             var tag = (TagBase?)Activator.CreateInstance(DefinedTagsCollection.ValidTagTypes![text].Item1);
- 
+
             return tag;
         }
     }

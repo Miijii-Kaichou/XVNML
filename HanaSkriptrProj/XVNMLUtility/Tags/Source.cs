@@ -3,8 +3,12 @@
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("source", TagOccurance.PragmaOnce)]
-    public class Source : TagBase
+    sealed class Source : TagBase
     {
+        internal override void OnResolve(string fileOrigin)
+        {
+            base.OnResolve(fileOrigin);
+        }
 
     }
 }

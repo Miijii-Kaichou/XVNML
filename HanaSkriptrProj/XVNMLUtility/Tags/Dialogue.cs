@@ -3,8 +3,8 @@ using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("dialogue", TagOccurance.Multiple)]
-    public class Dialogue : TagBase
+    [AssociateWithTag("dialogue", new[] { typeof(Proxy), typeof(DialogueGroup) }, TagOccurance.Multiple)]
+    sealed class Dialogue : TagBase
     {
         public string? Script { get; private set; }
         public string? ID { get; private set; }
@@ -14,9 +14,9 @@ namespace XVNML.XVNMLUtility.Tags
 
         public DialogueScript? dialogueOutput;
 
-        public override void OnResolve()
+        internal override void OnResolve(string fileOrigin)
         {
-            base.OnResolve();
+            base.OnResolve(fileOrigin);
             Script = value?.ToString();
             ID = parameterInfo?["id"]?.ToString();
             Name = tagName;
@@ -27,7 +27,7 @@ namespace XVNML.XVNMLUtility.Tags
 
         private void AnalyzeDialogue()
         {
-            if (Script == null) throw new ArgumentNullException(nameof(Script));
+            if (Script == null) return;
             _ = new DialogueParser(Script, out dialogueOutput);
         }
     }

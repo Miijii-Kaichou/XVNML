@@ -3,18 +3,19 @@
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("castDefinitions", typeof(Proxy), TagOccurance.PragmaOnce)]
-    public  class CastDefinitions : TagBase
+    sealed class CastDefinitions : TagBase
     {
-        public new Cast this[string name]
+        public Cast[]? CastMembers => Collect<Cast>();
+        public Cast? this[string name]
         {
-            get { return GetElement<Cast>(name)!; }
+            get { return GetCast(name); }
         }
 
-        public override void OnResolve()
+        internal override void OnResolve(string fileOrigin)
         {
-            base.OnResolve();
+            base.OnResolve(fileOrigin);
         }
 
-        public Cast GetCast(string name) => this[name];
+        public Cast? GetCast(string name) => this[name];
     }
 }

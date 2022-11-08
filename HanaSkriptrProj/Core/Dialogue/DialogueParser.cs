@@ -1,29 +1,25 @@
-﻿using System.Diagnostics.SymbolStore;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
+﻿using System.Text;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Lexer;
+using XVNML.Core.Tags;
 
+internal delegate void ReferenceLinkerHandler(TagBase? sender, TagBase? referencingTag, Type type);
 namespace XVNML.Core.Dialogue
 {
-
     internal class DialogueParser
     {
         public string Source { get; }
 
         private DialogueParserMode CurrentMode;
 
-        private CastEvaluationMode CastEvaluationState;
-
         //For any persistence
-        (string? Character, string? Expression, string? Voice) Cache;
+        static (string? Character, string? Expression, string? Voice)? _PreviousCast;
+        readonly (string? Character, string? Expression, string? Voice) _DefaultCast = new(string.Empty, null, null);
 
         //private CommandState? CommandState;
 
         private bool? IsReadingLineContent = false;
         private bool? IsCreatingPromptChoices = false;
-
-        private int castStateValue = 0;
 
         private static Tokenizer? Tokenizer;
         private static bool _Conflict;
@@ -38,8 +34,14 @@ namespace XVNML.Core.Dialogue
 
         public DialogueParser(string dialogueSource, out DialogueScript output)
         {
+            _position = -1;
+            _Conflict = false;
+            ReadyToBuild = false;
+            FindFirstLine = false;
+            _evaluatingCast = false;
+            CurrentMode = DialogueParserMode.Dialogue;
             Source = dialogueSource;
-            Console.WriteLine(Source);
+
             output = ParseDialogue() ?? default!;
         }
 
@@ -52,15 +54,13 @@ namespace XVNML.Core.Dialogue
         private DialogueScript? CreateDialogueOutput()
         {
             if (Tokenizer == null) return null;
-            DialogueScript output = new DialogueScript();
-            DialogueLine line = new DialogueLine();
+            DialogueScript output = new();
+            DialogueLine line = new();
             int linesCollected = -1;
-            Stack<((DialogueLine, int), Stack<string?>)> promptCacheStack = new();
+            Stack<((DialogueLine, int), Stack<string?>)>? promptCacheStack = new();
             // Used to define a Cast Signature (based on documentation)
             var castSignatureCollection = new List<SyntaxToken>();
             var castSignatureString = new StringBuilder();
-
-            var isEscaping = false;
 
             for (int i = 0; i < Tokenizer.Length; i++)
             {
@@ -70,17 +70,15 @@ namespace XVNML.Core.Dialogue
 
                 SyntaxToken? token = Current;
 
-                Console.WriteLine(token?.Text);
-
-                if (IsReadingLineContent.Value && CurrentMode == DialogueParserMode.Dialogue)
+                if (IsReadingLineContent!.Value && CurrentMode == DialogueParserMode.Dialogue)
                 {
 
                     ReadyToBuild = false;
-                    line?.AppendContent(token?.Text!);
+                    line?.AppendContent(token?.Type == TokenType.String ? $"\"{token?.Text!}\"" : token?.Text!);
                     IsReadingLineContent = token?.Type != TokenType.DoubleOpenBracket &&
                     token?.Type != TokenType.OpenBracket;
                     ReadyToBuild = !IsReadingLineContent.Value;
-                    if (IsReadingLineContent.Value) 
+                    if (IsReadingLineContent.Value)
                         continue;
 
                 }
@@ -89,7 +87,7 @@ namespace XVNML.Core.Dialogue
                 {
 
                     ReadyToBuild = false;
-                    line?.AppendContent(token?.Text!);
+                    line?.AppendContent(token?.Type == TokenType.String ? $"\"{token?.Text!}\"" : token?.Text!);
                     IsReadingLineContent = token?.Type != TokenType.DoubleCloseBracket;
                     ReadyToBuild = !IsReadingLineContent.Value;
                     if (IsReadingLineContent.Value)
@@ -102,7 +100,7 @@ namespace XVNML.Core.Dialogue
                     case TokenType.At:
                         if (FindFirstLine) FindFirstLine = !FindFirstLine;
 
-                        TryPopFromPromptCacheStack(promptCacheStack, linesCollected + 1, ref output);
+                        TryPopFromPromptCacheStack(promptCacheStack!, linesCollected + 1, ref output);
 
                         castSignatureCollection = new List<SyntaxToken>();
                         castSignatureString = new StringBuilder();
@@ -114,7 +112,7 @@ namespace XVNML.Core.Dialogue
                     //Denote the start of a prompt
                     case TokenType.Prompt:
                         if (FindFirstLine) FindFirstLine = !FindFirstLine;
-                        TryPopFromPromptCacheStack(promptCacheStack, linesCollected + 1, ref output);
+                        TryPopFromPromptCacheStack(promptCacheStack!, linesCollected + 1, ref output);
 
                         castSignatureCollection = new List<SyntaxToken>();
                         castSignatureString = new StringBuilder();
@@ -245,7 +243,7 @@ namespace XVNML.Core.Dialogue
                                     _ = promptCacheStack.Peek().Item2.Pop();
                                 continue;
                             }
-                            if(!IsCreatingPromptChoices == true) throw new InvalidDataException($"Expected a {TokenType.String} or {TokenType.Identifier} at Line {token?.Line}, Position {token?.Position + 1}");
+                            if (!IsCreatingPromptChoices == true) throw new InvalidDataException($"Expected a {TokenType.String} or {TokenType.Identifier} at Line {token?.Line}, Position {token?.Position + 1}");
                         }
                         throw new InvalidDataException($"Invalid Token at Line {token?.Line}, Position {token?.Position}");
 
@@ -273,7 +271,7 @@ namespace XVNML.Core.Dialogue
                             line = new DialogueLine()
                             {
                                 Mode = (DialogueLineMode)CurrentMode,
-                                CastName = definedSignature.IsPersistent == true ? Cache.Character : cachedData.Character,
+                                CastName = definedSignature.IsPersistent == true ? (_PreviousCast ?? _DefaultCast).Character : cachedData.Character,
                                 Expression = cachedData.Expression,
                                 Voice = cachedData.Voice,
                                 SignatureInfo = definedSignature
@@ -281,7 +279,8 @@ namespace XVNML.Core.Dialogue
                             _evaluatingCast = false;
                             IsReadingLineContent = line != null;
 
-                            if (definedSignature.IsPrimitive == true) Cache = cachedData;
+                            if (definedSignature.IsPrimitive == true) _PreviousCast = cachedData;
+
                             continue;
                         }
                         if (!ReadyToBuild || FindFirstLine) continue;
@@ -298,20 +297,23 @@ namespace XVNML.Core.Dialogue
             return output;
         }
 
-        private static void TryPopFromPromptCacheStack(Stack<((DialogueLine, int), Stack<string>)> promptCacheStack, int linePos, ref DialogueScript output)
+        private static void TryPopFromPromptCacheStack(Stack<((DialogueLine, int), Stack<string>)>? promptCacheStack, int linePos, ref DialogueScript output)
         {
+            if (promptCacheStack == null) return;
             if (promptCacheStack.Count != 0 &&
                                         promptCacheStack.Peek().Item1.Item1 != null &&
                                         promptCacheStack.Peek().Item2.Count == 0)
             {
                 var prompt = promptCacheStack.Pop();
+                var dialogueData = prompt.Item1.Item1;
                 output.Lines[prompt.Item1.Item2].SetEndPointOnAllChoices(linePos);
+                _PreviousCast = (dialogueData.CastName, dialogueData.Expression, dialogueData.Voice);
             }
         }
 
         private static void ConsumeCastSigData(List<SyntaxToken>? castSignatureCollection, StringBuilder castSignatureString, SyntaxToken? token)
         {
-            castSignatureCollection?.Add(token ?? default(SyntaxToken)!);
+            castSignatureCollection?.Add(token ?? default!);
             castSignatureString.Append(token?.Text);
         }
 
@@ -362,8 +364,6 @@ namespace XVNML.Core.Dialogue
 
             if (signature.IsNarrative == true)
             {
-                CastEvaluationState = CastEvaluationMode.Voice;
-
                 output.Character = null;
 
                 //Proceed to next symbol. If we get a white space, that is the end
@@ -408,7 +408,7 @@ namespace XVNML.Core.Dialogue
 
             if (queue[evaluationPos].Type == TokenType.WhiteSpace)
             {
-                output.Character = signature.IsPersistent == true ? Cache.Character : characterSymbol.Text; ;
+                output.Character = signature.IsPersistent == true ? (_PreviousCast ?? _DefaultCast).Character : characterSymbol.Text; ;
                 signature.IsPartial = true;
                 signatureDataOutput = signature;
                 return;
@@ -494,7 +494,7 @@ namespace XVNML.Core.Dialogue
             }
             output.Character = (signature.IsAnonymous == true ||
                                 signature.IsNarrative == true) ? string.Empty :
-                                signature.IsPersistent == true ? Cache.Character : characterSymbol.Text;
+                                signature.IsPersistent == true ? (_PreviousCast ?? _DefaultCast).Character : characterSymbol.Text;
             signature.IsPartial = (output.Expression != null && output.Voice == null) ||
                                     (output.Expression == null && output.Voice != null);
             signature.IsFull = !signature.IsPartial;

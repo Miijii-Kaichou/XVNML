@@ -2,6 +2,6 @@
 {
     public interface IResolvable
     {
-        public void OnResolve();
+        internal void OnResolve() { }
     }
 }

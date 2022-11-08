@@ -1,53 +1,16 @@
 ﻿using System.Text;
-using XVNML.Core.Dialogue;
 using XVNML.Core.Lexer;
+using XVNML.Core.Parser.Enums;
 using XVNML.Core.Tags;
 
 namespace XVNML.Core.Parser
 {
-    //Parser State
-    public enum ParserEvaluationState
-    {
-        //Normal Parsing of XVNML tag
-        Tag,
-
-        //Set conditions before following through with the parsing
-        Preprocessing,
-
-        //References, anything starting with a dollarsign $
-        Referencing,
-
-        //If a Dialogue Tag is defined
-        //Parse the contents inside
-        Dialogue,
-
-        //After a tag being open
-        //it'll evaluate anything between open and close tags
-        TagValue,
-
-        //If using the Script tag, parse the language
-        //target. (not supported at this time)
-        Script
-    }
-
-    //Parse Resource State
-    public enum ParseResourceState
-    {
-        Internal,
-
-        //If a .xvnml is definied as a src for things
-        //like scenes, casts, or audio,
-        //It'll evaluate the contents of that files
-        //and put information in the main .xvnml object
-        External
-    }
-
     internal class Parser
     {
         #region Fields and Properties
         protected static int Position = -1;
 
-        protected static string? FileTarget;
+        internal static string? FileTarget;
 
         private static bool _Conflict;
 
@@ -56,8 +19,9 @@ namespace XVNML.Core.Parser
         private static ParserEvaluationState EvaluationState = ParserEvaluationState.Tag;
         private static ParseResourceState EvaluationResourceState = ParseResourceState.Internal;
 
-        static Stack<TagBase> TagStackFrame = new Stack<TagBase>();
+        static readonly Stack<TagBase> TagStackFrame = new();
         static int TagLevel => TagStackFrame.Count - 1;
+        public static Action Completed;
 
         static TagBase? TopOfStack
         {
@@ -81,15 +45,27 @@ namespace XVNML.Core.Parser
         public static bool ExpectingMoreTagParameters { get; private set; }
 
         //This is important for anything in between tags (for example) <title>Hi</title>
-        private static StringBuilder _TagValueStringBuilder = new StringBuilder();
+        private static StringBuilder _TagValueStringBuilder = new();
+        private static readonly Queue<Action> _SolvingQueue = new();
+
+        public event ReferenceLinkerHandler onParserComplete;
         #endregion
 
         public static void Parse()
         {
+            Position = -1;
+            _Conflict = false;
+            EvaluationResourceState = ParseResourceState.Internal;
+            EvaluationState = ParserEvaluationState.Tag;
+            RootTag = null;
+            cachedTagName = null;
+            cachedTagParameterInfo = null;
+            ExpectingMoreTagParameters = false;
+            _TagValueStringBuilder = new StringBuilder();
             if (FileTarget == null)
                 throw new NullReferenceException("FileTarget cannot be null when parsing.");
 
-            Tokenizer ??= new Tokenizer(FileTarget, TokenizerReadState.IO, out _Conflict);
+            Tokenizer = new Tokenizer(FileTarget, TokenizerReadState.IO, out _Conflict);
 
 
             if (_Conflict)
@@ -120,10 +96,8 @@ namespace XVNML.Core.Parser
                         Position++;
                         continue;
                     }
-
                     return token;
                 }
-
             }
             catch
             {
@@ -158,15 +132,14 @@ namespace XVNML.Core.Parser
 
                     if (Current?.Type == TokenType.OpenBracket && Peek(1, true)?.Type == TokenType.ForwardSlash)
                     {
-                            ChangeEvaluationState(ParserEvaluationState.Tag);
-                            Position--;
-                            continue;
+                        ChangeEvaluationState(ParserEvaluationState.Tag);
+                        Position--;
+                        continue;
                     }
 
-                    _TagValueStringBuilder.Append(Current?.Type == TokenType.String ? 
-                        $"\"{Current?.Text}\"" : 
+                    _TagValueStringBuilder.Append(Current?.Type == TokenType.String ?
+                        $"\"{Current?.Text}\"" :
                         Current?.Text);
-                    var resultTest = _TagValueStringBuilder.ToString();
                 }
 
                 if (EvaluationState == ParserEvaluationState.Tag)
@@ -236,7 +209,7 @@ namespace XVNML.Core.Parser
                                     }
 
                                     //This means that we are creating a tag
-                                    var newTag = (TagBase?)TagConverter.Convert(Current.Text!);
+                                    var newTag = TagConverter.Convert(Current.Text!);
                                     newTag!.tagTypeName = Current.Text;
 
                                     //If top is still open, it means we're nesting
@@ -249,8 +222,6 @@ namespace XVNML.Core.Parser
                                     }
 
                                     TagStackFrame.Push(newTag);
-
-                                    Console.WriteLine($"New tag created named: {newTag.tagTypeName}{(newTag.parentTag != null ? $": Parent => {newTag.parentTag.tagTypeName}" : $": No Parent")}");
                                     break;
                                 }
                             }
@@ -280,7 +251,7 @@ namespace XVNML.Core.Parser
                             //We expect an identifier
                             if (Peek(1)?.Type != TokenType.Identifier)
                             {
-                                Console.WriteLine($"Expected Identifier at Line {Current?.Line} Position {Current?.Position}");
+                                Console.WriteLine($"Expected Identifier at Line {Current?.Line} Position {Current?.Position}: {FileTarget}");
                                 return;
                             }
                             ExpectingMoreTagParameters = true;
@@ -322,7 +293,7 @@ namespace XVNML.Core.Parser
                                     continue;
                                 }
 
-                                TagParameter? newParameter = new TagParameter()
+                                TagParameter? newParameter = new()
                                 {
                                     name = Current?.Value?.ToString()
                                 };
@@ -335,43 +306,52 @@ namespace XVNML.Core.Parser
                             continue;
 
                         case TokenType.EOF:
-                            Console.WriteLine("Parsing of XVNML Document now complete.");
+                            Console.WriteLine($"Parsing of XVNML Document now complete.: {FileTarget}");
+                            RunReferenceSolveProcedure();
                             return;
 
                         case TokenType.DoubleColon:
-                            int length = cachedTagParameterInfo!.totalParameters;
-                            var parameterName = cachedTagParameterInfo.paramters[cachedTagName!].name;
-
-                            //Go next, and grab the value for the TagParameter
-                            Next();
-
-                            //Make sure it's valid input
-                            //Expecting the following:
-                            if (Current?.Type == TokenType.Char ||
-                                Current?.Type == TokenType.String ||
-                                Current?.Type == TokenType.Number ||
-                                Current?.Type == TokenType.EmptyString ||
-                                Current?.Type == TokenType.Identifier)
                             {
-                                cachedTagParameterInfo.paramters[cachedTagName!].value = Current.Value;
-                                continue;
-                            }
+                                int length = cachedTagParameterInfo!.totalParameters;
+                                var parameterName = cachedTagParameterInfo.paramters[cachedTagName!].name;
 
-                            //Find a reference
-                            if (Current?.Type == TokenType.DollarSign)
-                            {
-                                Next();
-                                //Expect Identifer
-                                if (Current?.Type != TokenType.Identifier)
+
+                                var expected = Peek(1);
+
+                                //Go next, and grab the value for the TagParameter
+
+                                //Make sure it's valid input
+                                //Expecting the following:
+                                if (expected?.Type == TokenType.Char ||
+                                    expected?.Type == TokenType.String ||
+                                    expected?.Type == TokenType.Number ||
+                                    expected?.Type == TokenType.EmptyString ||
+                                    expected?.Type == TokenType.Identifier)
                                 {
-                                    Console.WriteLine($"Reference Error at Line {Current?.Line} Position {Current?.Position}: Expected Identifier");
-                                    return;
+                                    Next();
+                                    cachedTagParameterInfo.paramters[cachedTagName!].value = Current.Value;
+                                    continue;
                                 }
-                                cachedTagParameterInfo.paramters[cachedTagName!].value = Current.Value;
-                                continue;
-                            }
 
-                            Console.WriteLine($"Invalid assignment to parameter: {parameterName} at Line {Current?.Line} Position {Current?.Position}");
+                                //Find a reference
+                                if (expected?.Type == TokenType.DollarSign)
+                                {
+                                    Next();
+
+                                    //Expect Identifer
+                                    if (Peek(1).Type != TokenType.Identifier)
+                                    {
+                                        Console.WriteLine($"Reference Error at Line {Current?.Line} Position {Current?.Position}: Expected Identifier: {FileTarget}");
+                                        return;
+                                    }
+                                    cachedTagParameterInfo.paramters[cachedTagName!].value = Current.Value;
+                                    cachedTagParameterInfo.paramters[cachedTagName!].isReferencing = true;
+
+                                    continue;
+                                }
+
+                                Console.WriteLine($"Invalid assignment to parameter: {parameterName} at Line {Current?.Line} Position {Current?.Position}: {FileTarget}");
+                            }
                             return;
 
                         case TokenType.String:
@@ -391,6 +371,21 @@ namespace XVNML.Core.Parser
                 }
                 #endregion
             }
+        }
+
+        private static void RunReferenceSolveProcedure()
+        {
+            while (_SolvingQueue.Count != 0)
+            {
+                var nextSolvee = _SolvingQueue.Dequeue();
+
+                nextSolvee();
+            }
+        }
+
+        internal static void QueueForReferenceSolve(Action method)
+        {
+            _SolvingQueue.Enqueue(method);
         }
 
         public static void Abort()
@@ -413,7 +408,9 @@ namespace XVNML.Core.Parser
                 _TagValueStringBuilder.Clear();
             }
 
-            TopOfStack.OnResolve();
+            var dirInfo = new DirectoryInfo(FileTarget?.ToString());
+            var fileOrigin = dirInfo.Parent?.ToString();
+            TopOfStack.OnResolve(fileOrigin);
 
             RootTag = TagStackFrame.Pop();
         }

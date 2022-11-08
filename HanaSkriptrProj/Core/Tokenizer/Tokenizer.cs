@@ -71,7 +71,7 @@ namespace XVNML.Core.Lexer
         {
             get
             {
-                Regex returns = new Regex("\r");
+                Regex returns = new("\r");
                 string substring = SourceText?.Substring(0, _position)!;
                 return substring == string.Empty ? 1 : returns.Matches(substring).Count() + 1;
             }
@@ -79,9 +79,9 @@ namespace XVNML.Core.Lexer
 
         private bool _isThereConflict = false;
 
-        internal List<SyntaxToken> definedTokens = new List<SyntaxToken>();
+        internal List<SyntaxToken> definedTokens = new();
 
-        private FileInfo _fileTargetInfo;
+        private readonly FileInfo _fileTargetInfo;
 
         public Tokenizer(string sourceText, TokenizerReadState state, out bool conflictResult)
         {
@@ -97,7 +97,7 @@ namespace XVNML.Core.Lexer
                     case TokenizerReadState.IO:
                         //Read the file only once. This will later be replace by an IO class that will
                         //hold the fileTarget's contents prior to Tokenizer and Parser initiation
-                        using (StreamReader sr = new StreamReader(sourceText))
+                        using (StreamReader sr = new(sourceText))
                         {
                             SourceText = sr.ReadToEnd();
                         }
@@ -117,8 +117,6 @@ namespace XVNML.Core.Lexer
 
         public void Tokenize(out bool conflictResult)
         {
-            Console.WriteLine($"Tokenization of {_fileTargetInfo?.Name} starting...\n" +
-                $"----------------------------------------------------------------------\n\n");
             while (true)
             {
                 var token = NextToken();
@@ -130,7 +128,7 @@ namespace XVNML.Core.Lexer
                 }
 
                 //Uncomment to debug
-                Console.WriteLine($"{token.Type}: '{token.Text}'{(token.Value != null ? $" {token.Value}" : string.Empty)}");
+                //Console.WriteLine($"{token.Type}: '{token.Text}'{(token.Value != null ? $" {token.Value}" : string.Empty)}");
             }
         }
 
@@ -246,7 +244,7 @@ namespace XVNML.Core.Lexer
                 return new SyntaxToken(TokenType.DoubleCloseBracket, _Line, start, ">>", null);
             }
 
-            if(Peek(_position, "???"))
+            if (Peek(_position, "???"))
             {
                 var start = _position;
                 JumpPosition(3);

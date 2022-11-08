@@ -2,16 +2,16 @@
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("dialogueGroup", typeof(Proxy), TagOccurance.Multiple)]
-    public class DialogueGroup : TagBase
+    sealed class DialogueGroup : TagBase
     {
         public object? this[int index]
         {
             get { return GetDialogue(index)?.Script; }
         }
 
-        public new object? this[string name]
+        public new object? this[ReadOnlySpan<char> name]
         {
-            get { return GetDialogue(name)?.Script; }
+            get { return GetDialogue(name.ToString())?.Script; }
         }
 
         public Dialogue? GetDialogue(string name) => GetElement<Dialogue>(name);

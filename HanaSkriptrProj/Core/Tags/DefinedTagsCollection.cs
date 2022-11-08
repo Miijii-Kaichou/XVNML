@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Linq;
 using XVNML.Core.Extensions;
 
 namespace XVNML.Core.Tags
@@ -11,10 +10,10 @@ namespace XVNML.Core.Tags
     /// </summary>
     internal static class DefinedTagsCollection
     {
-        public static SortedDictionary<string, (Type, TagConfiguration, List<TagBase>)>? ValidTagTypes;
+        public static SortedDictionary<string, (Type, TagConfiguration, List<TagBase>, string?)>? ValidTagTypes;
 
         private static Assembly? Assembly;
-        
+
         public static void ManifestTagTypes()
         {
             Assembly = Assembly.GetExecutingAssembly();
@@ -22,11 +21,11 @@ namespace XVNML.Core.Tags
 
             //Find all objects that derive from TagBase
             Type[] tagBasesTypes = Assembly.GetTypes().Where(t => t.IsClass && t.IsSubclassOf(typeof(TagBase))).ToArray();
-            
+
             //Get Assemblies
-            foreach(Type type in tagBasesTypes)
+            foreach (Type type in tagBasesTypes)
             {
-                if(type.CustomAttributes.Any() == false)
+                if (type.CustomAttributes.Any() == false)
                 {
                     Console.WriteLine($"Error in Tag Type Manifest. Must use AssociateWithTag attribute.");
                     return;
@@ -34,7 +33,7 @@ namespace XVNML.Core.Tags
 
                 AssociateWithTagAttribute? attribute = type.GetCustomAttribute<AssociateWithTagAttribute>();
 
-                if(attribute == null)
+                if (attribute == null)
                 {
                     return;
                 }
@@ -49,7 +48,7 @@ namespace XVNML.Core.Tags
 
                 //Add to validated tagTypes. This means when
                 //parsing the XVNML, this type will be resolved.
-                ValidTagTypes.Add(attribute.Tag, (type, tagConfig, new List<TagBase>()));
+                ValidTagTypes.Add(attribute.Tag, (type, tagConfig, new List<TagBase>(), null));
             }
 
             var tagCount = ValidTagTypes.Count;

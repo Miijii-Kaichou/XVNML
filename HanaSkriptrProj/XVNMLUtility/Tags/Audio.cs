@@ -1,15 +1,22 @@
-﻿using XVNML.Core.Tags;
+﻿using XVNML.Core.IO.Enums;
+using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("audio", typeof(AudioDefinitions), TagOccurance.Multiple)]
-    public class Audio : TagBase
+    sealed class Audio : TagBase
     {
-        public string? sourceFile;
-        public override void OnResolve()
+        internal DirectoryRelativity relativity;
+        internal DirectoryInfo? dirInfo;
+
+        internal override void OnResolve(string fileOrigin)
         {
-            base.OnResolve();
-            sourceFile = parameterInfo?.paramters["src"].value!.ToString();
+            base.OnResolve(fileOrigin);
+            var rel = parameterInfo?["rel"];
+            string src = (string?)parameterInfo?["src"] ?? string.Empty;
+            relativity = rel == null ? default : (DirectoryRelativity)Enum.Parse(typeof(DirectoryRelativity), rel.ToString()!);
+            var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + src : src;
+            dirInfo = new DirectoryInfo(pathFlow);
         }
     }
 }

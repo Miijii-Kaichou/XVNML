@@ -6,15 +6,15 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v6.0": {
-      "XVNMLUtility/1.0.0": {
+      "XVNML/1.0.0": {
         "runtime": {
-          "XVNMLUtility.dll": {}
+          "XVNML.dll": {}
         }
       }
     }
   },
   "libraries": {
-    "XVNMLUtility/1.0.0": {
+    "XVNML/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

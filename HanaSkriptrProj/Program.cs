@@ -15,16 +15,21 @@ namespace XVNML
             DefinedTagsCollection.ManifestTagTypes();
 
             //Create XVNML File
-            XVNMLObj? xvnml = XVNMLObj.Create(@"C:\Users\tclte\Desktop\TestXVNML.xvnml");
+            XVNMLObj xvnml = XVNMLObj.Create(@"C:\Users\tclte\Desktop\TestXVNML\TestXVNML.xvnml")!;
+            XVNMLObj testXVNML = XVNMLObj.Create(@"C:\Users\tclte\Desktop\TestXVNML\AllPreBuildTags.xvnml")!;
+            XVNMLObj flommcsXVNML = XVNMLObj.Create(@"C:\Users\tclte\Desktop\TestXVNML\Tomakunihahaji.xvnml")!;
+            XVNMLObj testStory = XVNMLObj.Create(@"C:\Users\tclte\Desktop\TestXVNML\TestStory.xvnml")!;
 
-            if (xvnml == null)          return -1;
-            if (xvnml?.proxy == null)   return -1;
+            var metadata = xvnml.proxy?.GetElement<Metadata>();
+            var dialogueGroup = xvnml.proxy?.GetElement<DialogueGroup>("XVNML Tutorial Basics");
+            var RavenRoute = flommcsXVNML.proxy?.GetElement<DialogueGroup>("RavenRoute_EN");
+            var prologue = testStory.proxy?.GetElement<DialogueGroup>("Prologue");
 
-            var metadata = xvnml.proxy.GetElement<Metadata>();
-            var dialogueGroup= xvnml.proxy.GetElement<DialogueGroup>("XVNML Tutorial Basics");
             while (Active)
             {
                 Console.WriteLine(dialogueGroup!["Chapter 1"]);
+                Console.WriteLine(RavenRoute![0]);
+                Console.WriteLine(prologue![0]);
                 Console.ReadKey();
                 Active = false;
             }

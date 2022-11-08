@@ -8,6 +8,10 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("...", TagOccurance.Multiple, true)]
     public class UserDefined : TagBase
     {
+        internal override void OnResolve(string fileOrigin)
+        {
+            base.OnResolve(fileOrigin);
+        }
 
     }
 }

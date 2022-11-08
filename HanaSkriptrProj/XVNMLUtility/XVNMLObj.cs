@@ -1,14 +1,13 @@
-﻿using XVNML.Core.Tags;
-using XVNML.Core.Parser;
+﻿using XVNML.Core.Parser;
 using XVNML.XVNMLUtility.Tags;
 
 namespace XVNML.XVNMLUtility
 {
     public class XVNMLObj
     {
-        private static XVNMLObj? Instance => new XVNMLObj();
-        public Proxy? proxy;
-        public Source? source;
+        private static readonly XVNMLObj? Instance;
+        internal Proxy? proxy;
+        internal Source? source;
         public bool? IsBeingUsedAsSource => source != null;
 
         XVNMLObj()
@@ -18,24 +17,25 @@ namespace XVNML.XVNMLUtility
             var root = Parser.RootTag;
 
             //Valid root names are "proxy" and "source"
-            if(root.GetType() == typeof(Proxy))
+            if (root.GetType() == typeof(Proxy))
             {
-                proxy = Parser.RootTag as Proxy;
+                proxy = root as Proxy;
                 return;
             }
 
-            if(root.GetType() == typeof(Source))
+            if (root.GetType() == typeof(Source))
             {
-                source = Parser.RootTag as Source;
+                source = root as Source;
                 return;
             }
         }
 
         internal static XVNMLObj? Create(ReadOnlySpan<char> fileTarget)
         {
+
             Parser.SetTarget(fileTarget);
             Parser.Parse();
-            return Instance;
+            return new XVNMLObj();
         }
     }
 }

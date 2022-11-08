@@ -3,8 +3,12 @@
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("author", typeof(Metadata), TagOccurance.PragmaOnce)]
-    public class Author : TagBase
+    sealed class Author : TagBase
     {
+        internal override void OnResolve(string fileOrigin)
+        {
+            base.OnResolve(fileOrigin);
+        }
 
     }
 }

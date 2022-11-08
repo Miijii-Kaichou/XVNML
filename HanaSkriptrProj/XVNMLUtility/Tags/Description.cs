@@ -3,8 +3,12 @@
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("description", typeof(Metadata), TagOccurance.PragmaOnce)]
-    public class Description : TagBase
+    sealed class Description : TagBase
     {
+        internal override void OnResolve(string fileOrigin)
+        {
+            base.OnResolve(fileOrigin);
+        }
 
     }
 }

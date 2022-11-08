@@ -3,8 +3,12 @@
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("url", typeof(Metadata), TagOccurance.PragmaOnce)]
-    public class Url : TagBase
+    sealed class Url : TagBase
     {
+        internal override void OnResolve(string fileOrigin)
+        {
+            base.OnResolve(fileOrigin);
+        }
 
     }
 }

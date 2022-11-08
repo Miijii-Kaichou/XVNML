@@ -3,8 +3,12 @@
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("date", typeof(Metadata), TagOccurance.PragmaOnce)]
-    public class Date : TagBase
+    sealed class Date : TagBase
     {
+        internal override void OnResolve(string fileOrigin)
+        {
+            base.OnResolve(fileOrigin);
+        }
 
     }
 }

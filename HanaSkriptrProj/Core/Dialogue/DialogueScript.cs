@@ -6,8 +6,8 @@
     /// </summary>
     public class DialogueScript
     {
-       internal DialogueLine[] Lines => _lineList.ToArray();
-        private List<DialogueLine>  _lineList = new List<DialogueLine>();
+        internal DialogueLine[] Lines => _lineList.ToArray();
+        private readonly List<DialogueLine> _lineList = new();
 
         public DialogueLine GetLine(int index) => Lines?[index]!;
         public void ComposeNewLine(DialogueLine? line)

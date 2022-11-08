@@ -3,19 +3,19 @@
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("cast", typeof(CastDefinitions), TagOccurance.Multiple)]
-    public class Cast : TagBase
+    sealed class Cast : TagBase
     {
         PortraitDefinitions? _portraitDefinitions;
         VoiceDefinitions? _voiceDefinitions;
 
-        public override void OnResolve()
+        internal override void OnResolve(string fileOrigin)
         {
-            base.OnResolve();
-           _portraitDefinitions = GetElement<PortraitDefinitions>()!;
-            _voiceDefinitions = GetElement<VoiceDefinitions>()!;
+            base.OnResolve(fileOrigin);
+            _portraitDefinitions    = GetElement<PortraitDefinitions>();
+            _voiceDefinitions       = GetElement<VoiceDefinitions>();
         }
 
-        public Portrait GetPortrait(string name) => _portraitDefinitions?.GetElement<Portrait>(name)!;
-        public Voice GetVoice(string name) => _voiceDefinitions?.GetElement<Voice>(name)!;
+        public Portrait GetPortrait(string name) => _portraitDefinitions?[name]!;
+        public Voice GetVoice(string name) => _voiceDefinitions?[name]!;
     }
 }

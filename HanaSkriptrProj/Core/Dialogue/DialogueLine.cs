@@ -1,8 +1,6 @@
-﻿using System.Diagnostics.SymbolStore;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Text;
 using XVNML.Core.Dialogue.Enums;
-using XVNML.XVNMLUtility.Tags;
 
 namespace XVNML.Core.Dialogue
 {
@@ -51,9 +49,9 @@ namespace XVNML.Core.Dialogue
             }
         }
 
-        private StringBuilder _ContentStringBuilder = new StringBuilder();
+        private readonly StringBuilder _ContentStringBuilder = new();
         public string? Content { get; private set; }
-        public SortedDictionary<string, (int,int)> PromptContent { get; private set; } = new();
+        public Dictionary<string, (int, int)> PromptContent { get; private set; } = new();
 
         public DialogueLineMode Mode { get; set; }
         internal CastMemberSignature SignatureInfo { get; set; }
@@ -94,8 +92,7 @@ namespace XVNML.Core.Dialogue
         }
         internal void SetEndPointOnAllChoices(int lineID)
         {
-            var update = PromptContent;
-            for(int i = 0; i < PromptContent.Count(); i++)
+            for (int i = 0; i < PromptContent.Count(); i++)
                 PromptContent[PromptContent.Keys.ToArray()[i]] = new(PromptContent[PromptContent.Keys.ToArray()[i]].Item1, lineID);
         }
 

@@ -4,17 +4,17 @@ using XVNML.Core.Tags;
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("proxy", TagOccurance.PragmaOnce)]
-    public class Proxy : TagBase
+    sealed class Proxy : TagBase
     {
         public string? engine;
         public string? target;
         public TargetLanguage lang;
 
-        public override void OnResolve()
+        internal override void OnResolve(string fileOrigin)
         {
-            base.OnResolve();
-            engine = parameterInfo?.paramters["engine"].value?.ToString()!;
-            target = parameterInfo?.paramters["target"].value?.ToString()!;
+            base.OnResolve(fileOrigin);
+            engine = parameterInfo?["engine"]!.ToString()!;
+            target = parameterInfo?["target"]!.ToString()!;
             lang = Enum.Parse<TargetLanguage>(parameterInfo?.paramters["lang"].value?.ToString()!);
         }
     }

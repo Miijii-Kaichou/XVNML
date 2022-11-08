@@ -2,7 +2,7 @@
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("metadata", TagOccurance.PragmaOnce)]
-    public class Metadata : TagBase
+    sealed class Metadata : TagBase
     {
         public Title? title;
         public Author? author;
@@ -12,9 +12,9 @@ namespace XVNML.XVNMLUtility.Tags
         public Url? url;
         public Tags? tags;
 
-        public override void OnResolve()
+        internal override void OnResolve(string fileOrigin)
         {
-            base.OnResolve();
+            base.OnResolve(fileOrigin);
 
             title = GetElement<Title>();
             author = GetElement<Author>();

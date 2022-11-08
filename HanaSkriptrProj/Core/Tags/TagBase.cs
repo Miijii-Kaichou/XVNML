@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
-using XVNML.XVNMLUtility.Tags;
-
+﻿using XVNML.Core.Extensions;
+using OriginParser = XVNML.Core.Parser.Parser;
 namespace XVNML.Core.Tags
 {
     public class TagBase : IResolvable
@@ -25,12 +23,13 @@ namespace XVNML.Core.Tags
         public TagBase? parentTag;
         public object? value;
         public bool isSelfClosing = false;
+        internal OriginParser parserRef;
 
         internal TagEvaluationState tagState;
 
-        public object? this[string name]
+        public object this[ReadOnlySpan<char> name]
         {
-            get { return parameterInfo?[name]; }
+            get { return parameterInfo?[name.ToString()] ?? new object(); }
         }
 
         /// <summary>
@@ -79,7 +78,7 @@ namespace XVNML.Core.Tags
             }
 
             //Then we do normal Find method
-            T? element = (T?)elements.Find(e => (e.GetType() == typeof(T) && i == index));
+            T? element = (T?)elements.Find(e => e.GetType() == typeof(T) && i == index);
             return element;
         }
 
@@ -102,35 +101,39 @@ namespace XVNML.Core.Tags
         /// Once a tag has been successfully resolved,
         /// use this method to assign a tag whatever value you need.
         /// </summary>
-        public virtual void OnResolve()
+        internal virtual void OnResolve(string fileOrigin)
         {
             var validTagType = DefinedTagsCollection.ValidTagTypes![tagTypeName!];
             var config = validTagType.Item2;
             var appearanceLocation = validTagType.Item3;
+            var currentFile = validTagType.Item4 ?? OriginParser.FileTarget;
 
             if (config.TagOccurance == TagOccurance.PragmaLocalOnce)
             {
-                if (appearanceLocation.Contains(parentTag!))
+                if (appearanceLocation.Contains(parentTag!) && currentFile == OriginParser.FileTarget)
                 {
-                    Console.WriteLine($"This tag already exists within the scope {parentTag!.tagName}. There can only be 1: Tag Name {tagName}");
-                    Parser.Parser.Abort();
+                    Console.WriteLine($"This tag already exists within the scope {parentTag!.tagName}. There can only be 1: Tag Name {tagName}: {OriginParser.FileTarget}");
+                    OriginParser.Abort();
+
                     return;
                 }
 
                 validTagType.Item3.Add(parentTag!);
+                validTagType.Item4 = OriginParser.FileTarget;
                 DefinedTagsCollection.ValidTagTypes[tagTypeName!] = validTagType;
             }
 
             if (config.TagOccurance == TagOccurance.PragmaOnce)
             {
-                if (appearanceLocation.Count > 0)
+                if (appearanceLocation.Count > 0 && currentFile == OriginParser.FileTarget)
                 {
-                    Console.WriteLine($"This tag already exists within the document. There can only be 1: Tag Name {tagName}");
-                    Parser.Parser.Abort();
+                    Console.WriteLine($"This tag already exists within the document. There can only be 1: Tag Name {tagName}: {OriginParser.FileTarget}");
+                    OriginParser.Abort();
                     return;
                 }
 
                 validTagType.Item3.Add(parentTag!);
+                validTagType.Item4 = OriginParser.FileTarget;
                 DefinedTagsCollection.ValidTagTypes[tagTypeName!] = validTagType;
             }
 
@@ -138,7 +141,7 @@ namespace XVNML.Core.Tags
             //If there is a parent tag, but doesn't match the depending tag
             if (parentTag != null && config.DependingTags != null && config.DependingTags.Contains(parentTag.GetType().Name) == false)
             {
-                Console.WriteLine($"Invalid Depending Tag {parentTag}. The tag {tagTypeName} depends on {config.DependingTags}");
+                Console.WriteLine($"Invalid Depending Tag {parentTag}. The tag {tagTypeName} depends on {config.DependingTags.JoinStringArray()}: {OriginParser.FileTarget}");
                 Parser.Parser.Abort();
                 return;
             }
@@ -146,10 +149,22 @@ namespace XVNML.Core.Tags
             //If there is no parent tag, but it depends on a tag
             if (parentTag == null && config.DependingTags != null)
             {
-                Console.WriteLine($"The tag {tagTypeName} depends on {config.DependingTags}, but there is nothing.");
+                Console.WriteLine($"The tag {tagTypeName} depends on {config.DependingTags}, but there is nothing.: {OriginParser.FileTarget}");
                 Parser.Parser.Abort();
                 return;
             }
+        }
+
+        protected T[] Collect<T>()
+        {
+            Construct<List<T>>(out var list);
+            elements?.ForEach(item => list.Add((T)Convert.ChangeType(item, typeof(T)))); 
+            return list.ToArray();
+        }
+
+        public static TInput Construct<TInput>(out TInput result) where TInput : new()
+        {
+            return (result = new TInput());
         }
     }
 }

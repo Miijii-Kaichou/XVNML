@@ -2,8 +2,8 @@
 {
     public class TagParameterInfo
     {
-        internal Dictionary<string, TagParameter> paramters = new Dictionary<string, TagParameter>();
-        internal List<string> flagParameters = new List<string>();
+        internal Dictionary<string, TagParameter> paramters = new();
+        internal List<string> flagParameters = new();
 
         internal int totalParameters => paramters.Count;
 
@@ -23,6 +23,7 @@
     {
         internal string? name;
         internal object? value;
+        internal bool isReferencing = false;
         internal Type? type => value?.GetType();
     }
 }
