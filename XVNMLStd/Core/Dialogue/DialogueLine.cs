@@ -8,7 +8,7 @@ using XVNML.Core.Dialogue.Enums;
 namespace XVNML.Core.Dialogue
 {
 
-    public class DialogueLine
+    public sealed class DialogueLine
     {
         string? _castName;
         public string? CastName

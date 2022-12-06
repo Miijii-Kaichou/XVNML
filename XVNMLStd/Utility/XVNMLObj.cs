@@ -1,4 +1,5 @@
-﻿using XVNML.Core.TagParser;
+﻿using System;
+using XVNML.Core.TagParser;
 using XVNML.Core.Tags;
 using XVNML.XVNMLUtility.Tags;
 
@@ -45,6 +46,7 @@ namespace XVNML.XVNMLUtility
 
         public static XVNMLObj? Create(string fileTarget)
         {
+            Console.OutputEncoding = System.Text.Encoding.Unicode;
             var xvnmlParser = new Parser();
             xvnmlParser.SetTarget(fileTarget);
             xvnmlParser.Parse();

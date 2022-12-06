@@ -6,9 +6,9 @@ namespace XVNML.Core.Dialogue
     /// A class that takes a dialogue, and actually
     /// puts it into good use.
     /// </summary>
-    public class DialogueScript
+    public sealed class DialogueScript
     {
-        internal DialogueLine[] Lines => _lineList.ToArray();
+        public DialogueLine[] Lines => _lineList.ToArray();
         private readonly List<DialogueLine> _lineList = new List<DialogueLine>();
 
         public DialogueLine GetLine(int index) => Lines?[index]!;

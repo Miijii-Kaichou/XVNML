@@ -10,7 +10,7 @@ using System.IO;
 internal delegate void ReferenceLinkerHandler(TagBase? sender, TagBase? referencingTag, Type type);
 namespace XVNML.Core.Dialogue
 {
-    internal class DialogueParser
+    internal sealed class DialogueParser
     {
         public string Source { get; }
 

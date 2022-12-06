@@ -17,12 +17,12 @@ namespace XVNML.XVNMLUtility.Tags
         public override void OnResolve(string? fileOrigin)
         {
             base.OnResolve(fileOrigin);
-            engine = parameterInfo?["engine"]!.ToString()!;
-            target = parameterInfo?["target"]!.ToString()!;
+            engine = parameterInfo?["engine"]?.ToString()!;
+            target = parameterInfo?["target"]?.ToString()!;
             lang = Enum.Parse<TargetLanguage>(parameterInfo?.paramters["lang"].value?.ToString()!);
             screenWidth = Convert.ToUInt32(parameterInfo?["screenWidth"]);
             screenHeight = Convert.ToUInt32(parameterInfo?["screenHeight"]);
-            aspectRatio = parameterInfo?["aspectRatio"]!.ToString();
+            aspectRatio = parameterInfo?["aspectRatio"]?.ToString();
         }
     }
 }
