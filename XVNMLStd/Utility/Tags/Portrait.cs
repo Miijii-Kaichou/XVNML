@@ -7,7 +7,7 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("portrait", typeof(PortraitDefinitions), TagOccurance.Multiple)]
     public sealed class Portrait : TagBase
     {
-        internal Image? img;
+        public Image? image;
         public override void OnResolve(string? fileOrigin)
         {
             base.OnResolve(fileOrigin);
@@ -26,19 +26,21 @@ namespace XVNML.XVNMLUtility.Tags
 
         void OnImgReferenceSolve()
         {
-            TagBase? source = null;
+            TagBase? imageDefinitions = null;
             TagBase? target = null;
+            object? value = null;
             try
             {
                 //Iterate through until you find the right source target;
-                source = parserRef!._rootTag?.elements?.Where(tag => tag.GetType() == typeof(ImageDefinitions)).First();
-                target = source?.GetElement<Image>(parameterInfo?.GetParameter("img").value?.ToString()!);
-                img = (Image)Convert.ChangeType(target, typeof(Image))!;
+                imageDefinitions = parserRef!._rootTag?.elements?.Where(tag => tag.GetType() == typeof(ImageDefinitions)).First();
+                value = parameterInfo?["img"];
+                target = imageDefinitions?.GetElement<Image>(value?.ToString()!);
+                image = (Image)Convert.ChangeType(target, typeof(Image))!;
             }
             catch
             {
                 throw new Exception($"Could not find reference called {parameterInfo?.GetParameter("img").value?.ToString()!}" +
-                    $"img {source!.tagTypeName}");
+                    $": img {imageDefinitions!.tagTypeName}");
             }
         }
     }

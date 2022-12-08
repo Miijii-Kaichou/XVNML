@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Lexer;
 using XVNML.Core.Tags;
-using System;
-using System.IO;
 
 internal delegate void ReferenceLinkerHandler(TagBase? sender, TagBase? referencingTag, Type type);
 namespace XVNML.Core.Dialogue

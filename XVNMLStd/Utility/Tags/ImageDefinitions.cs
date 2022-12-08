@@ -1,4 +1,5 @@
-﻿using XVNML.Core.Tags;
+﻿using System.Linq;
+using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -16,7 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        Image? GetImage(string name) => this[name];
-
+        Image? GetImage(string name) => Images.First(img => img.tagName?.Equals(name) == true);
     }
 }

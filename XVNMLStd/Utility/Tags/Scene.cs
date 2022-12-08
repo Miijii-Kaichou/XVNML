@@ -30,12 +30,12 @@ namespace XVNML.XVNMLUtility.Tags
             {
                 //Iterate through until you find the right source target;
                 source = parserRef!._rootTag?.elements?.Where(tag => tag.GetType() == typeof(ImageDefinitions)).First();
-                target = source?.GetElement<Image>(parameterInfo?.GetParameter("img").value?.ToString()!);
+                target = source?.GetElement<Image>(parameterInfo?.GetParameter("img").ToString()!);
                 img = (Image)Convert.ChangeType(target, typeof(Image))!;
             }
             catch
             {
-                throw new Exception($"Could not find reference called {parameterInfo?.GetParameter("img").value?.ToString()!}" +
+                throw new Exception($"Could not find reference called {parameterInfo?.GetParameter("img").ToString()!}" +
                     $"img {source!.tagTypeName}");
             }
         }

@@ -11,6 +11,11 @@ namespace XVNML.XVNMLUtility.Tags
         internal DirectoryRelativity relativity;
         internal DirectoryInfo? dirInfo;
 
+        internal static Audio? First(Func<object, bool> value)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void OnResolve(string? fileOrigin)
         {
             base.OnResolve(fileOrigin);

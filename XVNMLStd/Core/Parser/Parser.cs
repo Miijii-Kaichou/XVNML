@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
-using System.Linq;
 using XVNML.Core.Lexer;
 using XVNML.Core.TagParser.Enums;
 using XVNML.Core.Tags;
-using System.IO;
 
 namespace XVNML.Core.TagParser
 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
@@ -17,6 +18,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        public Scene? GetScene(string name) => this[name];
+        public Scene? GetScene(string name) => Scenes.First(scene => scene.tagName?.Equals(name) == true);
     }
 }

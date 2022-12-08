@@ -1,4 +1,5 @@
-﻿using XVNML.Core.Tags;
+﻿using System.Linq;
+using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -16,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        Audio? GetCast(string name) => this[name];
+        Audio? GetCast(string name) => AudioCollection.First(audio => audio.tagName?.Equals(name) == true);
     }
 }

@@ -1,4 +1,5 @@
-﻿using XVNML.Core.Tags;
+﻿using System.Linq;
+using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -16,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        public Cast? GetCast(string name) => this[name];
+        public Cast? GetCast(string name) => CastMembers.First(cast => cast.tagName?.Equals(name) == true);
     }
 }

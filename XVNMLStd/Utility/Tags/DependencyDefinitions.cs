@@ -1,4 +1,5 @@
-﻿using XVNML.Core.Tags;
+﻿using System.Linq;
+using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -16,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        public Dependency? GetDependency(string name) => this[name];
+        public Dependency? GetDependency(string name) => Dependencies.First(dependency => dependency.tagName?.Equals(name) == true);
     }
 }

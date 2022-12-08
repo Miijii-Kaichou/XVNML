@@ -1,4 +1,6 @@
-﻿using XVNML.Core.Tags;
+﻿using System.Linq;
+using XVNML.Core.Tags;
+
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("voiceDefinitions", typeof(Cast), TagOccurance.PragmaLocalOnce)]
@@ -15,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        Voice? GetVoice(string name) => this[name];
+        Voice? GetVoice(string name) => Voices.First(voice => voice.tagName?.Equals(name) == true);
     }
 }

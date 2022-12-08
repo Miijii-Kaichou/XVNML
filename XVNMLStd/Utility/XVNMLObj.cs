@@ -46,6 +46,7 @@ namespace XVNML.XVNMLUtility
 
         public static XVNMLObj? Create(string fileTarget)
         {
+            DefinedTagsCollection.ManifestTagTypes();
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             var xvnmlParser = new Parser();
             xvnmlParser.SetTarget(fileTarget);

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -88,7 +87,7 @@ namespace XVNML.Core.Lexer
 
         public Tokenizer(string sourceText, TokenizerReadState state, out bool conflictResult)
         {
-           
+
             try
             {
                 switch (state)
@@ -284,10 +283,10 @@ namespace XVNML.Core.Lexer
 
             // Any Punctuations
             if (_Current == '\'' || _Current == '’') return new SyntaxToken(TokenType.Apostraphe, _Line, _position++, "'", null);
-            if (_Current == '<'　|| _Current == '＜') return new SyntaxToken(TokenType.OpenBracket, _Line, _position++, "<", null);
+            if (_Current == '<' || _Current == '＜') return new SyntaxToken(TokenType.OpenBracket, _Line, _position++, "<", null);
             if (_Current == '>' || _Current == '＞') return new SyntaxToken(TokenType.CloseBracket, _Line, _position++, ">", null);
-            if (_Current == ','　|| _Current == '、') return new SyntaxToken(TokenType.Comma, _Line, _position++, ",", null);
-            if (_Current == '|'　|| _Current == '｜') return new SyntaxToken(TokenType.Line, _Line, _position++, "|", null);
+            if (_Current == ',' || _Current == '、') return new SyntaxToken(TokenType.Comma, _Line, _position++, ",", null);
+            if (_Current == '|' || _Current == '｜') return new SyntaxToken(TokenType.Line, _Line, _position++, "|", null);
             if (_Current == '[' || _Current == '「') return new SyntaxToken(TokenType.OpenSquareBracket, _Line, _position++, "[", null);
             if (_Current == ']' || _Current == '」') return new SyntaxToken(TokenType.CloseSquareBracket, _Line, _position++, "]", null);
             if (_Current == '{' || _Current == '｛') return new SyntaxToken(TokenType.OpenCurlyBracket, _Line, _position++, "{", null);
@@ -300,7 +299,7 @@ namespace XVNML.Core.Lexer
             if (_Current == '#' || _Current == '＃') return new SyntaxToken(TokenType.Pound, _Line, _position++, "#", null);
             if (_Current == '@' || _Current == '＠') return new SyntaxToken(TokenType.At, _Line, _position++, "@", null);
             if (_Current == '?' || _Current == '？') return new SyntaxToken(TokenType.Prompt, _Line, _position++, "?", null);
-            if (_Current == '$'　|| _Current == '＄'　|| _Current == '￥') return new SyntaxToken(TokenType.DollarSign, _Line, _position++, "$", null);
+            if (_Current == '$' || _Current == '＄' || _Current == '￥') return new SyntaxToken(TokenType.DollarSign, _Line, _position++, "$", null);
             if (_Current == '!' || _Current == '！') return new SyntaxToken(TokenType.Exclamation, _Line, _position++, "!", null);
             if (_Current == '*' || _Current == '＊') return new SyntaxToken(TokenType.Star, _Line, _position++, "*", null);
             if (_Current == '.' || _Current == '。') return new SyntaxToken(TokenType.Period, _Line, _position++, ".", null);

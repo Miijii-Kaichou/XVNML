@@ -1,4 +1,6 @@
-﻿using XVNML.Core.Tags;
+﻿using System.Linq;
+using XVNML.Core.Tags;
+
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("portraitDefinitions", typeof(Cast), TagOccurance.PragmaLocalOnce)]
@@ -15,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        Portrait? GetPortrait(string name) => this[name];
+        Portrait? GetPortrait(string name) => Portraits.First(portrait => portrait.tagName?.Equals(name) == true);
     }
 }

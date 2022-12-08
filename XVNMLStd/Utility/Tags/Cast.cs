@@ -18,11 +18,11 @@ namespace XVNML.XVNMLUtility.Tags
             {
                 var xvnml = XVNMLObj.Create(fileOrigin + _CastDir + parameterInfo?["src"]!.ToString());
                 if (xvnml == null) return;
-                var test = xvnml?.source?.GetElement<Cast>(tagName ?? string.Empty) ??
+                var target = xvnml?.source?.GetElement<Cast>(tagName ?? string.Empty) ??
                            xvnml?.source?.GetElement<Cast>();
-                if (test == null) return;
-                _portraitDefinitions = test!._portraitDefinitions;
-                _voiceDefinitions = test!._voiceDefinitions;
+                if (target == null) return;
+                _portraitDefinitions = target!._portraitDefinitions;
+                _voiceDefinitions = target!._voiceDefinitions;
                 return;
             }
 

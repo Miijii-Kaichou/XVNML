@@ -21,6 +21,15 @@ namespace XVNML.Core.Tags
                 return tagTypeName;
             }
         }
+
+        public string[]? alternativeTagNames
+        {
+            get
+            {
+                return GetParameterValue("altName")?.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
+            }
+        }
+
         public TagParameterInfo? parameterInfo;
         public List<TagBase>? elements;
         public TagBase? parentTag;
@@ -45,7 +54,8 @@ namespace XVNML.Core.Tags
         public T? GetElement<T>(string tagName) where T : TagBase
         {
             if (elements == null) return null;
-            T? element = (T?)elements.Find(e => e.tagName == tagName);
+            T? element = (T?)elements.Find(e => e.tagName == tagName ||
+                                                (e.alternativeTagNames?.Length > 0 && e.alternativeTagNames?.Contains(tagName) == true));
             return element;
         }
 

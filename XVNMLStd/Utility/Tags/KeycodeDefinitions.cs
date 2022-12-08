@@ -1,4 +1,5 @@
-﻿using XVNML.Core.Tags;
+﻿using System.Linq;
+using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -16,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        public Keycode? GetKeyCode(string name) => this[name];
+        public Keycode? GetKeyCode(string name) => KeyCodes.First(keyCode => keyCode.tagName?.Equals(name) == true);
     }
 }

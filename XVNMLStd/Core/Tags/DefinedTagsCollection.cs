@@ -13,12 +13,16 @@ namespace XVNML.Core.Tags
     /// </summary>
     public static class DefinedTagsCollection
     {
-        public static SortedDictionary<string, (Type, TagConfiguration, List<TagBase>, string)>? ValidTagTypes;
+        internal static SortedDictionary<string, (Type, TagConfiguration, List<TagBase>, string)>? ValidTagTypes;
 
-        public static int ExistingTags { get; private set; }
+        internal static int ExistingTags { get; private set; }
 
-        public static void ManifestTagTypes()
+        public static bool IsInitialized = false;
+
+        internal static void ManifestTagTypes()
         {
+            if (IsInitialized) return;
+
             ValidTagTypes = new SortedDictionary<string, (Type, TagConfiguration, List<TagBase>, string)>();
 
             //Find all objects that derive from TagBase
@@ -62,6 +66,8 @@ namespace XVNML.Core.Tags
             }
 
             ExistingTags = ValidTagTypes.Count;
+
+            IsInitialized = ExistingTags != 0;
         }
     }
 }
