@@ -81,7 +81,7 @@ Skriptr is a scripting language entirely unique to XVNML. In order to utlize thi
 
 ![image](https://user-images.githubusercontent.com/46007223/217723301-61a37ee5-6957-4573-91f2-60b4216c9dd9.png)
 
-You are also able to run macros (commands that performs a single action). Information of the command used, as well as the arguments passed will be stored inside your XVNMLObj instance. A macro is denoted by surrounding curly braces. The macro name is first defined, and then the argument being passed for it.
+You are also able to run macros (commands that performs a single action). Information of the command used, as well as the arguments passed will be stored inside your XVNMLObj instance. A macro is denoted by surrounding curly braces. The macro name is first defined, and then the argument(s) being passed for it (if the macro requires them).
 
 ![image](https://user-images.githubusercontent.com/46007223/217723765-c4ed8f8f-4251-4cdf-b2db-5bc341ddbe3c.png)
 
