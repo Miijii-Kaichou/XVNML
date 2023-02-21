@@ -120,13 +120,15 @@ namespace XVNML.Core.Tags
             var config = validTagType.Item2;
             var appearanceLocation = validTagType.Item3;
             var currentFile = validTagType.Item4 ?? parserRef!.fileTarget;
+            var msg = string.Empty;
 
             if (config.TagOccurance == TagOccurance.PragmaLocalOnce)
             {
                 if (appearanceLocation.Contains(parentTag!) && currentFile == parserRef!.fileTarget)
                 {
-                    Console.WriteLine($"This tag already exists within the scope {parentTag!.tagName}. There can only be 1: Tag Name {tagName}: {parserRef.fileTarget}");
-                    Parser.Abort();
+                    msg = $"This tag already exists within the scope {parentTag!.tagName}. There can only be 1: Tag Name {tagName}: {parserRef.fileTarget}";
+                    Console.WriteLine(msg);
+                    Parser.Abort(msg);
 
                     return;
                 }
@@ -140,8 +142,9 @@ namespace XVNML.Core.Tags
             {
                 if (appearanceLocation.Count > 0 && currentFile == parserRef!.fileTarget)
                 {
-                    Console.WriteLine($"This tag already exists within the document. There can only be 1: Tag Name {tagName}: {parserRef.fileTarget}");
-                    Parser.Abort();
+                    msg = $"This tag already exists within the document. There can only be 1: Tag Name {tagName}: {parserRef.fileTarget}";
+                    Console.WriteLine(msg);
+                    Parser.Abort(msg);
                     return;
                 }
 
@@ -154,16 +157,18 @@ namespace XVNML.Core.Tags
             //If there is a parent tag, but doesn't match the depending tag
             if (parentTag != null && config.DependingTags != null && config.DependingTags.Contains(parentTag.GetType().Name) == false)
             {
-                Console.WriteLine($"Invalid Depending Tag {parentTag}. The tag {tagTypeName} depends on {config.DependingTags.JoinStringArray()}: {parserRef!.fileTarget}");
-                TagParser.Parser.Abort();
+                msg = $"Invalid Depending Tag {parentTag}. The tag {tagTypeName} depends on {config.DependingTags.JoinStringArray()}: {parserRef!.fileTarget}";
+                Console.WriteLine(msg);
+                TagParser.Parser.Abort(msg);
                 return;
             }
 
             //If there is no parent tag, but it depends on a tag
             if (parentTag == null && config.DependingTags != null)
             {
-                Console.WriteLine($"The tag {tagTypeName} depends on {config.DependingTags}, but there is nothing.: {parserRef!.fileTarget}");
-                TagParser.Parser.Abort();
+                msg = $"The tag {tagTypeName} depends on {config.DependingTags}, but there is nothing.: {parserRef!.fileTarget}";
+                Console.WriteLine(msg);
+                TagParser.Parser.Abort(msg);
                 return;
             }
         }

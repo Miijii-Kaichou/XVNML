@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using XVNML.Core.Extensions;
+using XVNML.Core.TagParser;
 
 namespace XVNML.Core.Tags
 {

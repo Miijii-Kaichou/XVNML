@@ -9,8 +9,9 @@ namespace XVNML.Core.Tags
             if (DefinedTagsCollection.ValidTagTypes?.ContainsKey(text) == false)
             {
                 {
-                    Console.WriteLine($"Error in Tag Resolver: There is no association with tag {text}");
-                    TagParser.Parser.Abort();
+                    var msg = $"Error in Tag Resolver: There is no association with tag {text}";
+                    Console.WriteLine(msg);
+                    TagParser.Parser.Abort(msg);
                 }
             }
 

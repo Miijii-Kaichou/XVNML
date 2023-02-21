@@ -371,9 +371,9 @@ namespace XVNML.Core.TagParser
             _solvingQueue.Enqueue(method);
         }
 
-        public static void Abort()
+        public static void Abort(string? reason)
         {
-            throw new Exception("Parser has aborted.");
+            throw new Exception($"Parser has aborted. Reason: {reason ?? "Undefined"}");
         }
 
         private void CloseCurrentTag()
