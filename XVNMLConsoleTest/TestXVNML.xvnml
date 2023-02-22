@@ -6,6 +6,6 @@
             to leave a space after 
             each new line to keep spaces. 
             Or your output will look like 
-            this.<<
+            {delay::(500,"")|b}this{b::end}.<<
        </dialogue>
 </proxy>

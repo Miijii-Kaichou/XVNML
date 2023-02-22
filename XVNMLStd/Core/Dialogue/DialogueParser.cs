@@ -79,7 +79,7 @@ namespace XVNML.Core.Dialogue
                 {
 
                     ReadyToBuild = false;
-                    line?.AppendContent(token?.Type == TokenType.String ? $"\"{token?.Text!}\"" : token?.Text!);
+                    line?.AppendContent(token?.Type == TokenType.String  ? $"\"{token?.Text!}\"" : token?.Text!);
                     IsReadingLineContent = token?.Type != TokenType.DoubleOpenBracket &&
                     token?.Type != TokenType.OpenBracket;
                     ReadyToBuild = !IsReadingLineContent.Value;
