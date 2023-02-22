@@ -1,10 +1,22 @@
-﻿<proxy name::"TestXVNML"
-       lang::"CSharp"
-       engine::"Unity">
-       <dialogue name::"First Line">
-            @ You have to make sure 
-            to leave a space after 
-            each new line to keep spaces.{del::5000}  
-            Or your output will look like this.<<
-       </dialogue>
+﻿<proxy name::"TestXVNML" lang::"CSharp" engine::"Unity">
+     $> Example One, using macros seperately
+     <dialogue name::"First Line">
+          @ {set_text_speed::10}Soooooooo....
+          {delay::500} {set_text_speed::60}About what I said earlier...{delay::500} 
+          {set_text_speed::120}Yeah,{delay::250} You have to make sure 
+          to leave a space {set_text_speed::60}after{set_text_speed::120} 
+          each new line to keep spaces.{delay::500}  
+          Or your output will look like{delay::1000} {insert::"THIS"}.<<
+     </dialogue>
+
+     $> Example Two, combining macros in one single block
+     $> Output is the same result
+     <dialogue name::"First Line">
+          @ {set_text_speed::10}Soooooooo....
+          {delay::500|set_text_speed::30} About what I said earlier...{delay::500} 
+          {set_text_speed::60}Yeah,{delay::250} You have to make sure 
+          to leave a space {set_text_speed::10}after{set_text_speed::60} 
+          each new line to keep spaces.{delay::500} 
+          Or your output will look like {delay::1000|insert::"THIS"}.<<
+     </dialogue>
 </proxy>

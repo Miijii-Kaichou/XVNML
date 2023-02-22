@@ -67,6 +67,15 @@ namespace XVNML.Core.Dialogue
 
         private const int _DefaultPromptCapacity = 4;
 
+
+        public void ReadPosAndExecute(int position)
+        {
+            macroInvocationList
+                .Where(macro => macro.blockPosition.Equals(position))
+                .ToList()
+                .ForEach(macro => macro.Call());
+        }
+
         /// <summary>
         /// Resolves expression states on object to fully control it
         /// in code
@@ -126,10 +135,10 @@ namespace XVNML.Core.Dialogue
             //We're going to replace each block with a control
             //character of /0 to denote a macro is in that position
 
-            for(int i = 0; i < Content.Length; i++)
+            for (int i = 0; i < Content.Length; i++)
             {
                 var currentCharacter = Content[i];
-                if(currentCharacter == '{')
+                if (currentCharacter == '{')
                 {
                     // A new block as been established.
                     EvaluateBlock(i, out int length);
@@ -152,7 +161,7 @@ namespace XVNML.Core.Dialogue
             var pos = 0;
             var finished = false;
             var macroCount = 0;
-         
+
 
             while (finished == false)
             {
@@ -180,7 +189,7 @@ namespace XVNML.Core.Dialogue
                 Next();
                 currentToken = tokenizer[pos];
 
-                if (currentToken?.Type == TokenType.WhiteSpace) 
+                if (currentToken?.Type == TokenType.WhiteSpace)
                     continue;
 
                 if (expectingType.Value.HasFlag(currentToken?.Type) == false) return;

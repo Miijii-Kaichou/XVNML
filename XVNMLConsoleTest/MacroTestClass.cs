@@ -10,53 +10,21 @@ public static class MacroTestClass
     private static void DelayMacro(uint milliseconds)
     {
         // Delay macro logic here.
-        Console.WriteLine($"Delaying for {milliseconds} milliseconds");
+        Thread.Sleep((int)milliseconds);
     }
 
     [Macro("insert", typeof(string))]
     private static void InsertMacro(string text)
     {
         // Insert macro logic here.
-        Console.Write($"Inserting {text}...");
+        Console.Write(text);
     }
 
-    [Macro("set_text_speed", typeof(int))]
-    private static void SpeedMacro(int level)
+    [Macro("set_text_speed", typeof(uint))]
+    private static void SetTextSpeed(uint level)
     {
+
         // Speed macro logic here.
-        switch (level)
-        {
-            case 0: Console.WriteLine("Text at normal speed"); break;
-            case 1: Console.WriteLine("Text at slow speed"); break;
-            case 2: Console.WriteLine("Text at fast speed"); break;
-            case 3: Console.WriteLine("Text at faster speed"); break;
-        }
-    }
-
-    [Macro("shake_camera", typeof(float), typeof(int))]
-    private static void ShakeMacro(float magnitude, int milliseconds)
-    {
-        // Shake (Camera Shake) logic here
-        Console.WriteLine($"Camera Shaking " +
-            $"with Magnitude {magnitude} " +
-            $"for {milliseconds} milliseconds");
-    }
-
-    [Macro("music", typeof(string), typeof(bool), typeof(bool))]
-    private static void MusicMacro(string musicName, bool pause, bool loop)
-    {
-
-    }
-
-    [Macro("audio", typeof(string), typeof(bool))]
-    private static void AudioMacro(string audioName, bool oneShot)
-    {
-
-    }
-
-    [Macro("portrait", typeof(string))]
-    private static void PortraitMacro(string portraitName)
-    {
-
+        Program.SetTextRate(level == 0 ? level : 1000 / level);
     }
 }

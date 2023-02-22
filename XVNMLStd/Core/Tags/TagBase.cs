@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using XVNML.Core.Extensions;
 using XVNML.Core.TagParser;
+
 namespace XVNML.Core.Tags
 {
     public class TagBase : IResolvable

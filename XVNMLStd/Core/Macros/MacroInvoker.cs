@@ -28,7 +28,7 @@ namespace XVNMLStd.Core.Macros
             for(int i = 0; i < args.Length; i++)
             {
                 var currentArg = args[i];
-                var requiredArg = targetMacro.argumentTypes[i];
+                var requiredArg = targetMacro?.argumentTypes[i];
 
                 // TODO: Convert to whatever type the attribute has
                 currentArg = Convert.ChangeType(currentArg, requiredArg);
