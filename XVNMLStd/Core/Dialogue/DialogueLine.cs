@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -98,6 +99,47 @@ namespace XVNML.Core.Dialogue
                 PromptContent[PromptContent.Keys.ToArray()[i]] = (PromptContent[PromptContent.Keys.ToArray()[i]].Item1, lineID);
         }
 
-        internal void FinalizeBuilder() => Content = _ContentStringBuilder.ToString().TrimEnd('<', '>');
+        internal void FinalizeAndCleanBuilder()
+        {
+            // Trim any < and >
+            Content = _ContentStringBuilder.ToString().TrimEnd('<', '>');
+
+            // Get rid of excess white spaces
+            CleanOutExcessWhiteSpaces();
+            RemoveReturnCarriages();
+            ExtractMacroBlocks();
+        }
+
+        private void ExtractMacroBlocks()
+        {
+            //TODO: Find Macro Data and extract
+        }
+
+        private void CleanOutExcessWhiteSpaces()
+        {
+            if (Content == null) return;
+            for (int i = 0; i < Content.Length; i++)
+            {
+                if (Content[i] == '\n')
+                {
+                    int peek = 0;
+                    bool cleared = false;
+                    while (cleared == false)
+                    {
+                        peek++;
+                        cleared = !(Content[i + peek] == ' ');
+                    }
+                    i++;
+                    Content = Content.Remove(i, peek - 1);
+                }
+            }
+        }
+
+        private void RemoveReturnCarriages()
+        {
+            if (Content == null) return;
+            Content = Content.Replace("\r", string.Empty).
+                              Replace("\n", string.Empty);
+        }
     }
 }

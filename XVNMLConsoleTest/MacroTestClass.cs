@@ -3,7 +3,7 @@
 
 using XVNMLStd.Core.Marcos;
 
-[MacroLibraryAttribute(typeof(MacroTestClass))]
+[MacroLibrary(typeof(MacroTestClass))]
 public static class MacroTestClass
 {
     [Macro("delay", typeof(int))]
