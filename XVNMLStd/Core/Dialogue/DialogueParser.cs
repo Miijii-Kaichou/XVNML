@@ -17,8 +17,8 @@ namespace XVNML.Core.Dialogue
         private DialogueParserMode CurrentMode;
 
         //For any persistence
-        static (string? Character, string? Expression, string? Voice)? _PreviousCast;
-        readonly (string? Character, string? Expression, string? Voice) _DefaultCast = (string.Empty, null, null);
+        private static (string? Character, string? Expression, string? Voice)? _PreviousCast;
+        private readonly (string? Character, string? Expression, string? Voice) _DefaultCast = (string.Empty, null, null);
 
         //private CommandState? CommandState;
 
@@ -58,6 +58,7 @@ namespace XVNML.Core.Dialogue
         private DialogueScript? CreateDialogueOutput()
         {
             if (Tokenizer == null) return null;
+
             DialogueScript output = new DialogueScript();
             DialogueLine line = new DialogueLine();
             int linesCollected = -1;
@@ -78,7 +79,7 @@ namespace XVNML.Core.Dialogue
                 {
 
                     ReadyToBuild = false;
-                    line?.AppendContent(token?.Type == TokenType.String ? $"\"{token?.Text!}\"" : token?.Text!);
+                    line?.AppendContent(token?.Type == TokenType.String  ? $"\"{token?.Text!}\"" : token?.Text!);
                     IsReadingLineContent = token?.Type != TokenType.DoubleOpenBracket &&
                     token?.Type != TokenType.OpenBracket;
                     ReadyToBuild = !IsReadingLineContent.Value;
@@ -110,7 +111,7 @@ namespace XVNML.Core.Dialogue
                         castSignatureString = new StringBuilder();
                         ChangeDialogueParserMode(DialogueParserMode.Dialogue);
                         _evaluatingCast = true;
-                        ConsumeCastSigData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
                         continue;
 
                     //Denote the start of a prompt
@@ -122,7 +123,7 @@ namespace XVNML.Core.Dialogue
                         castSignatureString = new StringBuilder();
                         ChangeDialogueParserMode(DialogueParserMode.Prompt);
                         _evaluatingCast = true;
-                        ConsumeCastSigData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
                         continue;
 
                     //While in At or Prompt Phase, get information between
@@ -130,7 +131,7 @@ namespace XVNML.Core.Dialogue
                     // or (Cast>Expression/Voice)
                     case TokenType.OpenBracket:
                         if (!_evaluatingCast) continue;
-                        ConsumeCastSigData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
                         continue;
 
                     //Only validate at the start or in between {} delimiters
@@ -148,7 +149,7 @@ namespace XVNML.Core.Dialogue
                             }
                             continue;
                         }
-                        ConsumeCastSigData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
                         //Otherwise, the identifier will be in-between brackets
                         continue;
 
@@ -160,13 +161,13 @@ namespace XVNML.Core.Dialogue
                     //Acts as delimiter to known dependencies (like the dot operator .)
                     case TokenType.DoubleColon:
                         if (!_evaluatingCast) continue;
-                        ConsumeCastSigData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
                         continue;
 
                     //At start, means use the same cast character
                     case TokenType.Star:
                         if (!_evaluatingCast) continue;
-                        ConsumeCastSigData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
                         continue;
 
                     //Ending of internal method call
@@ -182,12 +183,12 @@ namespace XVNML.Core.Dialogue
                         // This also means overriding the evaluationState from Expression
                         // to Voice
                         if (!_evaluatingCast) continue;
-                        ConsumeCastSigData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
                         continue;
 
                     case TokenType.AnonymousCastSymbol:
                         if (!_evaluatingCast) continue;
-                        ConsumeCastSigData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
                         continue;
 
                     //Leap out of the prompt or dialogue set (this denotes that this is the end of
@@ -206,7 +207,7 @@ namespace XVNML.Core.Dialogue
                     //user feedback (as opposed to < where after the dialogue, the whole test would clear).
                     case TokenType.DoubleCloseBracket:
                         if (!_evaluatingCast) continue;
-                        ConsumeCastSigData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
                         continue;
 
                     //Direct reference to something (whatever that may be)
@@ -219,6 +220,10 @@ namespace XVNML.Core.Dialogue
 
                     //Valid in-between {} delimiters to seperate method calls
                     case TokenType.Line:
+                        continue;
+
+                    //Escape Character Prefix
+                    case TokenType.ForwardSlash:
                         continue;
 
                     //You will mainly find a string within curly brackets, or being
@@ -268,7 +273,7 @@ namespace XVNML.Core.Dialogue
                     case TokenType.WhiteSpace:
                         if (_evaluatingCast)
                         {
-                            ConsumeCastSigData(castSignatureCollection, castSignatureString, token);
+                            ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
                             DefineCastSignature(castSignatureString, castSignatureCollection, CurrentMode, out (string? Character, string? Expression, string? Voice) cachedData, out CastMemberSignature definedSignature);
 
                             //Create a line
@@ -288,7 +293,7 @@ namespace XVNML.Core.Dialogue
                             continue;
                         }
                         if (!ReadyToBuild || FindFirstLine) continue;
-                        line?.FinalizeBuilder();
+                        line?.FinalizeAndCleanBuilder();
 
                         output.ComposeNewLine(line);
 
@@ -305,8 +310,8 @@ namespace XVNML.Core.Dialogue
         {
             if (promptCacheStack == null) return;
             if (promptCacheStack?.Count != 0 &&
-                                        promptCacheStack?.Peek().Item1.Item1 != null &&
-                                        promptCacheStack?.Peek().Item2.Count == 0)
+                promptCacheStack?.Peek().Item1.Item1 != null &&
+                promptCacheStack?.Peek().Item2.Count == 0)
             {
                 var prompt = promptCacheStack.Pop();
                 var dialogueData = prompt.Item1.Item1;
@@ -315,7 +320,7 @@ namespace XVNML.Core.Dialogue
             }
         }
 
-        private static void ConsumeCastSigData(List<SyntaxToken>? castSignatureCollection, StringBuilder castSignatureString, SyntaxToken? token)
+        private static void ConsumeCastSignatureData(List<SyntaxToken>? castSignatureCollection, StringBuilder castSignatureString, SyntaxToken? token)
         {
             castSignatureCollection?.Add(token ?? default!);
             castSignatureString.Append(token?.Text);

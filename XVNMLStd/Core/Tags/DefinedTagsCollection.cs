@@ -18,7 +18,7 @@ namespace XVNML.Core.Tags
 
         internal static int ExistingTags { get; private set; }
 
-        public static bool IsInitialized = false;
+        public static bool IsInitialized { get; private set; } = false;
 
         internal static void ManifestTagTypes()
         {

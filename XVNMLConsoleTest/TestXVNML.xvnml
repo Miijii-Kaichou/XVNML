@@ -1,0 +1,10 @@
+﻿<proxy name::"TestXVNML"
+       lang::"CSharp"
+       engine::"Unity">
+       <dialogue name::"First Line">
+            @ You have to make sure 
+            to leave a space after 
+            each new line to keep spaces. 
+            Or your output will look like this.<<
+       </dialogue>
+</proxy>
