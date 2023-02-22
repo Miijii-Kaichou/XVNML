@@ -131,7 +131,8 @@ namespace XVNML.Core.Dialogue
                     EvaluateBlock(i, out int length);
 
                     // Remove block from final content
-                    Content = Content.Remove(i, length - 1);
+                    Content = Content.Remove(i, length);
+                    i--;
                 }
             }
         }
@@ -154,25 +155,33 @@ namespace XVNML.Core.Dialogue
                 finished = Content[position + length] == '}';
                 length++;
             }
-            
-            tokenizer = new Tokenizer(Content.Substring(position, length), TokenizerReadState.Local, out bool conflict);
+            var blockString = Content.Substring(position, length);
+            var macrosTotal = blockString.Split('|').Length;
+
+            tokenizer = new Tokenizer(blockString, TokenizerReadState.Local, out bool conflict);
+            if (conflict) return;
             finished = false;
-            newBlock.Initialize(macroCount);
+            newBlock.Initialize(macrosTotal);
             newBlock.SetPosition(position);
             TokenType? expectingType = TokenType.Identifier;
 
             string? macroName = null;
             List<object> macroArgs = new List<object>();
             bool multiArgs = false;
+            SyntaxToken? currentToken = null;
             while (finished == false)
             {
+                macroInvocationList ??= new List<MacroBlockInfo>();
+
                 Next();
-                SyntaxToken? currentToken = tokenizer[pos];
-                if (currentToken.Type == TokenType.WhiteSpace) 
+                currentToken = tokenizer[pos];
+
+                if (currentToken?.Type == TokenType.WhiteSpace) 
                     continue;
+
                 if (expectingType.Value.HasFlag(currentToken?.Type) == false) return;
 
-                switch (currentToken.Type)
+                switch (currentToken?.Type)
                 {
                     case TokenType.Identifier:
                         // If we don't have a name
@@ -184,7 +193,8 @@ namespace XVNML.Core.Dialogue
                             // We're now expecting a double colon after this.
                             // or a closed curly bracket
                             expectingType = TokenType.DoubleColon |
-                                            TokenType.CloseCurlyBracket;
+                                            TokenType.CloseCurlyBracket |
+                                            TokenType.Line;
                             continue;
                         }
 
@@ -198,7 +208,8 @@ namespace XVNML.Core.Dialogue
                                                       TokenType.Comma;
                             continue;
                         }
-                        expectingType = TokenType.CloseCurlyBracket;
+                        expectingType = TokenType.CloseCurlyBracket |
+                                        TokenType.Line;
                         continue;
 
                     // If this was successful,
@@ -250,19 +261,21 @@ namespace XVNML.Core.Dialogue
                         if (macroName == null) return;
 
                         expectingType = TokenType.Identifier;
-
-                        newBlock!.macroCalls![macroCount].macroSymbol = macroName;
-                        newBlock.macroCalls[macroCount].args = macroArgs.ToArray();
+                        PopulateBlock(newBlock, macroCount, macroName, macroArgs);
                         macroArgs.Clear();
                         macroName = null;
+                        multiArgs = false;
                         macroCount++;
                         continue;
-                    
-                        // We are now done with this block
+
+                    // We are now done with this block
                     case TokenType.CloseCurlyBracket:
+                        PopulateBlock(newBlock, macroCount, macroName, macroArgs);
                         macroInvocationList.Add(newBlock);
                         macroArgs.Clear();
+                        macroName = null;
                         finished = true;
+                        multiArgs = false;
                         continue;
 
                     case TokenType.Number:
@@ -274,7 +287,8 @@ namespace XVNML.Core.Dialogue
                             continue;
                         }
                         //Otherwise, it could be interpreted as an Enum or Flag
-                        expectingType = TokenType.CloseCurlyBracket;
+                        expectingType = TokenType.CloseCurlyBracket |
+                                        TokenType.Line;
                         continue;
 
                     case TokenType.String:
@@ -286,7 +300,8 @@ namespace XVNML.Core.Dialogue
                             continue;
                         }
                         //Otherwise, it could be interpreted as an Enum or Flag
-                        expectingType = TokenType.CloseCurlyBracket;
+                        expectingType = TokenType.CloseCurlyBracket |
+                                        TokenType.Line;
                         continue;
 
                     case TokenType.EmptyString:
@@ -298,16 +313,19 @@ namespace XVNML.Core.Dialogue
                                             TokenType.Comma;
                             continue;
                         }
-                        expectingType = TokenType.CloseCurlyBracket;
+                        expectingType = TokenType.CloseCurlyBracket |
+                                        TokenType.Line;
                         continue;
                 }
             }
 
             void Next() => pos++;
-            SyntaxToken? Peek(int length)
-            {
-                return tokenizer[pos + length];
-            }
+        }
+
+        private static void PopulateBlock(MacroBlockInfo newBlock, int macroCount, string? macroName, List<object> macroArgs)
+        {
+            newBlock!.macroCalls![macroCount].macroSymbol = macroName;
+            newBlock.macroCalls[macroCount].args = macroArgs.ToArray();
         }
 
         private void CleanOutExcessWhiteSpaces()
