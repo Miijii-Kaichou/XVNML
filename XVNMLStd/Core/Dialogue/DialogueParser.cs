@@ -17,8 +17,8 @@ namespace XVNML.Core.Dialogue
         private DialogueParserMode CurrentMode;
 
         //For any persistence
-        static (string? Character, string? Expression, string? Voice)? _PreviousCast;
-        readonly (string? Character, string? Expression, string? Voice) _DefaultCast = (string.Empty, null, null);
+        private static (string? Character, string? Expression, string? Voice)? _PreviousCast;
+        private readonly (string? Character, string? Expression, string? Voice) _DefaultCast = (string.Empty, null, null);
 
         //private CommandState? CommandState;
 
@@ -58,6 +58,7 @@ namespace XVNML.Core.Dialogue
         private DialogueScript? CreateDialogueOutput()
         {
             if (Tokenizer == null) return null;
+
             DialogueScript output = new DialogueScript();
             DialogueLine line = new DialogueLine();
             int linesCollected = -1;
@@ -219,6 +220,10 @@ namespace XVNML.Core.Dialogue
 
                     //Valid in-between {} delimiters to seperate method calls
                     case TokenType.Line:
+                        continue;
+
+                    //Escape Character Prefix
+                    case TokenType.ForwardSlash:
                         continue;
 
                     //You will mainly find a string within curly brackets, or being

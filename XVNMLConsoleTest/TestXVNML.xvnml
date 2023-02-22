@@ -1,0 +1,8 @@
+﻿<proxy name::"TestXVNML"
+       lang::"CSharp"
+       engine::"Unity">
+       <dialogue name::"First Line">
+            @ I'm some what of a 
+            degenerate myself.<<
+       </dialogue>
+</proxy>

@@ -2,12 +2,13 @@
 using XVNML.Core.TagParser;
 using XVNML.Core.Tags;
 using XVNML.XVNMLUtility.Tags;
+using XVNMLStd.Core.Marcos;
 
 namespace XVNML.XVNMLUtility
 {
     public class XVNMLObj
     {
-        private static readonly XVNMLObj? Instance;
+        public static XVNMLObj? Instance { get; private set; }
         internal Proxy? proxy;
         internal Source? source;
 
@@ -47,11 +48,13 @@ namespace XVNML.XVNMLUtility
         public static XVNMLObj? Create(string fileTarget)
         {
             DefinedTagsCollection.ManifestTagTypes();
+            MacroManager.ManifestMacros();
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             var xvnmlParser = new Parser();
             xvnmlParser.SetTarget(fileTarget);
             xvnmlParser.Parse();
-            return new XVNMLObj(xvnmlParser);
+            Instance = new XVNMLObj(xvnmlParser);
+            return Instance;
         }
     }
 }
