@@ -92,7 +92,12 @@ namespace XVNML.Core.Tags
             }
 
             //Then we do normal Find method
-            T? element = (T?)elements.Find(e => e.GetType() == typeof(T) && i == index);
+            T? element = (T?)elements.Find(e =>
+            {
+                var condition = e.GetType() == typeof(T) && i == index;
+                i++;
+                return condition;
+            });
             return element;
         }
 

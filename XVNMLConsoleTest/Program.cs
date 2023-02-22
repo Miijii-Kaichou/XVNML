@@ -14,34 +14,35 @@ class Program
         while (true)
         {
             XVNMLObj? name = XVNMLObj.Create("E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLConsoleTest\\TestXVNML.xvnml");
-            var dialogue1 = name?.Root?.GetElement<Dialogue>()?.dialogueOutput?.GetLine(0);
-            var dialogue2 = name?.Root?.GetElement<Dialogue>()?.dialogueOutput?.GetLine(1);
+            var dialogue1 = name?.Root?.GetElement<Dialogue>(0)?.dialogueOutput?.GetLine(0);
+            var dialogue2 = name?.Root?.GetElement<Dialogue>(1)?.dialogueOutput?.GetLine(0);
 
             DoTypeWriterEffect(dialogue1);
-            Console.ReadKey();
+            Thread.Sleep(3000);
+            Console.WriteLine('\n');
             DoTypeWriterEffect(dialogue2);
             return;
         }
-    }
 
-    private static void DoTypeWriterEffect(DialogueLine dialogue)
-    {
-        bool IsRunning = true;
-        int pos = -1;
-        while(IsRunning)
+        void DoTypeWriterEffect(DialogueLine dialogue)
         {
-            Next();
-            if (pos > dialogue.Content.Length - 1)
+            bool IsRunning = true;
+            int pos = -1;
+            while (IsRunning)
             {
-                IsRunning = false;
-                continue;
+                Next();
+                if (pos > dialogue.Content.Length - 1)
+                {
+                    IsRunning = false;
+                    continue;
+                }
+                dialogue.ReadPosAndExecute(pos);
+                var substring = dialogue.Content?[pos];
+                Console.Write(substring);
+                Thread.Sleep((int)TextRate);
             }
-            dialogue.ReadPosAndExecute(pos);
-            var substring = dialogue.Content?[pos];
-            Console.Write(substring);
-            Thread.Sleep((int)TextRate);
+            void Next() => pos++;
         }
-        void Next() => pos++;
     }
 
     internal static void SetTextRate(uint rate)
