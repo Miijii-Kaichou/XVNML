@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using XVNMLStd.Utility.Macros;
 
-namespace XVNMLStd.Core.Marcos
+namespace XVNMLStd.Core.Macros
 {
-    public static class MacroManager
+    public static class DefinedMacrosCollection
     {
         public static SortedDictionary<string, MacroAttribute>? ValidMacros { get; private set; }
 
@@ -68,46 +69,6 @@ namespace XVNMLStd.Core.Marcos
                     continue;
                 }
             }
-        }
-    }
-
-    [AttributeUsage(AttributeTargets.Method)]
-    public sealed class MacroAttribute : Attribute
-    {
-        public Type? macroLibraryType;
-        public string macroName;
-        public MethodInfo? method;
-        public Type[] argumentTypes;
-
-        public MacroAttribute(string name, params Type[] argTypes)
-        {
-            macroName = name;
-            argumentTypes = argTypes;
-        }
-
-        public void ValidateMethodParameters(out bool result)
-        {
-            ParameterInfo[]? methodParameterInfo = method!.GetParameters();
-            result = methodParameterInfo == null || methodParameterInfo.Count() == 0;
-
-            if (result) return;
-
-            for(int i = 0; i < argumentTypes.Length; i++)
-            {
-                var type = argumentTypes[i];
-                result = type.Equals(methodParameterInfo![i].ParameterType);
-                if (result == false) return;
-            }
-        }
-    }
-
-    [AttributeUsage(AttributeTargets.Class)]
-    public sealed class MacroLibraryAttribute : Attribute
-    {
-        public Type targetType;
-        public MacroLibraryAttribute(Type type)
-        {
-           targetType = type;
         }
     }
 }

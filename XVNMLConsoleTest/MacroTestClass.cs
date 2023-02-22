@@ -1,13 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 
-using XVNMLStd.Core.Marcos;
+using XVNMLStd.Utility.Macros;
 
 [MacroLibrary(typeof(MacroTestClass))]
 public static class MacroTestClass
 {
-    [Macro("delay", typeof(int))]
-    private static void DelayMacro(int milliseconds)
+    [Macro("delay", typeof(uint))]
+    private static void DelayMacro(uint milliseconds)
     {
         // Delay macro logic here.
         Console.WriteLine($"Delaying for {milliseconds} milliseconds");
@@ -20,7 +20,7 @@ public static class MacroTestClass
         Console.Write($"Inserting {text}...");
     }
 
-    [Macro("speed", typeof(int))]
+    [Macro("set_text_speed", typeof(int))]
     private static void SpeedMacro(int level)
     {
         // Speed macro logic here.
@@ -33,7 +33,7 @@ public static class MacroTestClass
         }
     }
 
-    [Macro("shake", typeof(float), typeof(int))]
+    [Macro("shake_camera", typeof(float), typeof(int))]
     private static void ShakeMacro(float magnitude, int milliseconds)
     {
         // Shake (Camera Shake) logic here
@@ -42,7 +42,7 @@ public static class MacroTestClass
             $"for {milliseconds} milliseconds");
     }
 
-    [Macro("music", typeof(string), typeof(bool), typeof(int))]
+    [Macro("music", typeof(string), typeof(bool), typeof(bool))]
     private static void MusicMacro(string musicName, bool pause, bool loop)
     {
 

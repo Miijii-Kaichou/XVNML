@@ -7,8 +7,4 @@
     <StartupObject></StartupObject>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Utility\" />
-  </ItemGroup>
-
 </Project>

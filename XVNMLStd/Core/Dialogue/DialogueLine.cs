@@ -6,6 +6,7 @@ using System.Text;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Lexer;
 using XVNML.XVNMLUtility.Tags;
+using XVNMLStd.Core.Macros;
 
 namespace XVNML.Core.Dialogue
 {
@@ -113,6 +114,9 @@ namespace XVNML.Core.Dialogue
             CleanOutExcessWhiteSpaces();
             RemoveReturnCarriages();
             ExtractMacroBlocks();
+
+            // Test
+            macroInvocationList[0].Call();
         }
 
         private void ExtractMacroBlocks()

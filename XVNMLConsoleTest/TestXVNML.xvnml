@@ -4,7 +4,7 @@
        <dialogue name::"First Line">
             @ You have to make sure 
             to leave a space after 
-            each new line to keep spaces. 
+            each new line to keep spaces.{del::5000}  
             Or your output will look like this.<<
        </dialogue>
 </proxy>

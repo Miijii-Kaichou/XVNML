@@ -2,7 +2,7 @@
 using XVNML.Core.TagParser;
 using XVNML.Core.Tags;
 using XVNML.XVNMLUtility.Tags;
-using XVNMLStd.Core.Marcos;
+using XVNMLStd.Core.Macros;
 
 namespace XVNML.XVNMLUtility
 {
@@ -48,7 +48,7 @@ namespace XVNML.XVNMLUtility
         public static XVNMLObj? Create(string fileTarget)
         {
             DefinedTagsCollection.ManifestTagTypes();
-            MacroManager.ManifestMacros();
+            DefinedMacrosCollection.ManifestMacros();
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             var xvnmlParser = new Parser();
             xvnmlParser.SetTarget(fileTarget);
