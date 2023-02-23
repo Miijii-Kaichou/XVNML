@@ -29,4 +29,10 @@ public static class MacroTestClass
         // Speed macro logic here.
         DialogueWriter.SetTextRate(level == 0 ? level : 1000 / level);
     }
+
+    [Macro("clear")]
+    private static void ClearText()
+    {
+        Console.Clear();
+    }
 }

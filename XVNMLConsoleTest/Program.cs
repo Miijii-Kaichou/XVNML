@@ -19,7 +19,7 @@ class Program
         var dialogue1 = name?.Root?.GetElement<Dialogue>(0)?.dialogueOutput;
         var dialogue2 = name?.Root?.GetElement<Dialogue>(1)?.dialogueOutput;
 
-        DialogueWriter.Run(dialogue1);
+        DialogueWriter.Write(dialogue1);
         DialogueWriter.OnLineSubstringChange = UpdateText;
         DialogueWriter.OnLineFinished = ReadInput;
         DialogueWriter.OnDialogueFinish = Finish;
@@ -27,7 +27,8 @@ class Program
         {
             continue;
         }
-
+        DialogueWriter.ShutDown();
+        Console.Clear();
         Console.WriteLine("Press any key to end program");
         Console.ReadKey();
         return;
@@ -41,8 +42,7 @@ class Program
 
     private static void Finish(DialogueLine sender)
     {
-        finished = true;
-        Console.Clear();
+        finished = true; 
     }
 
     private static void UpdateText(DialogueLine sender)

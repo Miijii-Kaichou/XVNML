@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using XVNML.Core.Dialogue;
@@ -19,6 +20,7 @@ namespace XVNML.Utility.Dialogue
         public static DialogueWriterCallback? OnDialogueFinish;
 
         private static Thread? dialogueWritingThread;
+        private static CancellationTokenSource cancelationTokenSource = new CancellationTokenSource();
         private static bool IsInitialized = false;
 
         private static ConcurrentQueue<DialogueLine> lineProcesses = new ConcurrentQueue<DialogueLine>();
@@ -30,7 +32,7 @@ namespace XVNML.Utility.Dialogue
 
         internal static uint TextRate { get; private set; } = 20;
 
-        public static void Run(DialogueScript script)
+        public static void Write(DialogueScript script)
         {
             if (IsInitialized == false) Initialize();
 
@@ -43,14 +45,16 @@ namespace XVNML.Utility.Dialogue
 
         private static void Initialize()
         {
+            cancelationTokenSource = new CancellationTokenSource();
             IsInitialized = true;
             dialogueWritingThread = new Thread(new ParameterizedThreadStart(WriterThread));
-            dialogueWritingThread.Start();
+            dialogueWritingThread.Start(cancelationTokenSource);
         }
 
-        private static void WriterThread(object data)
+        private static void WriterThread(object obj)
         {
-            while(IsInitialized)
+            CancellationToken cancelationToken = ((CancellationTokenSource)obj).Token;
+            while(IsInitialized && !cancelationToken.IsCancellationRequested)
             {
                 ProcessLine();
                 Thread.Sleep(10);
@@ -123,6 +127,11 @@ namespace XVNML.Utility.Dialogue
         {
             if (IsInitialized == false) Initialize();
             text = currentLetter?.ToString()!;
+        }
+
+        public static void ShutDown()
+        {
+            cancelationTokenSource.Cancel();
         }
         #endregion
     }
