@@ -9,21 +9,22 @@ using XVNML.Utility.Dialogue;
 public static class MacroTestClass
 {
     [Macro("delay")]
-    private static void DelayMacro(uint milliseconds)
+    private static void DelayMacro(DialogueLine src, uint milliseconds)
     {
+        Console.WriteLine(src.ToString());
         // Delay macro logic here.
         Thread.Sleep((int)milliseconds);
     }
 
     [Macro("insert")]
-    private static void InsertMacro(string text)
+    private static void InsertMacro(DialogueLine src, string text)
     {
         // Insert macro logic here.
         Console.Write(text);
     }
 
     [Macro("set_text_speed")]
-    private static void SetTextSpeed(uint level)
+    private static void SetTextSpeed(DialogueLine src, uint level)
     {
 
         // Speed macro logic here.
@@ -31,7 +32,7 @@ public static class MacroTestClass
     }
 
     [Macro("clear")]
-    private static void ClearText()
+    private static void ClearText(DialogueLine src)
     {
         Console.Clear();
     }
