@@ -12,7 +12,7 @@ namespace XVNML.Core.Macros
         {
             if(DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == false)
             {
-                throw new InvalidMacroException(macroSymbol);
+                throw new InvalidMacroException(macroSymbol, source);
             }
 
             var targetMacro = DefinedMacrosCollection.ValidMacros?[macroSymbol];
