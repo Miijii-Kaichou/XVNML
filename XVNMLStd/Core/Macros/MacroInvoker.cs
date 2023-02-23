@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using XVNML.Core.Dialogue;
-using XVNMLStd.Utility.Macros;
+using XVNML.Utility.Macros;
 
-namespace XVNMLStd.Core.Macros
+namespace XVNML.Core.Macros
 {
     internal static class MacroInvoker
     {
-        internal static void Call(string macroSymbol, object[] args, MacroBlockInfo source)
+        internal static void Call(string macroSymbol, object[] args, DialogueLine source)
         {
             if(DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == false)
             {
@@ -38,10 +38,10 @@ namespace XVNMLStd.Core.Macros
             return args;
         }
 
-        internal static void Call(this MacroBlockInfo info)
+        internal static void Call(this MacroBlockInfo info, DialogueLine dialogueLine)
         {
             foreach ((string macroSymbol, object[] args) call in info.macroCalls)
-                Call(call.macroSymbol, call.args, info);
+                Call(call.macroSymbol, call.args, dialogueLine);
         }
     }
 }

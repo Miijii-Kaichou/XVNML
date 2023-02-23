@@ -6,7 +6,7 @@ using System.Text;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Lexer;
 using XVNML.XVNMLUtility.Tags;
-using XVNMLStd.Core.Macros;
+using XVNML.Core.Macros;
 
 namespace XVNML.Core.Dialogue
 {
@@ -63,8 +63,8 @@ namespace XVNML.Core.Dialogue
         internal CastMemberSignature? SignatureInfo { get; set; }
 
         // Macro Data
-        internal List<MacroBlockInfo> macroInvocationList;
-
+        internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
+        internal int textRate;
         private const int _DefaultPromptCapacity = 4;
 
 
@@ -73,7 +73,7 @@ namespace XVNML.Core.Dialogue
             macroInvocationList
                 .Where(macro => macro.blockPosition.Equals(position))
                 .ToList()
-                .ForEach(macro => macro.Call());
+                .ForEach(macro => macro.Call(this));
         }
 
         /// <summary>
@@ -123,9 +123,6 @@ namespace XVNML.Core.Dialogue
             CleanOutExcessWhiteSpaces();
             RemoveReturnCarriages();
             ExtractMacroBlocks();
-
-            // Test
-            macroInvocationList[0].Call();
         }
 
         private void ExtractMacroBlocks()

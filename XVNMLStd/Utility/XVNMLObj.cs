@@ -2,7 +2,7 @@
 using XVNML.Core.TagParser;
 using XVNML.Core.Tags;
 using XVNML.XVNMLUtility.Tags;
-using XVNMLStd.Core.Macros;
+using XVNML.Core.Macros;
 
 namespace XVNML.XVNMLUtility
 {

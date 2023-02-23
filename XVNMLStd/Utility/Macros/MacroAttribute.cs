@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using XVNML.Core.Dialogue;
 
-namespace XVNMLStd.Utility.Macros
+namespace XVNML.Utility.Macros
 {
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class MacroAttribute : Attribute
@@ -22,10 +23,21 @@ namespace XVNMLStd.Utility.Macros
         {
             ParameterInfo[]? methodParameterInfo = method!.GetParameters();
             result = methodParameterInfo == null || methodParameterInfo.Count() == 0;
+            bool isImplicit = (argumentTypes == null || argumentTypes.Length == 0) &&
+                methodParameterInfo.Count() > 0;
+
+            if (isImplicit)
+            {
+                argumentTypes = new Type[methodParameterInfo!.Length];
+                for(int i = 0; i < methodParameterInfo.Length; i++)
+                    argumentTypes[i] = methodParameterInfo[i].ParameterType;
+                result = true;
+                return;
+            }
 
             if (result) return;
 
-            for (int i = 0; i < argumentTypes.Length; i++)
+            for (int i = 0; i < argumentTypes?.Length; i++)
             {
                 var type = argumentTypes[i];
                 result = type.Equals(methodParameterInfo![i].ParameterType);

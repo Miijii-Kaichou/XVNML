@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace XVNMLStd.Utility.Macros
+namespace XVNML.Utility.Macros
 {
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class MacroLibraryAttribute : Attribute

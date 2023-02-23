@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using XVNMLStd.Utility.Macros;
+using XVNML.Utility.Macros;
 
-namespace XVNMLStd.Core.Macros
+namespace XVNML.Core.Macros
 {
     public static class DefinedMacrosCollection
     {
@@ -60,7 +60,6 @@ namespace XVNMLStd.Core.Macros
                     if (result)
                     {
                         ValidMacros.Add(attribute.macroName, attribute);
-                        Console.WriteLine($"Macro {attribute.macroName} successfully attached to method {method.Name}");
                         continue;
                     }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace XVNMLStd.Core.Macros
+namespace XVNML.Core.Macros
 {
     [Serializable]
     internal class InvalidMacroException : Exception

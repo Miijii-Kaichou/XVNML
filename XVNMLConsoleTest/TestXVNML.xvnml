@@ -1,22 +1,40 @@
 ﻿<proxy name::"TestXVNML" lang::"CSharp" engine::"Unity">
-     $> Example One, using macros seperately
      <dialogue name::"First Line">
-          @ {set_text_speed::10}Soooooooo....
-          {delay::500}{set_text_speed::30} About what I said earlier...{delay::500} 
-          {set_text_speed::60}Yeah,{delay::250} You have to make sure 
-          to leave a space {set_text_speed::10}after{set_text_speed::60} 
-          each new line to keep spaces.{delay::500} 
-          Or your output will look like {delay::1000}{insert::"THIS"}.<<
-     </dialogue>
-
-     $> Example Two, combining macros in one single block
-     $> Output is the same result
-     <dialogue name::"Second Line">
           @ {set_text_speed::10}Soooooooo....
           {delay::500|set_text_speed::30} About what I said earlier...{delay::500} 
           {set_text_speed::60}Yeah,{delay::250} You have to make sure 
           to leave a space {set_text_speed::10}after{set_text_speed::60} 
           each new line to keep spaces.{delay::500} 
-          Or your output will look like {delay::1000|insert::"THIS"}.<<
+          Or your output will look like {delay::1000|insert::"THIS"}.<
+
+          @ I think you might of made this thing a whole lot better... 
+          like seriously{delay::500} you rock dude!<
+          @ You are{set_text_speed::10} DEFINITELY{delay::500|set_text_speed::80} going to my daughter's Quincenera!<
+               
+          @ {set_text_speed::60}Hey!{delay::500} let's do that{delay::750|set_text_speed::25} one thing where you hmmmmm...{delay::1000} 
+          {set_text_speed::60}where you do that {insert::"Latin"|delay::500} thing...<
+
+          @ It goes all...{delay::1000} ya know...<
+
+          @ {set_text_speed::20}Lorem ipsum dolor sit amet,{delay::750} 
+          {set_text_speed::40}consectetur{delay::250} {set_text_speed::20}adipiscing elit,{delay::500} 
+          {set_text_speed::60}sed do eiusmod tempor {insert::"incididunt"} {insert::"ut"} {insert::"labore"|delay::500|set_text_speed::30} et dolore magna aliqua.{delay::1000} 
+          {set_text_speed::60}Ut enim ad minim veniam,{delay::500|set_text_speed::100} 
+          quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea 
+          {set_text_speed::30}commodo{delay::500|insert::"."}{delay::500|insert::"."}{delay::500|insert::"."}{delay::2000} 
+          {insert::"consequa"|delay::500}{insert::"t"|delay::500}.{delay::800} 
+          {set_text_speed::10}Duis 
+          {set_text_speed::20}aute 
+          {set_text_speed::30}irure 
+          {set_text_speed::40}dolor 
+          {set_text_speed::50}in {set_text_speed::60}reprehenderit 
+          {set_text_speed::60}in 
+          {set_text_speed::70}voluptate 
+          {set_text_speed::80}velit 
+          {set_text_speed::90}esse cillum dolore eu fugiat nulla pariatur.{delay::5000} 
+          {set_text_speed::60}Excepteur sint occaecat cupidatat non proident,{delay::500} 
+          sunt in culpa qui officia deserunt mollit anim id est{set_text_speed::10} laborum.<
+
+          @ {set_text_speed::60}You really didn't need to do that dude...<<
      </dialogue>
 </proxy>

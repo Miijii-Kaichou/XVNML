@@ -2,51 +2,54 @@
 
 
 using XVNML.Core.Dialogue;
+using XVNML.Utility.Dialogue;
 using XVNML.XVNMLUtility;
 using XVNML.XVNMLUtility.Tags;
 
 class Program
 {
     // 60 characters a second is the default
-    static uint TextRate = 60;
+    static string outputString = string.Empty;
+    private static bool finished;
+
     static void Main(string[] args)
     {
-        while (true)
-        {
-            XVNMLObj? name = XVNMLObj.Create("E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLConsoleTest\\TestXVNML.xvnml");
-            var dialogue1 = name?.Root?.GetElement<Dialogue>(0)?.dialogueOutput?.GetLine(0);
-            var dialogue2 = name?.Root?.GetElement<Dialogue>(1)?.dialogueOutput?.GetLine(0);
+        finished = false;
+        XVNMLObj? name = XVNMLObj.Create("E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLConsoleTest\\TestXVNML.xvnml");
+        var dialogue1 = name?.Root?.GetElement<Dialogue>(0)?.dialogueOutput;
+        var dialogue2 = name?.Root?.GetElement<Dialogue>(1)?.dialogueOutput;
 
-            DoTypeWriterEffect(dialogue1);
-            Thread.Sleep(3000);
-            Console.WriteLine('\n');
-            DoTypeWriterEffect(dialogue2);
-            return;
+        DialogueWriter.Run(dialogue1);
+        DialogueWriter.OnLineSubstringChange = UpdateText;
+        DialogueWriter.OnLineFinished = ReadInput;
+        DialogueWriter.OnDialogueFinish = Finish;
+        while (finished == false)
+        {
+            continue;
         }
 
-        void DoTypeWriterEffect(DialogueLine dialogue)
-        {
-            bool IsRunning = true;
-            int pos = -1;
-            while (IsRunning)
-            {
-                Next();
-                if (pos > dialogue.Content.Length - 1)
-                {
-                    IsRunning = false;
-                    continue;
-                }
-                dialogue.ReadPosAndExecute(pos);
-                var substring = dialogue.Content?[pos];
-                Console.Write(substring);
-                Thread.Sleep((int)TextRate);
-            }
-            void Next() => pos++;
-        }
+        Console.WriteLine("Press any key to end program");
+        Console.ReadKey();
+        return;
     }
 
-    internal static void SetTextRate(uint rate)
+    private static void ReadInput(DialogueLine sender)
     {
-        TextRate = rate;
+        Console.ReadKey();
+        DialogueWriter.MoveNextLine();
+    }
+
+    private static void Finish(DialogueLine sender)
+    {
+        finished = true;
+        Console.Clear();
+    }
+
+    private static void UpdateText(DialogueLine sender)
+    {
+        var span = outputString.AsSpan();
+        span.Feed();
+        outputString = span.ToString();
+        Console.Write(outputString);
     }
 }
