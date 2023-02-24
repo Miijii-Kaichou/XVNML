@@ -123,7 +123,11 @@ namespace XVNML.Core.Dialogue
         internal void FinalizeAndCleanBuilder()
         {
             // Trim any < and >
-            Content = _ContentStringBuilder.ToString().TrimEnd('<', '>');
+            Content = _ContentStringBuilder
+                .ToString()
+                .TrimEnd('<')
+                .Replace(">>", string.Empty)
+                .Replace(">", "{pause}");
 
             // Get rid of excess white spaces
             CleanOutExcessWhiteSpaces();
