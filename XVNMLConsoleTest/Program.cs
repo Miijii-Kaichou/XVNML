@@ -19,7 +19,7 @@ class Program
         var dialogue1 = name?.Root?.GetElement<Dialogue>(0)?.dialogueOutput;
         var dialogue2 = name?.Root?.GetElement<Dialogue>(1)?.dialogueOutput;
 
-        DialogueWriter.Write(dialogue1);
+        DialogueWriter.Write(dialogue2, 0);
         DialogueWriter.OnLineSubstringChange = UpdateText;
         DialogueWriter.OnLineFinished = ReadInput;
         DialogueWriter.OnDialogueFinish = Finish;
@@ -34,21 +34,21 @@ class Program
         return;
     }
 
-    private static void ReadInput(DialogueLine sender)
+    private static void ReadInput(DialogueWriterProcessor sender)
     {
         Console.ReadKey();
-        DialogueWriter.MoveNextLine();
+        DialogueWriter.MoveNextLine(sender);
     }
 
-    private static void Finish(DialogueLine sender)
+    private static void Finish(DialogueWriterProcessor sender)
     {
         finished = true; 
     }
 
-    private static void UpdateText(DialogueLine sender)
+    private static void UpdateText(DialogueWriterProcessor sender)
     {
         var span = outputString.AsSpan();
-        span.Feed();
+        span.Feed(sender);
         outputString = span.ToString();
         Console.Write(outputString);
     }

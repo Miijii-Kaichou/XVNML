@@ -6,33 +6,50 @@ using XVNML.Utility.Macros;
 using XVNML.Utility.Dialogue;
 
 [MacroLibrary(typeof(MacroTestClass))]
-public static class MacroTestClass
+internal static class MacroTestClass
 {
     [Macro("delay")]
-    private static void DelayMacro(uint milliseconds)
+    internal static void DelayMacro(DialogueWriterProcessor source, uint milliseconds)
     {
         // Delay macro logic here.
         Thread.Sleep((int)milliseconds);
     }
 
     [Macro("insert")]
-    private static void InsertMacro(string text)
+    internal static void InsertMacro(DialogueWriterProcessor source, string text)
     {
         // Insert macro logic here.
-        Console.Write(text);
+        source.Append(text);
     }
 
     [Macro("set_text_speed")]
-    private static void SetTextSpeed(uint level)
+    internal static void SetTextSpeed(DialogueWriterProcessor source, uint level)
     {
-
         // Speed macro logic here.
-        DialogueWriter.SetTextRate(level == 0 ? level : 1000 / level);
+        source.SetProcessRate(level == 0 ? level : 1000 / level);
     }
 
     [Macro("clear")]
-    private static void ClearText()
+    internal static void ClearText(DialogueWriterProcessor source)
     {
         Console.Clear();
+    }
+
+    [Macro("new_line")]
+    internal static void NewLineMacro(DialogueWriterProcessor source)
+    {
+        source.Append('\n');
+    }
+
+    [Macro("paren")]
+    internal static void ParenthesisMacro(DialogueWriterProcessor source)
+    {
+        source.Append('(');
+    }
+
+    [Macro("paren_end")]
+    internal static void EndParenthesisMacro(DialogueWriterProcessor source)
+    {
+        source.Append(')');
     }
 }

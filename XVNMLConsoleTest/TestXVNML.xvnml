@@ -4,4 +4,8 @@
           @ Honestly...{delay::5000|clear}I think I'm good actually.<
           @ Okay... {delay::800|insert::"*insert name here*"|delay::2000|clear}Suit yourself.<<
      </dialogue>
+     <dialogue name::"Second Line">
+          @ There's another feature that XVNML has that lets you do whatever you want.{new_line}
+          and that is called Concurrent Dialogue Processes {paren}or CDP for short{paren_end}<<
+     </dialogue>
 </proxy>

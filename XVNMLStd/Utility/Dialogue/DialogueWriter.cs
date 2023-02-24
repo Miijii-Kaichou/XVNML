@@ -1,15 +1,15 @@
 ﻿#nullable enable
 
 using System;
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Text;
+using System.Linq;
+using System.Numerics;
 using System.Threading;
+using System.Threading.Tasks;
 using XVNML.Core.Dialogue;
 
 namespace XVNML.Utility.Dialogue
 {
-    public delegate void DialogueWriterCallback(DialogueLine sender);
+    public delegate void DialogueWriterCallback(DialogueWriterProcessor sender);
 
     public static class DialogueWriter
     {
@@ -23,26 +23,48 @@ namespace XVNML.Utility.Dialogue
         private static CancellationTokenSource cancelationTokenSource = new CancellationTokenSource();
         private static bool IsInitialized = false;
 
-        private static ConcurrentQueue<DialogueLine> lineProcesses = new ConcurrentQueue<DialogueLine>();
-        private static DialogueLine? currentLine;
+        internal static DialogueWriterProcessor?[] WriterProcesses { get; private set; }
 
-        private static char? currentLetter = null;
-        private static bool waitingForUserInput;
-        private static int linePosition;
+        private const int DefaultTotalChannelsAllocated = 12;
 
-        internal static uint TextRate { get; private set; } = 20;
-
-        public static void Write(DialogueScript script)
+        /// <summary>
+        /// Allocate a total amount of Dialogue Process prior to
+        /// write start up. Allocations are immutable once set.
+        /// </summary>
+        /// <param name="totalChannels"></param>
+        public static void AllocateChannels(int totalChannels = DefaultTotalChannelsAllocated)
         {
-            if (IsInitialized == false) Initialize();
-
-            //TODO: read script, and get lines
-            foreach(DialogueLine line in script.Lines)
-            {
-                lineProcesses.Enqueue(line);
-            }
+            if (IsInitialized) return;
+            WriterProcesses = new DialogueWriterProcessor[totalChannels];
         }
 
+        /// <summary>
+        /// Begin the writing process of a dialogue.
+        /// </summary>
+        /// <param name="script"></param>
+        public static void Write(DialogueScript script)
+        {
+            if (WriterProcesses == null) AllocateChannels();
+            Write(script, Array.IndexOf(WriterProcesses, WriterProcesses.Where(dwp => dwp == null).Single()));
+        }
+
+        /// <summary>
+        /// Begin the writing process of a dialogue.
+        /// </summary>
+        /// <param name="script"></param>
+        public static void Write(DialogueScript script, int channel)
+        {
+            if (WriterProcesses == null) AllocateChannels(channel);
+            
+            var newProcess = DialogueWriterProcessor.Initialize(script, channel);
+            if (newProcess == null) { return; }
+
+            if (IsInitialized == false) Initialize();
+
+            WriterProcesses[channel] = newProcess;
+        }
+
+        
         private static void Initialize()
         {
             cancelationTokenSource = new CancellationTokenSource();
@@ -54,85 +76,85 @@ namespace XVNML.Utility.Dialogue
         private static void WriterThread(object obj)
         {
             CancellationToken cancelationToken = ((CancellationTokenSource)obj).Token;
-            while(IsInitialized && !cancelationToken.IsCancellationRequested)
+            while (IsInitialized && !cancelationToken.IsCancellationRequested)
             {
-                ProcessLine();
+                Parallel.ForEach<DialogueWriterProcessor>(WriterProcesses!, ProcessLine);
                 Thread.Sleep(10);
             }
         }
 
-        private static void ProcessLine()
+        private static void ProcessLine(DialogueWriterProcessor process)
         {
             // We don't need to read the dialogue
             // if the line stack is 0;
-            if (lineProcesses.Count == 0) return;
-            if (waitingForUserInput) return;
+            if (process == null) return;
+            if (process.lineProcesses.Count == 0) return;
+            if (process.waitingForUserInput) return;
 
-            if (currentLine == null)
+            if (process.currentLine == null)
             {
                 Console.Clear();
-                lineProcesses.TryDequeue(out currentLine);
-                OnLineStart?.Invoke(currentLine);
+                process.lineProcesses.TryDequeue(out process.currentLine);
+                OnLineStart?.Invoke(process);
             }
 
             // We can now add to the currently displayed screen
-            linePosition = -1;
-            while (waitingForUserInput == false)
+            process.linePosition = -1;
+            while (process.waitingForUserInput == false)
             {
                 Next();
-                if (linePosition > currentLine.Content?.Length - 1)
+                if (process.linePosition > process.currentLine.Content?.Length - 1)
                 {
-                    waitingForUserInput = true;
-                    OnLineFinished?.Invoke(currentLine!);
+                    process.waitingForUserInput = true;
+                    WriterProcesses[process.ProcessID] = process;
+                    OnLineFinished?.Invoke(process!);
                     return;
                 }
-                currentLine!.ReadPosAndExecute(linePosition);
-                currentLetter = currentLine.Content?[linePosition];
-                OnLineSubstringChange?.Invoke(currentLine);
-                Thread.Sleep((int)TextRate);
+
+                process.currentLine!.ReadPosAndExecute(process.linePosition);
+                process.CurrentLetter = process.currentLine.Content?[process.linePosition];
+                WriterProcesses[process.ProcessID] = process;
+                OnLineSubstringChange?.Invoke(process);
+                Thread.Sleep((int)process.processRate);
             }
 
-            void Next() => linePosition++;
-        }
+            void Next() => process.linePosition++;
 
-        public static void SetTextRate(uint rate)
-        {
-            TextRate = rate;
-        }
-
-        public static void MoveNextLine()
-        {
-            if (waitingForUserInput == false) return;
-            if (lineProcesses.Count == 0)
-            {
-                // That was the last dialogue
-                OnDialogueFinish?.Invoke(currentLine);
-                Reset();
-                return;
-            }
-            OnNextLine?.Invoke(currentLine!);
-            Reset();
-        }
-
-        private static void Reset()
-        {
-            currentLine = null;
-            currentLetter = null;
-            Thread.Sleep(10);
-            waitingForUserInput = false;
-        }
-
-        #region Extensions
-        public static void Feed(this ref ReadOnlySpan<char> text)
-        {
-            if (IsInitialized == false) Initialize();
-            text = currentLetter?.ToString()!;
         }
 
         public static void ShutDown()
         {
             cancelationTokenSource.Cancel();
         }
+
+        public static void MoveNextLine(DialogueWriterProcessor process)
+        {
+            if (process.waitingForUserInput == false) return;
+            if (process.lineProcesses.Count == 0)
+            {
+                // That was the last dialogue
+                OnDialogueFinish?.Invoke(process);
+                Reset(process);
+                return;
+            }
+            OnNextLine?.Invoke(process);
+            Reset(process);
+        }
+
+        private static void Reset(DialogueWriterProcessor process)
+        {
+            process.currentLine = null;
+            process.CurrentLetter = null;
+            process.waitingForUserInput = false;
+        }
+
+        #region Extensions
+        public static void Feed(this ref ReadOnlySpan<char> text, DialogueWriterProcessor process)
+        {
+            if (IsInitialized == false) Initialize();
+            text = process.CurrentLetter?.ToString()!;
+        }
+
         #endregion
     }
 }
