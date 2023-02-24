@@ -6,7 +6,10 @@
      </dialogue>
      <dialogue name::"Second Line">
           @ {set_text_speed::120}Delaying for 3 seconds...{delay::3000|new_line}Test was sucessful.<
-          @ Also testing{delay::500} a pause macro, which momentarilly
+          @ Also testing{delay::500} a {insert::"PAUSE"|delay::500} macro, which will hold 
+          the Dialogue Writer Process until there's a MoveNextLine call.<
+          @ Press any key to continue this dialogue...{pause|new_line}and show how 
+          cool this is.<
           @ You may now close your window.<<
      </dialogue>
 </proxy>

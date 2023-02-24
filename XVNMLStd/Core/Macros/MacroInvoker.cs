@@ -9,11 +9,6 @@ namespace XVNML.Core.Macros
     {
         internal static void Call(string macroSymbol, object[] args, MacroCallInfo info)
         {
-            if (DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == false)
-            {
-                throw new InvalidMacroException(macroSymbol, info.source.currentLine!);
-            }
-
             var targetMacro = DefinedMacrosCollection.ValidMacros?[macroSymbol];
 
             args = ResolveMacroArgumentTypes(targetMacro, args);
@@ -62,7 +57,9 @@ namespace XVNML.Core.Macros
         internal static void Call(this MacroBlockInfo info, MacroCallInfo source)
         {
             foreach ((string macroSymbol, object[] args) call in info.macroCalls)
+            {
                 Call(call.macroSymbol, call.args, source);
+            }
         }
     }
 }

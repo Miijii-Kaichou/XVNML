@@ -14,6 +14,8 @@ namespace XVNML.Core.Dialogue
 
     public sealed class DialogueLine
     {
+        private static DialogueLine Instance;
+
         string? _castName;
         public string? CastName
         {
@@ -67,7 +69,6 @@ namespace XVNML.Core.Dialogue
         internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
         internal int textRate;
         private const int _DefaultPromptCapacity = 4;
-
 
         internal void ReadPosAndExecute(DialogueWriterProcessor process)
         {
@@ -156,6 +157,8 @@ namespace XVNML.Core.Dialogue
         {
             length = 0;
             if (Content == null) return;
+
+            Instance = this;
 
             Tokenizer tokenizer;
             MacroBlockInfo newBlock = new MacroBlockInfo();
@@ -337,9 +340,13 @@ namespace XVNML.Core.Dialogue
             void Next() => pos++;
         }
 
-        private static void PopulateBlock(MacroBlockInfo newBlock, int macroCount, string? macroName, List<object> macroArgs)
+        private static void PopulateBlock(MacroBlockInfo newBlock, int macroCount, string? macroSymbol, List<object> macroArgs)
         {
-            newBlock!.macroCalls![macroCount].macroSymbol = macroName;
+            if (macroSymbol == null || DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == false)
+            {
+                throw new InvalidMacroException(macroSymbol, Instance);
+            }
+            newBlock!.macroCalls![macroCount].macroSymbol = macroSymbol;
             newBlock.macroCalls[macroCount].args = macroArgs.ToArray();
         }
 

@@ -69,7 +69,6 @@ internal static class StandardMacroLibrary
     [Macro("pause")]
     internal static void PauseMacro(MacroCallInfo info)
     {
-        info.source.WasControlledPause = true;
-        info.source.waitingForUserInput = true;
+        info.source.Pause();
     }
 }

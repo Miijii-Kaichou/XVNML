@@ -22,6 +22,7 @@ namespace XVNML.Utility.Dialogue
         private static Thread? dialogueWritingThread;
         private static CancellationTokenSource cancelationTokenSource = new CancellationTokenSource();
         private static bool IsInitialized = false;
+        private static bool waitingForUnpauseCue;
 
         internal static DialogueWriterProcessor?[] WriterProcesses { get; private set; }
 
@@ -92,7 +93,7 @@ namespace XVNML.Utility.Dialogue
             // if the line stack is 0;
             if (process == null) return;
             if (process.lineProcesses.Count == 0) return;
-            if (process.waitingForUserInput) return;
+            if (process.isPaused) return;
 
             if (process.currentLine == null)
             {
@@ -103,12 +104,20 @@ namespace XVNML.Utility.Dialogue
 
             // We can now add to the currently displayed screen
             process.linePosition = -1;
-            while (process.waitingForUserInput == false)
+            while (process.isPaused == false)
             {
                 // Don't do anything if you are on delay
-                if (process.IsOnDelay)
+                if (process.IsOnDelay || waitingForUnpauseCue)
                 {
                     Thread.Sleep((int)process.processRate);
+                    continue;
+                }
+
+                if (waitingForUnpauseCue == false && process.WasControlledPause)
+                {
+                    waitingForUnpauseCue = true;
+                    WriterProcesses[process.ProcessID] = process;
+                    OnLinePause?.Invoke(process!);
                     continue;
                 }
 
@@ -119,7 +128,7 @@ namespace XVNML.Utility.Dialogue
 
                 if (process.linePosition > process.currentLine.Content?.Length - 1)
                 {
-                    process.waitingForUserInput = true;
+                    process.isPaused = true;
                     WriterProcesses[process.ProcessID] = process;
                     OnLineSubstringChange?.Invoke(process);
                     OnLinePause?.Invoke(process!);
@@ -153,7 +162,14 @@ namespace XVNML.Utility.Dialogue
 
         public static void MoveNextLine(DialogueWriterProcessor process)
         {
-            if (process.waitingForUserInput == false) return;
+            if (process.WasControlledPause)
+            {
+                waitingForUnpauseCue = false;
+                process.Unpause();
+                WriterProcesses[process.ProcessID] = process;
+                return;
+            }
+            if (process.isPaused == false) return;
             if (process.lineProcesses.Count == 0)
             {
                 // That was the last dialogue
@@ -167,21 +183,18 @@ namespace XVNML.Utility.Dialogue
 
         private static void Reset(DialogueWriterProcessor process)
         {
-            if (process.WasControlledPause)
-            {
-                process.Unpause();
-                return;
-            }
+            
             process.Clear();
             process.currentLine = null;
             process.CurrentLetter = null;
-            process.waitingForUserInput = false;
+            process.isPaused = false;
         }
 
         #region Extensions
         public static string Feed(this string text, DialogueWriterProcessor process)
         {
             if (IsInitialized == false) Initialize();
+            if (process.IsOnDelay || process.WasControlledPause) return text;
             text = process.DisplayingContent!;
             return text;
         }

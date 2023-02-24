@@ -18,7 +18,7 @@ namespace XVNML.Core.Dialogue
 
         internal ConcurrentQueue<DialogueLine> lineProcesses = new ConcurrentQueue<DialogueLine>();
         internal DialogueLine? currentLine;
-        internal bool waitingForUserInput;
+        internal bool isPaused;
         internal bool doDetain;
         internal int linePosition;
         internal uint processRate = 60;
@@ -102,7 +102,7 @@ namespace XVNML.Core.Dialogue
                 currentLine = null,
                 CurrentLetter = null,
                 linePosition = -1,
-                waitingForUserInput = false,
+                isPaused = false,
                 doDetain = false
             };
 
