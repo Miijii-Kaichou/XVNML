@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Text;
 using System.Timers;
 using XVNML.Core.Dialogue;
@@ -10,9 +11,10 @@ namespace XVNML.Core.Dialogue
     {
         internal static DialogueWriterProcessor Instance { get; private set; }
 
-        public int ProcessID { get; internal set; }
+        public int ID { get; internal set; }
         public string? DisplayingContent => _processBuilder.ToString();
         public bool WasControlledPause { get; private set; }
+        public uint ProcessRate { get; internal set; } = 60;
 
         public static bool IsStagnant => Instance.lineProcesses.Count == 0;
 
@@ -21,7 +23,6 @@ namespace XVNML.Core.Dialogue
         internal bool isPaused;
         internal bool doDetain;
         internal int linePosition;
-        internal uint processRate = 60;
 
         internal bool IsOnDelay => delayTimer != null;
 
@@ -43,7 +44,7 @@ namespace XVNML.Core.Dialogue
 
         internal void SetProcessRate(uint rate)
         {
-            processRate = rate;
+            ProcessRate = rate;
         }
 
         internal void Append(string text)
@@ -64,13 +65,14 @@ namespace XVNML.Core.Dialogue
         internal void Pause()
         {
             WasControlledPause = true;
+            
         }
 
         internal void Unpause()
         {
             WasControlledPause = false;
+            CurrentLetter = currentLine?.Content?[linePosition];
         }
-
         internal void Feed()
         {
             _processBuilder.Append(CurrentLetter);
@@ -96,7 +98,7 @@ namespace XVNML.Core.Dialogue
 
             Instance = new DialogueWriterProcessor()
             {
-                ProcessID = id,
+                ID = id,
                 lineProcesses = new ConcurrentQueue<DialogueLine>(),
                 _processBuilder = new StringBuilder(),
                 currentLine = null,

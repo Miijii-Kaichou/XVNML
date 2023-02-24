@@ -8,6 +8,7 @@ using XVNML.Core.Lexer;
 using XVNML.XVNMLUtility.Tags;
 using XVNML.Core.Macros;
 using XVNML.Utility.Macros;
+using XVNML.Utility.Dialogue;
 
 namespace XVNML.Core.Dialogue
 {
@@ -77,7 +78,8 @@ namespace XVNML.Core.Dialogue
                 .ToList()
                 .ForEach(macro =>
                 {
-                    if (process.IsOnDelay) return;
+                    if (DialogueWriter.WaitingForUnpauseQueue) return;
+                    if (process.IsOnDelay || process.WasControlledPause) return;
                     macro.Call(new MacroCallInfo() { source = process });
                  });
         }
