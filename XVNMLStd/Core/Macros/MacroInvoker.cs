@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using XVNML.Core.Dialogue;
 using XVNML.Utility.Macros;
 
@@ -9,29 +7,32 @@ namespace XVNML.Core.Macros
 {
     internal static class MacroInvoker
     {
-        internal static void Call(string macroSymbol, object[] args, DialogueLine source)
+        internal static void Call(string macroSymbol, object[] args, MacroCallInfo info)
         {
             if (DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == false)
             {
-                throw new InvalidMacroException(macroSymbol);
+                throw new InvalidMacroException(macroSymbol, info.source.currentLine!);
             }
 
             var targetMacro = DefinedMacrosCollection.ValidMacros?[macroSymbol];
+
             args = ResolveMacroArgumentTypes(targetMacro, args);
 
-            object[] finalArgs = FinalizeArgumentData(args, source);
+            object[] finalArgs = FinalizeArgumentData(args, info);
 
-            targetMacro?.method?.Invoke(source, finalArgs);
+            targetMacro?.method?.Invoke(info, finalArgs);
         }
 
-        private static object[] FinalizeArgumentData(object[] args, DialogueLine source)
+        private static object[] FinalizeArgumentData(object[] args, MacroCallInfo source)
         {
+            var value = source;
             object[] finalArgs = new object[args.Length + 1];
+
             for (int i = 0; i < finalArgs.Length; i++)
             {
                 if (i == 0)
                 {
-                    finalArgs[i] = source;
+                    finalArgs[i] = value;
                     continue;
                 }
 
@@ -58,10 +59,10 @@ namespace XVNML.Core.Macros
             return args;
         }
 
-        internal static void Call(this MacroBlockInfo info, DialogueLine dialogueLine)
+        internal static void Call(this MacroBlockInfo info, MacroCallInfo source)
         {
             foreach ((string macroSymbol, object[] args) call in info.macroCalls)
-                Call(call.macroSymbol, call.args, dialogueLine);
+                Call(call.macroSymbol, call.args, source);
         }
     }
 }

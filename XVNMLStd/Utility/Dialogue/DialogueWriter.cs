@@ -15,7 +15,7 @@ namespace XVNML.Utility.Dialogue
     {
         public static DialogueWriterCallback? OnLineStart;
         public static DialogueWriterCallback? OnLineSubstringChange;
-        public static DialogueWriterCallback? OnLineFinished;
+        public static DialogueWriterCallback? OnLinePause;
         public static DialogueWriterCallback? OnNextLine;
         public static DialogueWriterCallback? OnDialogueFinish;
 
@@ -35,6 +35,7 @@ namespace XVNML.Utility.Dialogue
         public static void AllocateChannels(int totalChannels = DefaultTotalChannelsAllocated)
         {
             if (IsInitialized) return;
+            totalChannels = totalChannels == 0 ? DefaultTotalChannelsAllocated : totalChannels;
             WriterProcesses = new DialogueWriterProcessor[totalChannels];
         }
 
@@ -44,7 +45,8 @@ namespace XVNML.Utility.Dialogue
         /// <param name="script"></param>
         public static void Write(DialogueScript script)
         {
-            if (WriterProcesses == null) AllocateChannels();
+            if (WriterProcesses == null || WriterProcesses.Length == 0)
+                AllocateChannels();
             Write(script, Array.IndexOf(WriterProcesses, WriterProcesses.Where(dwp => dwp == null).Single()));
         }
 
@@ -54,8 +56,9 @@ namespace XVNML.Utility.Dialogue
         /// <param name="script"></param>
         public static void Write(DialogueScript script, int channel)
         {
-            if (WriterProcesses == null) AllocateChannels(channel);
-            
+            if (WriterProcesses == null || WriterProcesses.Length == 0)
+                AllocateChannels(channel);
+
             var newProcess = DialogueWriterProcessor.Initialize(script, channel);
             if (newProcess == null) { return; }
 
@@ -64,7 +67,7 @@ namespace XVNML.Utility.Dialogue
             WriterProcesses[channel] = newProcess;
         }
 
-        
+
         private static void Initialize()
         {
             cancelationTokenSource = new CancellationTokenSource();
@@ -102,25 +105,46 @@ namespace XVNML.Utility.Dialogue
             process.linePosition = -1;
             while (process.waitingForUserInput == false)
             {
+                // Don't do anything if you are on delay
+                if (process.IsOnDelay)
+                {
+                    Thread.Sleep((int)process.processRate);
+                    continue;
+                }
+
                 Next();
+
+                process.currentLine!.ReadPosAndExecute(process);
+
+
                 if (process.linePosition > process.currentLine.Content?.Length - 1)
                 {
                     process.waitingForUserInput = true;
                     WriterProcesses[process.ProcessID] = process;
-                    OnLineFinished?.Invoke(process!);
+                    OnLineSubstringChange?.Invoke(process);
+                    OnLinePause?.Invoke(process!);
                     return;
                 }
 
-                process.currentLine!.ReadPosAndExecute(process.linePosition);
+                UpdateSubString(process);
+            }
+
+            void Next()
+            {
+                if (process.IsOnDelay) return;
+                process.linePosition++;
+            }
+
+            void UpdateSubString(DialogueWriterProcessor process)
+            {
+                if (process.IsOnDelay) return;
                 process.CurrentLetter = process.currentLine.Content?[process.linePosition];
                 WriterProcesses[process.ProcessID] = process;
                 OnLineSubstringChange?.Invoke(process);
                 Thread.Sleep((int)process.processRate);
             }
-
-            void Next() => process.linePosition++;
-
         }
+
 
         public static void ShutDown()
         {
@@ -143,16 +167,23 @@ namespace XVNML.Utility.Dialogue
 
         private static void Reset(DialogueWriterProcessor process)
         {
+            if (process.WasControlledPause)
+            {
+                process.Unpause();
+                return;
+            }
+            process.Clear();
             process.currentLine = null;
             process.CurrentLetter = null;
             process.waitingForUserInput = false;
         }
 
         #region Extensions
-        public static void Feed(this ref ReadOnlySpan<char> text, DialogueWriterProcessor process)
+        public static string Feed(this string text, DialogueWriterProcessor process)
         {
             if (IsInitialized == false) Initialize();
-            text = process.CurrentLetter?.ToString()!;
+            text = process.DisplayingContent!;
+            return text;
         }
 
         #endregion

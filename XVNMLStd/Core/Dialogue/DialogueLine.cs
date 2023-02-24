@@ -7,6 +7,7 @@ using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Lexer;
 using XVNML.XVNMLUtility.Tags;
 using XVNML.Core.Macros;
+using XVNML.Utility.Macros;
 
 namespace XVNML.Core.Dialogue
 {
@@ -68,12 +69,16 @@ namespace XVNML.Core.Dialogue
         private const int _DefaultPromptCapacity = 4;
 
 
-        public void ReadPosAndExecute(int position)
+        internal void ReadPosAndExecute(DialogueWriterProcessor process)
         {
             macroInvocationList
-                .Where(macro => macro.blockPosition.Equals(position))
+                .Where(macro => macro.blockPosition.Equals(process.linePosition))
                 .ToList()
-                .ForEach(macro => macro.Call(this));
+                .ForEach(macro =>
+                {
+                    if (process.IsOnDelay) return;
+                    macro.Call(new MacroCallInfo() { source = process });
+                 });
         }
 
         /// <summary>

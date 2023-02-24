@@ -35,7 +35,7 @@ namespace XVNML.Utility.Macros
 
                     // Check if the first type if of DialogueLine type. If not
                     // invalidate the macro.
-                    if (argType == typeof(DialogueLine)) continue;
+                    if (argType == typeof(MacroCallInfo)) continue;
                     result = !(i == 0);
                     if (i == 0) return;
                     argumentTypes[i - 1] = methodParameterInfo[i].ParameterType;

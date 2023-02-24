@@ -21,11 +21,6 @@ namespace XVNML.Core.Macros
             
             foreach (Assembly assembly in assemblies)
             {
-                // We actually don't want to include this assembly.
-                // We want macros outside of this.
-                if (assembly == Assembly.GetExecutingAssembly()) continue;
-
-                // TODO: Collect all classes that have MacroLibrary on it.
                 Type[] libraryTypes = assembly.GetTypes().Where(c => c.IsClass && c.GetCustomAttribute<MacroLibraryAttribute>() != null).ToArray();
 
                 EstablishLibraries(libraryTypes);
@@ -40,9 +35,7 @@ namespace XVNML.Core.Macros
             {
                 var methods = lib.GetRuntimeMethods();
 
-                ProcessMethods(lib, methods);
-
-                
+                ProcessMethods(lib, methods);              
             }
         }
 

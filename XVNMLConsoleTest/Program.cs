@@ -21,7 +21,7 @@ class Program
 
         DialogueWriter.Write(dialogue2, 0);
         DialogueWriter.OnLineSubstringChange = UpdateText;
-        DialogueWriter.OnLineFinished = ReadInput;
+        DialogueWriter.OnLinePause = ReadInput;
         DialogueWriter.OnDialogueFinish = Finish;
         while (finished == false)
         {
@@ -34,22 +34,21 @@ class Program
         return;
     }
 
-    private static void ReadInput(DialogueWriterProcessor sender)
+    private static void ReadInput(DialogueWriterProcessor process)
     {
         Console.ReadKey();
-        DialogueWriter.MoveNextLine(sender);
+        DialogueWriter.MoveNextLine(process);
     }
 
-    private static void Finish(DialogueWriterProcessor sender)
+    private static void Finish(DialogueWriterProcessor process)
     {
         finished = true; 
     }
 
-    private static void UpdateText(DialogueWriterProcessor sender)
+    private static void UpdateText(DialogueWriterProcessor process)
     {
-        var span = outputString.AsSpan();
-        span.Feed(sender);
-        outputString = span.ToString();
-        Console.Write(outputString);
+        outputString = outputString.Feed(process);
+        Console.SetCursorPosition(0, 0);
+        Console.Out.Write(outputString);
     }
 }
