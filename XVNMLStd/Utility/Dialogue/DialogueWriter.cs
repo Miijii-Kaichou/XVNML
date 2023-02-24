@@ -20,6 +20,8 @@ namespace XVNML.Utility.Dialogue
         public static DialogueWriterCallback? OnNextLine;
         public static DialogueWriterCallback? OnDialogueFinish;
 
+        public static int TotalProcesses => WriterProcesses.Length;
+
         private static Thread? dialogueWritingThread;
         private static CancellationTokenSource cancelationTokenSource = new CancellationTokenSource();
         private static bool IsInitialized = false;
@@ -49,7 +51,17 @@ namespace XVNML.Utility.Dialogue
         {
             if (WriterProcesses == null || WriterProcesses.Length == 0)
                 AllocateChannels();
-            Write(script, Array.IndexOf(WriterProcesses, WriterProcesses.Where(dwp => dwp == null).Single()));
+
+            int i = 0;
+
+            for(;i < WriterProcesses.Length;i++)
+            {
+                if (WriterProcesses[i] == null)
+                {
+                    Write(script, i);
+                    return;
+                }
+            }
         }
 
         /// <summary>

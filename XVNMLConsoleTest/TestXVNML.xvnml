@@ -5,7 +5,7 @@
           @ Okay... {delay::800|insert::"*insert name here*"|delay::2000|clear}Suit yourself.<<
      </dialogue>
      <dialogue name::"Second Line">
-          @ {set_text_speed::120}Delaying for 3 seconds...{delay::3000|new_line}Test was successful.<
+          @ {set_text_speed::1}Delaying for 3 seconds...{delay::3000|new_line}Test was successful.<
           @ Also testing{delay::500} a {insert::"PAUSE"|delay::500} macro, which will hold 
           the Dialogue Writer Process until there's a MoveNextLine call.<
           @ Press any key to continue this dialogue...{pause|new_line|clear}And show how 
