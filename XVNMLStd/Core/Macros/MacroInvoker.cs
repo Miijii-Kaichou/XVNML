@@ -15,23 +15,22 @@ namespace XVNML.Core.Macros
     {
         private static ConcurrentQueue<(string symbol, object[] args, MacroCallInfo info)> QueuedForRetry = new ConcurrentQueue<(string symbol, object[] args, MacroCallInfo info)>();
 
-        static MacroInvoker()
-        {
-            Timer timer = new Timer(10);
-            timer.Elapsed += CallRetries;
-            timer.AutoReset = true;
-            timer.Enabled = true;
-        }
+        private static bool[] IsBlocked;
 
-        private static void CallRetries(object sender, System.Timers.ElapsedEventArgs e)
+        internal static void Init()
         {
-            if (QueuedForRetry.IsEmpty) return;
-            QueuedForRetry.TryDequeue(out var call);
-            Call(call.symbol, call.args, call.info);
+            IsBlocked = new bool[DialogueWriter.TotalProcesses];
         }
 
         internal static void Call(string macroSymbol, object[] args, MacroCallInfo info)
         {
+            if (IsBlocked[info.process.ID])
+            {
+                Thread.Sleep(10);
+                Call(macroSymbol, args, info);
+                return;
+            }
+
             var targetMacro = DefinedMacrosCollection.ValidMacros?[macroSymbol];
 
             args = ResolveMacroArgumentTypes(targetMacro, args);
@@ -88,6 +87,16 @@ namespace XVNML.Core.Macros
             {
                 Call(macroSymbol, args, source);
             }
+        }
+
+        internal static void Block(DialogueWriterProcessor process)
+        {
+            IsBlocked[process.ID] = true;
+        }
+
+        internal static void UnBlock(DialogueWriterProcessor process)
+        {
+            IsBlocked[process.ID] = false;
         }
     }
 }

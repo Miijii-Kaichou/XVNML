@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Text;
 using System.Timers;
 using XVNML.Core.Dialogue;
+using XVNML.Core.Macros;
+using XVNML.Utility.Dialogue;
 
 namespace XVNML.Core.Dialogue
 {
@@ -80,14 +82,15 @@ namespace XVNML.Core.Dialogue
 
         internal void Pause()
         {
-            WasControlledPause = true;      
+            MacroInvoker.Block(this);
+            WasControlledPause = true;
+            DialogueWriter.OnLinePause?[ID]?.Invoke(this);
         }
 
         internal void Unpause()
         {
+            MacroInvoker.UnBlock(this);
             WasControlledPause = false;
-            if (linePosition > currentLine.Content?.Length - 1) return;
-            CurrentLetter = currentLine?.Content?[linePosition];
         }
         internal void Feed()
         {
@@ -99,16 +102,17 @@ namespace XVNML.Core.Dialogue
 
         internal void Wait(uint milliseconds)
         {
+            MacroInvoker.Block(this);
             delayTimer = new Timer(milliseconds);
             delayTimer.Elapsed += OnTimedEvent;
             delayTimer.AutoReset = false;
-            delayTimer.Enabled = true;          
+            delayTimer.Enabled = true;
         }
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
+            MacroInvoker.UnBlock(this);
             delayTimer = null;
-            CurrentLetter = currentLine?.Content?[linePosition];
         }
 
         internal static DialogueWriterProcessor? Initialize(DialogueScript input, int id)

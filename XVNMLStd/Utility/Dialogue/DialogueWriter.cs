@@ -10,6 +10,7 @@ using System.Text;
 using Timer = System.Timers.Timer;
 using static System.Net.Mime.MediaTypeNames;
 using System.Collections.Concurrent;
+using XVNML.Core.Macros;
 
 namespace XVNML.Utility.Dialogue
 {
@@ -103,6 +104,7 @@ namespace XVNML.Utility.Dialogue
             cancelationTokenSource = new CancellationTokenSource();
             IsInitialized = true;
             dialogueWritingThread = new Thread(new ParameterizedThreadStart(WriterThread));
+            MacroInvoker.Init();
             dialogueWritingThread.Start(cancelationTokenSource);
         }
 
@@ -140,7 +142,7 @@ namespace XVNML.Utility.Dialogue
 
                 if (ProcessStalling![process.ID]) return;
 
-                if (WaitingForUnpauseCue[process.ID] == false && process.WasControlledPause)
+                if (WaitingForUnpauseCue![process.ID] == false && process.WasControlledPause)
                 {
                     WaitingForUnpauseCue[process.ID] = true;
                     OnLinePause?[process!.ID]?.Invoke(process!);
@@ -152,11 +154,6 @@ namespace XVNML.Utility.Dialogue
 
                 if (process.linePosition > process.currentLine.Content?.Length - 1)
                 {
-                    if (IsRestricting(process))
-                    {
-                        OnLinePause?[process.ID]?.Invoke(process!);
-                        return;
-                    }
                     process.IsPaused = true;
                     WriterProcesses![process.ID] = process;
                     OnLineSubstringChange?[process.ID]?.Invoke(process);
@@ -174,13 +171,11 @@ namespace XVNML.Utility.Dialogue
 
                 void UpdateSubString(DialogueWriterProcessor process)
                 {
-                    if (IsRestricting(process)) return;
                     process.CurrentLetter = process.currentLine?.Content?[process.linePosition];
                     WriterProcesses![process.ID] = process;
                     OnLineSubstringChange?[process!.ID]?.Invoke(process);
                     Yield(process);
                 }
-
             }
         }
         internal static bool IsRestricting(DialogueWriterProcessor process)
