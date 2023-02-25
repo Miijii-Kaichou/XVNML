@@ -9,6 +9,8 @@ using XVNML.XVNMLUtility.Tags;
 using XVNML.Core.Macros;
 using XVNML.Utility.Macros;
 using XVNML.Utility.Dialogue;
+using System.Threading;
+using System.Dynamic;
 
 namespace XVNML.Core.Dialogue
 {
@@ -73,15 +75,14 @@ namespace XVNML.Core.Dialogue
 
         internal void ReadPosAndExecute(DialogueWriterProcessor process)
         {
+
             macroInvocationList
                 .Where(macro => macro.blockPosition.Equals(process.linePosition))
                 .ToList()
                 .ForEach(macro =>
                 {
-                    if (DialogueWriter.WaitingForUnpauseQueue) return;
-                    if (process.IsOnDelay || process.WasControlledPause) return;
-                    macro.Call(new MacroCallInfo() { source = process });
-                 });
+                    macro.Call(new MacroCallInfo() { process = process });
+                });
         }
 
         /// <summary>

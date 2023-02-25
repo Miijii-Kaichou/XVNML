@@ -12,23 +12,34 @@ namespace XVNML.Core.Dialogue
         internal static DialogueWriterProcessor Instance { get; private set; }
 
         public int ID { get; internal set; }
-        public string? DisplayingContent => _processBuilder.ToString();
+        public string? DisplayingContent
+        {
+            get
+            {
+                lock(processLock)
+                {
+                    return _processBuilder.ToString();
+                }
+            }
+        }
         public bool WasControlledPause { get; private set; }
         public uint ProcessRate { get; internal set; } = 60;
+        public bool IsPaused { get; internal set; }
 
         public static bool IsStagnant => Instance.lineProcesses.Count == 0;
 
         internal ConcurrentQueue<DialogueLine> lineProcesses = new ConcurrentQueue<DialogueLine>();
         internal DialogueLine? currentLine;
-        internal bool isPaused;
         internal bool doDetain;
         internal int linePosition;
 
         internal bool IsOnDelay => delayTimer != null;
 
-        private  StringBuilder _processBuilder;
+        private StringBuilder _processBuilder = new StringBuilder();
         private char? _currentLetter;
         private Timer? delayTimer;
+
+        internal object processLock = new object();
 
         internal char? CurrentLetter
         {
@@ -48,13 +59,18 @@ namespace XVNML.Core.Dialogue
         }
 
         internal void Append(string text)
-        {
-            _processBuilder.Append(text);
+        {lock (processLock)
+            {
+                _processBuilder.Append(text);
+            }
         }
 
         internal void Append(char letter)
         {
-            _processBuilder.Append(letter);
+            lock (processLock)
+            {
+                _processBuilder.Append(letter);
+            }
         }
 
         internal void Clear()
@@ -64,18 +80,21 @@ namespace XVNML.Core.Dialogue
 
         internal void Pause()
         {
-            WasControlledPause = true;
-            
+            WasControlledPause = true;      
         }
 
         internal void Unpause()
         {
             WasControlledPause = false;
+            if (linePosition > currentLine.Content?.Length - 1) return;
             CurrentLetter = currentLine?.Content?[linePosition];
         }
         internal void Feed()
         {
-            _processBuilder.Append(CurrentLetter);
+            lock (processLock)
+            {
+                _processBuilder.Append(CurrentLetter);
+            }
         }
 
         internal void Wait(uint milliseconds)
@@ -83,7 +102,7 @@ namespace XVNML.Core.Dialogue
             delayTimer = new Timer(milliseconds);
             delayTimer.Elapsed += OnTimedEvent;
             delayTimer.AutoReset = false;
-            delayTimer.Enabled = true;
+            delayTimer.Enabled = true;          
         }
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
@@ -104,7 +123,7 @@ namespace XVNML.Core.Dialogue
                 currentLine = null,
                 CurrentLetter = null,
                 linePosition = -1,
-                isPaused = false,
+                IsPaused = false,
                 doDetain = false
             };
 

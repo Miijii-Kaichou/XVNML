@@ -20,9 +20,9 @@ class Program
         var dialogue2 = name?.Root?.GetElement<Dialogue>(1)?.dialogueOutput;
 
         DialogueWriter.Write(dialogue2, 0);
-        DialogueWriter.OnLineSubstringChange = UpdateText;
-        DialogueWriter.OnLinePause = ReadInput;
-        DialogueWriter.OnDialogueFinish = Finish;
+        DialogueWriter.OnLineSubstringChange[0] = UpdateText;
+        DialogueWriter.OnLinePause[0] = ReadInput;
+        DialogueWriter.OnDialogueFinish[0] = Finish;
         while (finished == false)
         {
             continue;
@@ -47,7 +47,7 @@ class Program
 
     private static void UpdateText(DialogueWriterProcessor process)
     {
-        outputString = outputString.Feed(process);
+        outputString = process.DisplayingContent;
         Console.SetCursorPosition(0, 0);
         Console.Out.Write(outputString);
     }

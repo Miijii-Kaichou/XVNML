@@ -9,6 +9,7 @@ using XVNML.Core.Dialogue;
 using System.Text;
 using Timer = System.Timers.Timer;
 using static System.Net.Mime.MediaTypeNames;
+using System.Collections.Concurrent;
 
 namespace XVNML.Utility.Dialogue
 {
@@ -16,22 +17,23 @@ namespace XVNML.Utility.Dialogue
 
     public static class DialogueWriter
     {
-        public static DialogueWriterCallback? OnLineStart;
-        public static DialogueWriterCallback? OnLineSubstringChange;
-        public static DialogueWriterCallback? OnLinePause;
-        public static DialogueWriterCallback? OnNextLine;
-        public static DialogueWriterCallback? OnDialogueFinish;
+        public static DialogueWriterCallback?[]? OnLineStart;
+        public static DialogueWriterCallback?[]? OnLineSubstringChange;
+        public static DialogueWriterCallback?[]? OnLinePause;
+        public static DialogueWriterCallback?[]? OnNextLine;
+        public static DialogueWriterCallback?[]? OnDialogueFinish;
 
-        public static int TotalProcesses => WriterProcesses.Length;
-        
-        internal static DialogueWriterProcessor?[] WriterProcesses { get; private set; }
-        internal static bool WaitingForUnpauseQueue { get; private set; }
+        public static int TotalProcesses => WriterProcesses!.Length;
+
+        internal static DialogueWriterProcessor?[]? WriterProcesses { get; private set; }
+        internal static bool[]? WaitingForUnpauseCue { get; private set; }
 
         private static Thread? dialogueWritingThread;
         private static CancellationTokenSource cancelationTokenSource = new CancellationTokenSource();
         private static bool IsInitialized = false;
-        private static Timer[] ProcessTimers;
-        private static bool[] ProcessStalling;
+        private static Timer[]? ProcessTimers;
+        private static bool[]? ProcessStalling;
+        private static ConcurrentQueue<string> LogQueue = new ConcurrentQueue<string>();
 
         private const int DefaultTotalChannelsAllocated = 12;
 
@@ -43,10 +45,18 @@ namespace XVNML.Utility.Dialogue
         public static void AllocateChannels(int totalChannels = DefaultTotalChannelsAllocated)
         {
             if (IsInitialized) return;
-            totalChannels = totalChannels == 0 ? DefaultTotalChannelsAllocated : totalChannels;
+
+            totalChannels = totalChannels < 1 ? DefaultTotalChannelsAllocated : totalChannels;
+
             WriterProcesses = new DialogueWriterProcessor[totalChannels];
             ProcessTimers = new Timer[totalChannels];
             ProcessStalling = new bool[totalChannels];
+            OnLineStart = new DialogueWriterCallback[totalChannels];
+            OnLineSubstringChange = new DialogueWriterCallback[totalChannels];
+            OnLinePause = new DialogueWriterCallback[totalChannels];
+            OnNextLine = new DialogueWriterCallback[totalChannels];
+            OnDialogueFinish = new DialogueWriterCallback[totalChannels];
+            WaitingForUnpauseCue = new bool[totalChannels];
         }
 
         /// <summary>
@@ -60,7 +70,7 @@ namespace XVNML.Utility.Dialogue
 
             int i = 0;
 
-            for(;i < WriterProcesses.Length;i++)
+            for (; i < WriterProcesses!.Length; i++)
             {
                 if (WriterProcesses[i] == null)
                 {
@@ -84,7 +94,7 @@ namespace XVNML.Utility.Dialogue
 
             if (IsInitialized == false) Initialize();
 
-            WriterProcesses[channel] = newProcess;
+            WriterProcesses![channel] = newProcess;
         }
 
 
@@ -101,82 +111,90 @@ namespace XVNML.Utility.Dialogue
             CancellationToken cancelationToken = ((CancellationTokenSource)obj).Token;
             while (IsInitialized && !cancelationToken.IsCancellationRequested)
             {
-                Parallel.ForEach<DialogueWriterProcessor>(WriterProcesses!, ProcessLine);
-                Thread.Sleep(100);
+
+                Parallel.ForEach<DialogueWriterProcessor>(WriterProcesses!, dwp =>
+                {
+                    if (dwp == null) return;
+                    ProcessLine(dwp);
+                });
+
             }
         }
 
         private static void ProcessLine(DialogueWriterProcessor process)
         {
-            // We don't need to read the dialogue
-            // if the line stack is 0;
-            if (process == null) return;
-            if (process.lineProcesses.Count == 0) return;
-            if (process.isPaused) return;
-
-            if (process.currentLine == null)
+            lock (process.processLock)
             {
-                Console.Clear();
-                process.lineProcesses.TryDequeue(out process.currentLine);
-                OnLineStart?.Invoke(process);
-            }
+                if (process == null) return;
+                int id = process.ID;
 
-            // We can now add to the currently displayed screen
-            process.linePosition = -1;
-            while (process.isPaused == false)
-            {
-                if (ProcessStalling[process.ID]) continue;
+                if (process.lineProcesses.Count == 0 && process.currentLine == null) return;
+                if (IsRestricting(process)) return;
 
-                // Don't do anything if you are on delay
-                if (process.IsOnDelay || WaitingForUnpauseQueue)
+                if (process.currentLine == null)
                 {
-                    Yield(process);
-                    continue;
+                    Reset(process);
+                    process.lineProcesses.TryDequeue(out process.currentLine);
+                    OnLineStart?[process.ID]?.Invoke(process);
                 }
 
-                if (WaitingForUnpauseQueue == false && process.WasControlledPause)
+                if (ProcessStalling![process.ID]) return;
+
+                if (WaitingForUnpauseCue[process.ID] == false && process.WasControlledPause)
                 {
-                    WaitingForUnpauseQueue = true;
-                    OnLinePause?.Invoke(process!);
-                    continue;
+                    WaitingForUnpauseCue[process.ID] = true;
+                    OnLinePause?[process!.ID]?.Invoke(process!);
+                    return;
                 }
 
                 Next();
-
                 process.currentLine!.ReadPosAndExecute(process);
 
                 if (process.linePosition > process.currentLine.Content?.Length - 1)
                 {
-                    process.isPaused = true;
-                    WriterProcesses[process.ID] = process;
-                    OnLineSubstringChange?.Invoke(process);
-                    OnLinePause?.Invoke(process!);
+                    if (IsRestricting(process))
+                    {
+                        OnLinePause?[process.ID]?.Invoke(process!);
+                        return;
+                    }
+                    process.IsPaused = true;
+                    WriterProcesses![process.ID] = process;
+                    OnLineSubstringChange?[process.ID]?.Invoke(process);
+                    OnLinePause?[process.ID]?.Invoke(process!);
                     return;
                 }
 
                 UpdateSubString(process);
-            }
 
-            void Next()
-            {
-                if (process.IsOnDelay || WaitingForUnpauseQueue) return;
-                process.linePosition++;
-            }
+                void Next()
+                {
+                    if (IsRestricting(process)) return;
+                    process.linePosition++;
+                }
 
-            void UpdateSubString(DialogueWriterProcessor process)
-            {
-                if (process.IsOnDelay) return;
-                if (WaitingForUnpauseQueue) return;
-                if (process.IsOnDelay || process.WasControlledPause) return;
-                process.CurrentLetter = process.currentLine?.Content?[process.linePosition];
-                WriterProcesses[process.ID] = process;
-                OnLineSubstringChange?.Invoke(process);
-                Yield(process);
+                void UpdateSubString(DialogueWriterProcessor process)
+                {
+                    if (IsRestricting(process)) return;
+                    process.CurrentLetter = process.currentLine?.Content?[process.linePosition];
+                    WriterProcesses![process.ID] = process;
+                    OnLineSubstringChange?[process!.ID]?.Invoke(process);
+                    Yield(process);
+                }
+
             }
+        }
+        internal static bool IsRestricting(DialogueWriterProcessor process)
+        {
+
+            if (process.IsPaused) return true;
+            if (process.WasControlledPause) return true;
+            if (process.IsOnDelay || WaitingForUnpauseCue![process.ID]) return true;
+            return false;
         }
 
         private static void Yield(DialogueWriterProcessor process)
         {
+
             ProcessStalling[process.ID] = true;
             ProcessTimers[process.ID] = new Timer(process.ProcessRate);
             ProcessTimers[process.ID].AutoReset = false;
@@ -190,7 +208,7 @@ namespace XVNML.Utility.Dialogue
 
         private static void DialogueWriter_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            ProcessStalling[(int)sender] = false;
+            ProcessStalling![(int)sender] = false;
         }
 
         public static void ShutDown()
@@ -200,44 +218,51 @@ namespace XVNML.Utility.Dialogue
 
         public static void MoveNextLine(DialogueWriterProcessor process)
         {
+
             if (process.WasControlledPause)
             {
-                WaitingForUnpauseQueue = false;
                 process.Unpause();
-                WriterProcesses[process.ID] = process;
+                WaitingForUnpauseCue![process.ID] = false;
+                WriterProcesses![process.ID] = process;
                 return;
             }
-            if (process.isPaused == false) return;
+            if (process.IsPaused == false) return;
+            process.IsPaused = false;
             if (process.lineProcesses.Count == 0)
             {
                 // That was the last dialogue
-                OnDialogueFinish?.Invoke(process);
+                OnDialogueFinish?[process!.ID]?.Invoke(process);
                 Reset(process);
                 return;
             }
-            OnNextLine?.Invoke(process);
+            OnNextLine?[process.ID]?.Invoke(process);
             Reset(process);
         }
 
         private static void Reset(DialogueWriterProcessor process)
         {
-            
-            process.Clear();
-            process.currentLine = null;
-            process.CurrentLetter = null;
-            process.isPaused = false;
+            lock (process.processLock)
+            {
+                process.currentLine = null;
+                process.CurrentLetter = null;
+                process.linePosition = -1;
+                process.Clear();
+            }
         }
 
-        #region Extensions
-        public static string Feed(this string text, DialogueWriterProcessor process)
+        public static void CollectLog(out string? message)
         {
-            if (IsInitialized == false) Initialize();
-            if (WaitingForUnpauseQueue) return text;
-            if (process.IsOnDelay || process.WasControlledPause) return text;
-            text = process.DisplayingContent!;
-            return text;
+            if (LogQueue.Count == 0)
+            {
+                message = null;
+                return;
+            }
+            LogQueue.TryDequeue(out message);
         }
 
-        #endregion
+        internal static void WriteLog(string message)
+        {
+            LogQueue.Enqueue(message);
+        }
     }
 }

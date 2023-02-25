@@ -4,6 +4,6 @@ namespace XVNML.Utility.Macros
 {
     public struct MacroCallInfo
     {
-        public DialogueWriterProcessor source;
+        public DialogueWriterProcessor process;
     }
 }
