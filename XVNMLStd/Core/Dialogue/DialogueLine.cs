@@ -74,15 +74,12 @@ namespace XVNML.Core.Dialogue
         internal int textRate;
         private const int _DefaultPromptCapacity = 4;
 
-        internal async void ReadPosAndExecute(DialogueWriterProcessor process)
+        internal async Task ReadPosAndExecute(DialogueWriterProcessor process)
         {
-            macroInvocationList
+            var list = macroInvocationList
                 .Where(macro => macro.blockPosition.Equals(process.linePosition))
-                .ToList()
-                .ForEach(macro =>
-                {
-                    macro.Call(new MacroCallInfo() { process = process });
-                });
+                .Select(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.linePosition }));
+            await Task.WhenAll(list);
         }
 
         /// <summary>

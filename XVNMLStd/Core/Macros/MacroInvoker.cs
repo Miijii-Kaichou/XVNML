@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading.Tasks;
 using XVNML.Core.Dialogue;
 using XVNML.Utility.Dialogue;
@@ -11,31 +12,30 @@ namespace XVNML.Core.Macros
 {
     internal static class MacroInvoker
     {
-        private static ConcurrentQueue<(string symbol, object[] args, MacroCallInfo info)> QueuedForRetry = new ConcurrentQueue<(string symbol, object[] args, MacroCallInfo info)>();
-
-        private static bool[] IsBlocked;
+        private static bool[] IsBlocked = new bool[0];
 
         internal static void Init()
         {
             IsBlocked = new bool[DialogueWriter.TotalProcesses];
         }
 
-        internal static void Call(string macroSymbol, object[] args, MacroCallInfo info)
+        internal static async Task Call(string macroSymbol, object[] args, MacroCallInfo info)
         {
-            while (IsBlocked[info.process.ID])
+            await Task.Run(() =>
             {
-                continue;
-            }
+                while (IsBlocked[info.process.ID])
+                {
+                    continue;
+                }
 
-            var targetMacro = DefinedMacrosCollection.ValidMacros?[macroSymbol];
+                var targetMacro = DefinedMacrosCollection.ValidMacros?[macroSymbol];
 
-            args = ResolveMacroArgumentTypes(targetMacro, args);
+                args = ResolveMacroArgumentTypes(targetMacro, args);
 
+                object[] finalArgs = FinalizeArgumentData(args, info);
 
-            object[] finalArgs = FinalizeArgumentData(args, info);
-
-            targetMacro?.method?.Invoke(info, finalArgs);
-
+                targetMacro?.method?.Invoke(info, finalArgs);
+            });
         }
 
         private static object[] FinalizeArgumentData(object[] args, MacroCallInfo info)
@@ -74,12 +74,10 @@ namespace XVNML.Core.Macros
             return args;
         }
 
-        internal static void Call(this MacroBlockInfo blockInfo, MacroCallInfo callInfo)
+        internal static async Task Call(this MacroBlockInfo blockInfo, MacroCallInfo callInfo)
         {
-            foreach(var info in blockInfo.macroCalls)
-            {             
-                Call(info.macroSymbol, info.args, callInfo);
-            };
+            var macros = blockInfo.macroCalls.Select(call => Call(call.macroSymbol, call.args, callInfo));
+            await Task.WhenAll(macros);
         }
 
         internal static void Block(DialogueWriterProcessor process)

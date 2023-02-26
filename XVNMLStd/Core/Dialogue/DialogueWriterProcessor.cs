@@ -24,6 +24,7 @@ namespace XVNML.Core.Dialogue
                 }
             }
         }
+
         public bool WasControlledPause { get; private set; }
         public uint ProcessRate { get; internal set; } = 60;
         public bool IsPaused { get; internal set; }
@@ -66,6 +67,7 @@ namespace XVNML.Core.Dialogue
             lock (processLock)
             {
                 _processBuilder.Append(text);
+                DialogueWriter.OnLineSubstringChange?[ID].Invoke(this);
             }
         }
 
@@ -74,6 +76,7 @@ namespace XVNML.Core.Dialogue
             lock (processLock)
             {
                 _processBuilder.Append(letter);
+                DialogueWriter.OnLineSubstringChange?[ID].Invoke(this);
             }
         }
 
@@ -88,7 +91,6 @@ namespace XVNML.Core.Dialogue
             WasControlledPause = true;
             DialogueWriter.WaitingForUnpauseCue![ID] = WasControlledPause;
             DialogueWriter.OnLinePause?[ID]?.Invoke(this);
-            StashLineState();
         }
 
         internal void Unpause()
@@ -106,7 +108,10 @@ namespace XVNML.Core.Dialogue
 
         internal void Feed()
         {
-            _processBuilder.Append(CurrentLetter);
+            lock (processLock)
+            {
+                _processBuilder.Append(CurrentLetter);
+            }
         }
 
         internal void Wait(uint milliseconds)
@@ -116,7 +121,6 @@ namespace XVNML.Core.Dialogue
             delayTimer.Elapsed += OnTimedEvent;
             delayTimer.AutoReset = false;
             delayTimer.Enabled = true;
-            StashLineState();
         }
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
