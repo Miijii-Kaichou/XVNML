@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using XVNML.Core.Dialogue;
@@ -24,20 +27,27 @@ namespace XVNML.Core.Macros
 
         internal static void Call(string macroSymbol, object[] args, MacroCallInfo info)
         {
-            if (IsBlocked[info.process.ID])
+            while (IsBlocked[info.process.ID])
             {
-                Thread.Sleep(10);
-                Call(macroSymbol, args, info);
-                return;
+                continue;
             }
 
             var targetMacro = DefinedMacrosCollection.ValidMacros?[macroSymbol];
 
             args = ResolveMacroArgumentTypes(targetMacro, args);
 
+
             object[] finalArgs = FinalizeArgumentData(args, info);
 
             targetMacro?.method?.Invoke(info, finalArgs);
+
+        }
+
+        private static void AttemptRetries()
+        {
+            if (QueuedForRetry.IsEmpty) return;
+            QueuedForRetry.TryDequeue(out var task);
+            Call(task.symbol, task.args, task.info);
         }
 
         private static void SendForRetry((string, object[], MacroCallInfo) retryData)
@@ -45,9 +55,9 @@ namespace XVNML.Core.Macros
             QueuedForRetry.Enqueue(retryData);
         }
 
-        private static object[] FinalizeArgumentData(object[] args, MacroCallInfo source)
+        private static object[] FinalizeArgumentData(object[] args, MacroCallInfo info)
         {
-            var value = source;
+            var value = info;
             object[] finalArgs = new object[args.Length + 1];
 
             for (int i = 0; i < finalArgs.Length; i++)
@@ -81,12 +91,18 @@ namespace XVNML.Core.Macros
             return args;
         }
 
-        internal static void Call(this MacroBlockInfo info, MacroCallInfo source)
+        internal static void Call(this MacroBlockInfo blockInfo, MacroCallInfo callInfo)
         {
-            foreach ((string macroSymbol, object[] args) in info.macroCalls)
+            if (QueuedForRetry.IsEmpty == false)
             {
-                Call(macroSymbol, args, source);
+                AttemptRetries();
+                return;
             }
+
+            Parallel.ForEach(blockInfo.macroCalls, info =>
+            {             
+                Call(info.macroSymbol, info.args, callInfo);
+            });
         }
 
         internal static void Block(DialogueWriterProcessor process)

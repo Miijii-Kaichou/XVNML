@@ -108,76 +108,77 @@ namespace XVNML.Utility.Dialogue
             dialogueWritingThread.Start(cancelationTokenSource);
         }
 
-        private static void WriterThread(object obj)
+        private static async void WriterThread(object obj)
         {
             CancellationToken cancelationToken = ((CancellationTokenSource)obj).Token;
             while (IsInitialized && !cancelationToken.IsCancellationRequested)
             {
-
-                Parallel.ForEach<DialogueWriterProcessor>(WriterProcesses!, dwp =>
+                foreach(var dwp in WriterProcesses!)
                 {
-                    if (dwp == null) return;
-                    ProcessLine(dwp);
-                });
-
+                    await Task.Run(() =>
+                    {
+                        if (dwp == null) return;
+                        ProcessLine(dwp);
+                    });
+                };
             }
         }
 
-        private static void ProcessLine(DialogueWriterProcessor process)
+        private static async void ProcessLine(DialogueWriterProcessor process)
         {
-            lock (process.processLock)
+            if (process == null) return;
+            int id = process.ID;
+
+            if (process.lineProcesses.Count == 0 && process.currentLine == null) return;
+            if (IsRestricting(process)) return;
+
+            if (process.currentLine == null)
             {
-                if (process == null) return;
-                int id = process.ID;
+                Reset(process);
+                process.lineProcesses.TryDequeue(out process.currentLine);
+                OnLineStart?[process.ID]?.Invoke(process);
+            }
 
-                if (process.lineProcesses.Count == 0 && process.currentLine == null) return;
+            if (ProcessStalling![process.ID]) return;
+
+            if (WaitingForUnpauseCue![process.ID] == false && process.WasControlledPause)
+            {
+                WaitingForUnpauseCue[process.ID] = true;
+                OnLinePause?[process!.ID]?.Invoke(process!);
+                return;
+            }
+
+            Next();
+            process.currentLine!.ReadPosAndExecute(process);
+
+            if (process.linePosition > process.currentLine.Content?.Length - 1)
+            {
                 if (IsRestricting(process)) return;
+                process.IsPaused = true;
+                WriterProcesses![process.ID] = process;
+                OnLineSubstringChange?[process.ID]?.Invoke(process);
+                OnLinePause?[process.ID]?.Invoke(process!);
+                return;
+            }
 
-                if (process.currentLine == null)
-                {
-                    Reset(process);
-                    process.lineProcesses.TryDequeue(out process.currentLine);
-                    OnLineStart?[process.ID]?.Invoke(process);
-                }
+            UpdateSubString(process);
 
-                if (ProcessStalling![process.ID]) return;
+            void Next()
+            {
+                if (IsRestricting(process)) return;
+                process.linePosition++;
+            }
 
-                if (WaitingForUnpauseCue![process.ID] == false && process.WasControlledPause)
-                {
-                    WaitingForUnpauseCue[process.ID] = true;
-                    OnLinePause?[process!.ID]?.Invoke(process!);
-                    return;
-                }
-
-                Next();
-                process.currentLine!.ReadPosAndExecute(process);
-
-                if (process.linePosition > process.currentLine.Content?.Length - 1)
-                {
-                    process.IsPaused = true;
-                    WriterProcesses![process.ID] = process;
-                    OnLineSubstringChange?[process.ID]?.Invoke(process);
-                    OnLinePause?[process.ID]?.Invoke(process!);
-                    return;
-                }
-
-                UpdateSubString(process);
-
-                void Next()
-                {
-                    if (IsRestricting(process)) return;
-                    process.linePosition++;
-                }
-
-                void UpdateSubString(DialogueWriterProcessor process)
-                {
-                    process.CurrentLetter = process.currentLine?.Content?[process.linePosition];
-                    WriterProcesses![process.ID] = process;
-                    OnLineSubstringChange?[process!.ID]?.Invoke(process);
-                    Yield(process);
-                }
+            void UpdateSubString(DialogueWriterProcessor process)
+            {
+                if(IsRestricting(process)) return;
+                process.CurrentLetter = process.currentLine?.Content?[process.linePosition];
+                WriterProcesses![process.ID] = process;
+                OnLineSubstringChange?[process!.ID]?.Invoke(process);
+                Yield(process);
             }
         }
+
         internal static bool IsRestricting(DialogueWriterProcessor process)
         {
 

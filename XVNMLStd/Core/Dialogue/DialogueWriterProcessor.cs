@@ -91,6 +91,8 @@ namespace XVNML.Core.Dialogue
         {
             MacroInvoker.UnBlock(this);
             WasControlledPause = false;
+            if (linePosition > currentLine?.Content?.Length - 1) return;
+            CurrentLetter = currentLine?.Content?[linePosition];
         }
         internal void Feed()
         {
@@ -113,6 +115,8 @@ namespace XVNML.Core.Dialogue
         {
             MacroInvoker.UnBlock(this);
             delayTimer = null;
+            if (linePosition > currentLine?.Content?.Length - 1) return;
+            CurrentLetter = currentLine?.Content?[linePosition];
         }
 
         internal static DialogueWriterProcessor? Initialize(DialogueScript input, int id)
