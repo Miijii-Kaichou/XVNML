@@ -76,8 +76,13 @@ namespace XVNML.Core.Macros
 
         internal static async Task Call(this MacroBlockInfo blockInfo, MacroCallInfo callInfo)
         {
-            var macros = blockInfo.macroCalls.Select(call => Call(call.macroSymbol, call.args, callInfo));
-            await Task.WhenAll(macros);
+            await Task.Run(async () =>
+            {
+                foreach (var (macroSymbol, args) in blockInfo.macroCalls)
+                {
+                    await Call(macroSymbol, args, callInfo);
+                };
+            });
         }
 
         internal static void Block(DialogueWriterProcessor process)
