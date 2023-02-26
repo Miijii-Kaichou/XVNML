@@ -5,16 +5,16 @@
           @ Okay... {delay::800|insert::"*insert name here*"|delay::2000|clear}Suit yourself.<<
      </dialogue>
      <dialogue name::"Second Line">
-          @ {set_text_speed::60}Delaying for 3 seconds...{delay::3000|new_line}Test was successful.<
+          @ {set_text_speed::100}Delaying for 3 seconds...{delay::3000|clear}Test was successful.<
           @ Ready... {pause|insert::"BOOM!"}<
           @ And also...{delay::2000}<
           @ Also testing{delay::500} a{insert::" PAUSE"|delay::500} macro, which will hold 
           the Dialogue Writer Process until there's a MoveNextLine call.<
-          @ Press any key to continue this dialogue...{pause|new_line|clear}And show how 
+          @ Press any key to continue this dialogue...{pause|new_line}And show how 
           cool this is.<
           @ Testing your knowledge...{pause|clear}
           Is this a new dialogue...{pause|clear}
-          Or...{delay::250} Am I just using {curly}pause{pipe}clear{curly_end}
+          Or...{delay::250} Am I just using {curly}pause{pipe}clear{curly_end} 
           as a Macro Block?<
           @ You may now close your window.<<
      </dialogue>

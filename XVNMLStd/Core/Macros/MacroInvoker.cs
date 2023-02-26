@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Numerics;
-using System.Threading;
 using System.Threading.Tasks;
 using XVNML.Core.Dialogue;
 using XVNML.Utility.Dialogue;
@@ -41,18 +36,6 @@ namespace XVNML.Core.Macros
 
             targetMacro?.method?.Invoke(info, finalArgs);
 
-        }
-
-        private static void AttemptRetries()
-        {
-            if (QueuedForRetry.IsEmpty) return;
-            QueuedForRetry.TryDequeue(out var task);
-            Call(task.symbol, task.args, task.info);
-        }
-
-        private static void SendForRetry((string, object[], MacroCallInfo) retryData)
-        {
-            QueuedForRetry.Enqueue(retryData);
         }
 
         private static object[] FinalizeArgumentData(object[] args, MacroCallInfo info)
@@ -93,16 +76,10 @@ namespace XVNML.Core.Macros
 
         internal static void Call(this MacroBlockInfo blockInfo, MacroCallInfo callInfo)
         {
-            if (QueuedForRetry.IsEmpty == false)
-            {
-                AttemptRetries();
-                return;
-            }
-
-            Parallel.ForEach(blockInfo.macroCalls, info =>
+            foreach(var info in blockInfo.macroCalls)
             {             
                 Call(info.macroSymbol, info.args, callInfo);
-            });
+            };
         }
 
         internal static void Block(DialogueWriterProcessor process)

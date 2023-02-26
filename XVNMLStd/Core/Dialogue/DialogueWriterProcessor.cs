@@ -18,7 +18,7 @@ namespace XVNML.Core.Dialogue
         {
             get
             {
-                lock(processLock)
+                lock (processLock)
                 {
                     return _processBuilder.ToString();
                 }
@@ -49,7 +49,8 @@ namespace XVNML.Core.Dialogue
             {
                 return _currentLetter;
             }
-            set {
+            set
+            {
                 _currentLetter = value;
                 Feed();
             }
@@ -61,7 +62,8 @@ namespace XVNML.Core.Dialogue
         }
 
         internal void Append(string text)
-        {lock (processLock)
+        {
+            lock (processLock)
             {
                 _processBuilder.Append(text);
             }
@@ -84,22 +86,27 @@ namespace XVNML.Core.Dialogue
         {
             MacroInvoker.Block(this);
             WasControlledPause = true;
+            DialogueWriter.WaitingForUnpauseCue![ID] = WasControlledPause;
             DialogueWriter.OnLinePause?[ID]?.Invoke(this);
+            StashLineState();
         }
 
         internal void Unpause()
         {
             MacroInvoker.UnBlock(this);
             WasControlledPause = false;
+            DialogueWriter.WaitingForUnpauseCue![ID] = WasControlledPause;
+        }
+
+        private void StashLineState()
+        {
             if (linePosition > currentLine?.Content?.Length - 1) return;
             CurrentLetter = currentLine?.Content?[linePosition];
         }
+
         internal void Feed()
         {
-            lock (processLock)
-            {
-                _processBuilder.Append(CurrentLetter);
-            }
+            _processBuilder.Append(CurrentLetter);
         }
 
         internal void Wait(uint milliseconds)
@@ -109,14 +116,13 @@ namespace XVNML.Core.Dialogue
             delayTimer.Elapsed += OnTimedEvent;
             delayTimer.AutoReset = false;
             delayTimer.Enabled = true;
+            StashLineState();
         }
 
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
             MacroInvoker.UnBlock(this);
             delayTimer = null;
-            if (linePosition > currentLine?.Content?.Length - 1) return;
-            CurrentLetter = currentLine?.Content?[linePosition];
         }
 
         internal static DialogueWriterProcessor? Initialize(DialogueScript input, int id)
@@ -135,12 +141,12 @@ namespace XVNML.Core.Dialogue
                 doDetain = false
             };
 
-            foreach(DialogueLine line in input.Lines)
+            foreach (DialogueLine line in input.Lines)
             {
                 Instance.lineProcesses.Enqueue(line);
             }
 
             return Instance;
         }
-    } 
+    }
 }

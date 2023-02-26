@@ -113,51 +113,48 @@ namespace XVNML.Utility.Dialogue
             CancellationToken cancelationToken = ((CancellationTokenSource)obj).Token;
             while (IsInitialized && !cancelationToken.IsCancellationRequested)
             {
-                foreach(var dwp in WriterProcesses!)
-                {
-                    await Task.Run(() =>
-                    {
-                        if (dwp == null) return;
-                        ProcessLine(dwp);
-                    });
-                };
+                await DoConcurrentDialogueProcesses();
             }
         }
 
-        private static async void ProcessLine(DialogueWriterProcessor process)
+        private static async Task DoConcurrentDialogueProcesses()
+        {
+            foreach (var dwp in WriterProcesses!)
+            {
+                await Task.Run(() =>
+                {
+                    if (dwp == null) return;
+                    ProcessLine(dwp);
+                });
+            };
+        }
+
+        private static void ProcessLine(DialogueWriterProcessor process)
         {
             if (process == null) return;
             int id = process.ID;
 
             if (process.lineProcesses.Count == 0 && process.currentLine == null) return;
             if (IsRestricting(process)) return;
+            
 
             if (process.currentLine == null)
             {
-                Reset(process);
                 process.lineProcesses.TryDequeue(out process.currentLine);
-                OnLineStart?[process.ID]?.Invoke(process);
-            }
-
-            if (ProcessStalling![process.ID]) return;
-
-            if (WaitingForUnpauseCue![process.ID] == false && process.WasControlledPause)
-            {
-                WaitingForUnpauseCue[process.ID] = true;
-                OnLinePause?[process!.ID]?.Invoke(process!);
-                return;
+                OnLineStart?[id]?.Invoke(process);
             }
 
             Next();
+
             process.currentLine!.ReadPosAndExecute(process);
 
             if (process.linePosition > process.currentLine.Content?.Length - 1)
             {
                 if (IsRestricting(process)) return;
                 process.IsPaused = true;
-                WriterProcesses![process.ID] = process;
-                OnLineSubstringChange?[process.ID]?.Invoke(process);
-                OnLinePause?[process.ID]?.Invoke(process!);
+                WriterProcesses![id] = process;
+                OnLineSubstringChange?[id]?.Invoke(process);
+                OnLinePause?[id]?.Invoke(process!);
                 return;
             }
 
@@ -171,17 +168,17 @@ namespace XVNML.Utility.Dialogue
 
             void UpdateSubString(DialogueWriterProcessor process)
             {
-                if(IsRestricting(process)) return;
+                if (IsRestricting(process)) return;
                 process.CurrentLetter = process.currentLine?.Content?[process.linePosition];
-                WriterProcesses![process.ID] = process;
-                OnLineSubstringChange?[process!.ID]?.Invoke(process);
+                WriterProcesses![id] = process;
+                OnLineSubstringChange?[id]?.Invoke(process);
                 Yield(process);
             }
         }
 
         internal static bool IsRestricting(DialogueWriterProcessor process)
         {
-
+            if (ProcessStalling![process.ID]) return true;
             if (process.IsPaused) return true;
             if (process.WasControlledPause) return true;
             if (process.IsOnDelay || WaitingForUnpauseCue![process.ID]) return true;
@@ -190,9 +187,8 @@ namespace XVNML.Utility.Dialogue
 
         private static void Yield(DialogueWriterProcessor process)
         {
-
-            ProcessStalling[process.ID] = true;
-            ProcessTimers[process.ID] = new Timer(process.ProcessRate);
+            ProcessStalling![process.ID] = true;
+            ProcessTimers![process.ID] = new Timer(process.ProcessRate);
             ProcessTimers[process.ID].AutoReset = false;
             ProcessTimers[process.ID].Elapsed += (s, e) =>
             {
@@ -205,6 +201,7 @@ namespace XVNML.Utility.Dialogue
         private static void DialogueWriter_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             ProcessStalling![(int)sender] = false;
+
         }
 
         public static void ShutDown()
@@ -214,7 +211,6 @@ namespace XVNML.Utility.Dialogue
 
         public static void MoveNextLine(DialogueWriterProcessor process)
         {
-
             if (process.WasControlledPause)
             {
                 process.Unpause();
@@ -237,13 +233,10 @@ namespace XVNML.Utility.Dialogue
 
         private static void Reset(DialogueWriterProcessor process)
         {
-            lock (process.processLock)
-            {
-                process.currentLine = null;
-                process.CurrentLetter = null;
-                process.linePosition = -1;
-                process.Clear();
-            }
+            process.currentLine = null;
+            process.CurrentLetter = null;
+            process.linePosition = -1;
+            process.Clear();
         }
 
         public static void CollectLog(out string? message)
