@@ -71,10 +71,13 @@ namespace XVNML.Core.Dialogue
 
         internal void ReadPosAndExecute(DialogueWriterProcessor process)
         {
-            macroInvocationList
+            lock (process.processLock)
+            {
+                macroInvocationList
                 .Where(macro => macro.blockPosition.Equals(process.linePosition))
                 .ToList()
                 .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.linePosition }));
+            }
         }
 
         /// <summary>

@@ -25,22 +25,25 @@ namespace XVNML.Core.Macros
 
         internal static void Call(string macroSymbol, object[] args, MacroCallInfo info)
         {
-            if (IsBlocked[info.process.ID])
+            lock (info.process.processLock)
             {
-                SendForRetry((macroSymbol, args, info));
-                Thread.Sleep(10);
-                AttemptRetries();
-                return;
+                if (IsBlocked[info.process.ID])
+                {
+                    SendForRetry((macroSymbol, args, info));
+                    Thread.Sleep(10);
+                    AttemptRetries();
+                    return;
+                }
+
+
+                var targetMacro = DefinedMacrosCollection.ValidMacros?[macroSymbol];
+
+                args = ResolveMacroArgumentTypes(targetMacro, args);
+
+                object[] finalArgs = FinalizeArgumentData(args, info);
+
+                targetMacro?.method?.Invoke(info, finalArgs);
             }
-
-
-            var targetMacro = DefinedMacrosCollection.ValidMacros?[macroSymbol];
-
-            args = ResolveMacroArgumentTypes(targetMacro, args);
-
-            object[] finalArgs = FinalizeArgumentData(args, info);
-
-            targetMacro?.method?.Invoke(info, finalArgs);
         }
 
         private static void SendForRetry((string macroSymbol, object[] args, MacroCallInfo info) value)
@@ -86,11 +89,13 @@ namespace XVNML.Core.Macros
 
         internal static void Call(this MacroBlockInfo blockInfo, MacroCallInfo callInfo)
         {
-            
-            foreach (var (macroSymbol, args) in blockInfo.macroCalls)
+            lock (callInfo.process.processLock)
             {
-                Call(macroSymbol, args, callInfo);
-            };
+                foreach (var (macroSymbol, args) in blockInfo.macroCalls)
+                {
+                    Call(macroSymbol, args, callInfo);
+                };
+            }
         }
 
         private static void AttemptRetries()
