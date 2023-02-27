@@ -31,7 +31,7 @@ namespace XVNML.Utility.Dialogue
         internal static DialogueWriterProcessor?[]? WriterProcesses { get; private set; }
         internal static bool[]? WaitingForUnpauseCue { get; private set; }
 
-        private static Thread? dialogueWritingThread;
+        private static Thread? _writingThread;
         private static CancellationTokenSource cancelationTokenSource = new CancellationTokenSource();
         private static bool IsInitialized = false;
         private static Timer[]? ProcessTimers;
@@ -48,7 +48,7 @@ namespace XVNML.Utility.Dialogue
         public static void AllocateChannels(int totalChannels = DefaultTotalChannelsAllocated)
         {
             if (IsInitialized) return;
-
+            ThreadPool.SetMaxThreads(1, 1);
             totalChannels = totalChannels < 1 ? DefaultTotalChannelsAllocated : totalChannels;
 
             WriterProcesses = new DialogueWriterProcessor[totalChannels];
@@ -106,64 +106,63 @@ namespace XVNML.Utility.Dialogue
             Console.Clear();
             cancelationTokenSource = new CancellationTokenSource();
             IsInitialized = true;
-            dialogueWritingThread = new Thread(new ParameterizedThreadStart(WriterThread));
+            _writingThread = new Thread(new ParameterizedThreadStart(WriterThread));
             MacroInvoker.Init();
-            dialogueWritingThread.Start(cancelationTokenSource);
+            _writingThread.Start(cancelationTokenSource);
         }
 
-        private static async void WriterThread(object obj)
+        private static void WriterThread(object obj)
         {
             CancellationToken cancelationToken = ((CancellationTokenSource)obj).Token;
             while (IsInitialized && !cancelationToken.IsCancellationRequested)
             {
-                await DoConcurrentDialogueProcesses();
+                DoConcurrentDialogueProcesses();
             }
         }
 
-        private static async Task DoConcurrentDialogueProcesses()
+        private static void  DoConcurrentDialogueProcesses()
         {
             var processes = WriterProcesses!.Where(process => process != null).ToList();
-            foreach(var process in processes)
-            {
-                await ProcessLine(process!);
-            }
-        }
-
-        private static async Task ProcessLine(DialogueWriterProcessor process)
-        {
-            await Task.Run(async () =>
+            Parallel.ForEach(processes, process =>
             {
                 if (process == null) return;
-
-                int id = process.ID;
-
-                if (process.lineProcesses.Count == 0 && process.currentLine == null) return;
-                if (IsRestricting(process)) return;
-
-                if (process.currentLine == null)
-                {
-                    process.lineProcesses.TryDequeue(out process.currentLine);
-                    OnLineStart?[id]?.Invoke(process);
-                }
-
-                if (process.linePosition > process.currentLine.Content?.Length - 1)
-                {
-                    if (IsRestricting(process)) return;
-                    process.IsPaused = true;
-                    WriterProcesses![id] = process;
-                    OnLineSubstringChange?[id]?.Invoke(process);
-                    OnLinePause?[id]?.Invoke(process!);
-                    return;
-                }
-
-                Next(process);
-
-                await process.currentLine!.ReadPosAndExecute(process);
-
-                UpdateSubString(process);
-
-                Yield(process);
+                ProcessLine(process!);
             });
+        }
+
+        private static void ProcessLine(DialogueWriterProcessor process)
+        {
+
+            if (process == null) return;
+
+            int id = process.ID;
+
+            if (process.lineProcesses.Count == 0 && process.currentLine == null) return;
+            if (IsRestricting(process)) return;
+
+            if (process.currentLine == null)
+            {
+                process.lineProcesses.TryDequeue(out process.currentLine);
+                OnLineStart?[id]?.Invoke(process);
+            }
+
+            if (process.linePosition > process.currentLine.Content?.Length - 1)
+            {
+                if (IsRestricting(process)) return;
+                process.IsPaused = true;
+                WriterProcesses![id] = process;
+                OnLineSubstringChange?[id]?.Invoke(process);
+                OnLinePause?[id]?.Invoke(process!);
+                return;
+            }
+
+            Next(process);
+
+            process.currentLine!.ReadPosAndExecute(process);
+
+            UpdateSubString(process);
+
+            Yield(process);
         }
 
         private static void Next(DialogueWriterProcessor process)

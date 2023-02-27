@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Lexer;
-using XVNML.XVNMLUtility.Tags;
 using XVNML.Core.Macros;
 using XVNML.Utility.Macros;
-using XVNML.Utility.Dialogue;
-using System.Threading;
-using System.Dynamic;
 using System.Threading.Tasks;
 
 namespace XVNML.Core.Dialogue
@@ -74,12 +69,12 @@ namespace XVNML.Core.Dialogue
         internal int textRate;
         private const int _DefaultPromptCapacity = 4;
 
-        internal async Task ReadPosAndExecute(DialogueWriterProcessor process)
+        internal void ReadPosAndExecute(DialogueWriterProcessor process)
         {
-            var list = macroInvocationList
+            macroInvocationList
                 .Where(macro => macro.blockPosition.Equals(process.linePosition))
-                .Select(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.linePosition }));
-            await Task.WhenAll(list);
+                .ToList()
+                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.linePosition }));
         }
 
         /// <summary>

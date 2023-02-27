@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using XVNML.Core.Dialogue;
 using XVNML.Utility.Dialogue;
@@ -12,6 +14,8 @@ namespace XVNML.Core.Macros
 {
     internal static class MacroInvoker
     {
+        private static ConcurrentQueue<(string, object[], MacroCallInfo)> RetryQueue = new ConcurrentQueue<(string, object[], MacroCallInfo)>();
+
         private static bool[] IsBlocked = new bool[0];
 
         internal static void Init()
@@ -19,23 +23,29 @@ namespace XVNML.Core.Macros
             IsBlocked = new bool[DialogueWriter.TotalProcesses];
         }
 
-        internal static async Task Call(string macroSymbol, object[] args, MacroCallInfo info)
+        internal static void Call(string macroSymbol, object[] args, MacroCallInfo info)
         {
-            await Task.Run(() =>
+            if (IsBlocked[info.process.ID])
             {
-                while (IsBlocked[info.process.ID])
-                {
-                    continue;
-                }
+                SendForRetry((macroSymbol, args, info));
+                Thread.Sleep(10);
+                AttemptRetries();
+                return;
+            }
 
-                var targetMacro = DefinedMacrosCollection.ValidMacros?[macroSymbol];
 
-                args = ResolveMacroArgumentTypes(targetMacro, args);
+            var targetMacro = DefinedMacrosCollection.ValidMacros?[macroSymbol];
 
-                object[] finalArgs = FinalizeArgumentData(args, info);
+            args = ResolveMacroArgumentTypes(targetMacro, args);
 
-                targetMacro?.method?.Invoke(info, finalArgs);
-            });
+            object[] finalArgs = FinalizeArgumentData(args, info);
+
+            targetMacro?.method?.Invoke(info, finalArgs);
+        }
+
+        private static void SendForRetry((string macroSymbol, object[] args, MacroCallInfo info) value)
+        {
+            RetryQueue.Enqueue(value);
         }
 
         private static object[] FinalizeArgumentData(object[] args, MacroCallInfo info)
@@ -74,15 +84,20 @@ namespace XVNML.Core.Macros
             return args;
         }
 
-        internal static async Task Call(this MacroBlockInfo blockInfo, MacroCallInfo callInfo)
+        internal static void Call(this MacroBlockInfo blockInfo, MacroCallInfo callInfo)
         {
-            await Task.Run(async () =>
+            
+            foreach (var (macroSymbol, args) in blockInfo.macroCalls)
             {
-                foreach (var (macroSymbol, args) in blockInfo.macroCalls)
-                {
-                    await Call(macroSymbol, args, callInfo);
-                };
-            });
+                Call(macroSymbol, args, callInfo);
+            };
+        }
+
+        private static void AttemptRetries()
+        {
+            if (RetryQueue.IsEmpty) return;
+            RetryQueue.TryDequeue(out var call);
+            Call(call.Item1, call.Item2, call.Item3);
         }
 
         internal static void Block(DialogueWriterProcessor process)

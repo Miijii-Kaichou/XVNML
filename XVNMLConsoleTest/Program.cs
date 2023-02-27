@@ -19,10 +19,11 @@ class Program
         var dialogue1 = name?.Root?.GetElement<Dialogue>(0)?.dialogueOutput;
         var dialogue2 = name?.Root?.GetElement<Dialogue>(1)?.dialogueOutput;
 
-        DialogueWriter.Write(dialogue2, 0);
+        DialogueWriter.Write(dialogue1, 0);
         DialogueWriter.OnLineSubstringChange[0] = UpdateText;
-        DialogueWriter.OnLinePause[0] = ReadInput;
+        DialogueWriter.OnLinePause[0] = DontReadInput;
         DialogueWriter.OnDialogueFinish[0] = Finish;
+
         while (finished == false)
         {
             continue;
@@ -32,6 +33,11 @@ class Program
         Console.WriteLine("Press any key to end program");
         Console.ReadKey();
         return;
+    }
+
+    private static void DontReadInput(DialogueWriterProcessor process)
+    {
+        DialogueWriter.MoveNextLine(process);
     }
 
     private static void ReadInput(DialogueWriterProcessor process)

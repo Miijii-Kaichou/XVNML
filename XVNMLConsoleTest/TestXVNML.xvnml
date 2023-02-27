@@ -1,6 +1,6 @@
 ﻿<proxy name::"TestXVNML" lang::"CSharp" engine::"Unity">
      <dialogue name::"First Line">
-          @ Want some...{pause} icecream?<
+          @ {set_text_speed::80}Want some...{pause} icecream?<
           @ Honestly...{delay::5000|clear}I think I'm good actually.<
           @ Okay... {delay::800|insert::"*insert name here*"|delay::2000|clear}Suit yourself.<<
      </dialogue>
