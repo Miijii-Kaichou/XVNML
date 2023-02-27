@@ -199,12 +199,6 @@ namespace XVNML.Core.TagParser
                                 //regarding the tag.
                                 if (_Current.Type == TokenType.Identifier)
                                 {
-
-                                    if (_Current.Text == "date")
-                                    {
-                                        _ = _Current.Text;
-                                    }
-
                                     //This means that we are creating a tag
                                     var newTag = TagConverter.Convert(_Current.Text!);
                                     newTag!.tagTypeName = _Current.Text;
@@ -241,9 +235,6 @@ namespace XVNML.Core.TagParser
                             ChangeEvaluationState(ParserEvaluationState.TagValue);
                             continue;
 
-                        case TokenType.Comma:
-                            continue;
-
                         case TokenType.ForwardSlash:
                             //Check if a CloseBracket exceeds that
                             //If it is, mark as SelfClosing
@@ -258,7 +249,12 @@ namespace XVNML.Core.TagParser
                         case TokenType.Pound:
                             //There will have to be a unique feature
                             //where flags are set prior to calculations.
+                            if (_topOfStack!.tagState != TagEvaluationState.OnParameters) continue;
 
+                            // This means that we are about to send in a flag
+                            // Expect a identifier, but the identifier should not 
+                            // expect a ::, since it's just a flag
+                            _topOfStack.isSettingFlag = true;
                             continue;
 
                         case TokenType.Identifier:
@@ -269,11 +265,18 @@ namespace XVNML.Core.TagParser
                                     _cachedTagParameterInfo = new TagParameterInfo();
 
                                 //Check if flag
-                                if (Peek(1)?.Type != TokenType.DoubleColon)
+                                if (_topOfStack!.isSettingFlag == true && Peek(1)?.Type != TokenType.DoubleColon)
                                 {
                                     //This means this is a Flag for the tag
                                     _cachedTagParameterInfo.flagParameters.Add(_Current?.Text!);
+                                    _topOfStack!.isSettingFlag = false;
                                     continue;
+                                }
+
+                                if(_topOfStack!.isSettingFlag)
+                                {
+                                    Abort($"A flag should not expect the token {Peek(1)?.Text}");
+                                    return;
                                 }
 
                                 TagParameter newParameter = new TagParameter()

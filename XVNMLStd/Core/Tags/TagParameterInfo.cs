@@ -11,6 +11,7 @@ namespace XVNML.Core.Tags
         internal int totalParameters => paramters.Count;
 
         internal TagParameter GetParameter(string name) => paramters[name];
+        internal bool HasFlag(string name) => flagParameters.Contains(name);
 
         public object? this[string? name]
         {

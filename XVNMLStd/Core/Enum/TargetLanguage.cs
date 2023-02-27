@@ -1,4 +1,4 @@
-﻿namespace XVNML.Core
+﻿namespace XVNML.Core.Enum
 {
     public enum TargetLanguage
     {

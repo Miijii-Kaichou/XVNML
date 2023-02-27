@@ -1,5 +1,5 @@
 ﻿using System;
-using XVNML.Core;
+using XVNML.Core.Enum;
 using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags

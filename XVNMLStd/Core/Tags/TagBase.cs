@@ -39,6 +39,7 @@ namespace XVNML.Core.Tags
         internal Parser? parserRef;
 
         internal TagEvaluationState tagState;
+        internal bool isSettingFlag;
 
         public object this[ReadOnlySpan<char> name]
         {

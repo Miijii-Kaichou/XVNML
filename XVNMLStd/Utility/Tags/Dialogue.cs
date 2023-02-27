@@ -20,7 +20,9 @@ namespace XVNML.XVNMLUtility.Tags
             Script = value?.ToString();
             ID = parameterInfo?["id"]?.ToString();
             Name = tagName;
-            DoNotDetain = parameterInfo?["DoNotDetain"] != null;
+
+            // Flags
+            DoNotDetain = parameterInfo!.HasFlag("dontDetain");
 
             AnalyzeDialogue();
         }
