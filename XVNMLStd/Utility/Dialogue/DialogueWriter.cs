@@ -118,10 +118,10 @@ namespace XVNML.Utility.Dialogue
             }
         }
 
-        private static void  DoConcurrentDialogueProcesses()
+        private static void DoConcurrentDialogueProcesses()
         {
             var processes = WriterProcesses!.Where(process => process != null).ToList();
-            foreach(var process in processes)
+            foreach (var process in processes)
             {
                 if (process == null) return;
                 lock (process.processLock)
