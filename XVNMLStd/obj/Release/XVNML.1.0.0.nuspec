@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>XVNML</id>
+    <version>1.0.0</version>
+    <title>XVNML</title>
+    <authors>XVNMLStd</authors>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework=".NETStandard2.1" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="E:\Documents\Repositories\C#\XVNML\XVNMLStd\bin\Release\netstandard2.1\XVNML.dll" target="lib\netstandard2.1\XVNML.dll" />
+  </files>
+</package>

@@ -1,17 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Lexer;
-using XVNML.XVNMLUtility.Tags;
+using XVNML.Core.Macros;
+using XVNML.Utility.Macros;
+using System.Threading.Tasks;
 
 namespace XVNML.Core.Dialogue
 {
 
     public sealed class DialogueLine
     {
+        private static DialogueLine Instance;
+
         string? _castName;
         public string? CastName
         {
@@ -62,9 +65,20 @@ namespace XVNML.Core.Dialogue
         internal CastMemberSignature? SignatureInfo { get; set; }
 
         // Macro Data
-        internal List<MacroBlockInfo> macroInvocationList;
-
+        internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
+        internal int textRate;
         private const int _DefaultPromptCapacity = 4;
+
+        internal void ReadPosAndExecute(DialogueWriterProcessor process)
+        {
+            lock (process.processLock)
+            {
+                macroInvocationList
+                .Where(macro => macro.blockPosition.Equals(process.linePosition))
+                .ToList()
+                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.linePosition }));
+            }
+        }
 
         /// <summary>
         /// Resolves expression states on object to fully control it
@@ -107,7 +121,11 @@ namespace XVNML.Core.Dialogue
         internal void FinalizeAndCleanBuilder()
         {
             // Trim any < and >
-            Content = _ContentStringBuilder.ToString().TrimEnd('<', '>');
+            Content = _ContentStringBuilder
+                .ToString()
+                .TrimEnd('<')
+                .Replace(">>", string.Empty)
+                .Replace(">", "{pause}");
 
             // Get rid of excess white spaces
             CleanOutExcessWhiteSpaces();
@@ -122,10 +140,10 @@ namespace XVNML.Core.Dialogue
             //We're going to replace each block with a control
             //character of /0 to denote a macro is in that position
 
-            for(int i = 0; i < Content.Length; i++)
+            for (int i = 0; i < Content.Length; i++)
             {
                 var currentCharacter = Content[i];
-                if(currentCharacter == '{')
+                if (currentCharacter == '{')
                 {
                     // A new block as been established.
                     EvaluateBlock(i, out int length);
@@ -142,13 +160,15 @@ namespace XVNML.Core.Dialogue
             length = 0;
             if (Content == null) return;
 
+            Instance = this;
+
             Tokenizer tokenizer;
             MacroBlockInfo newBlock = new MacroBlockInfo();
 
             var pos = 0;
             var finished = false;
             var macroCount = 0;
-         
+
 
             while (finished == false)
             {
@@ -176,7 +196,7 @@ namespace XVNML.Core.Dialogue
                 Next();
                 currentToken = tokenizer[pos];
 
-                if (currentToken?.Type == TokenType.WhiteSpace) 
+                if (currentToken?.Type == TokenType.WhiteSpace)
                     continue;
 
                 if (expectingType.Value.HasFlag(currentToken?.Type) == false) return;
@@ -322,9 +342,13 @@ namespace XVNML.Core.Dialogue
             void Next() => pos++;
         }
 
-        private static void PopulateBlock(MacroBlockInfo newBlock, int macroCount, string? macroName, List<object> macroArgs)
+        private static void PopulateBlock(MacroBlockInfo newBlock, int macroCount, string? macroSymbol, List<object> macroArgs)
         {
-            newBlock!.macroCalls![macroCount].macroSymbol = macroName;
+            if (macroSymbol == null || DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == false)
+            {
+                throw new InvalidMacroException(macroSymbol, Instance);
+            }
+            newBlock!.macroCalls![macroCount].macroSymbol = macroSymbol;
             newBlock.macroCalls[macroCount].args = macroArgs.ToArray();
         }
 

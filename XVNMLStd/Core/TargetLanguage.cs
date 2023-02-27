@@ -3,8 +3,11 @@
     public enum TargetLanguage
     {
         CSharp,
-        JavaScript,
+        Cpp,
+        GodotScript,
         Java,
-        Python
+        JavaScript,
+        Python,
+        Rust
     }
 }

@@ -1,8 +1,7 @@
-﻿using System;
-using XVNML.Core.TagParser;
+﻿using XVNML.Core.TagParser;
 using XVNML.Core.Tags;
 using XVNML.XVNMLUtility.Tags;
-using XVNMLStd.Core.Marcos;
+using XVNML.Core.Macros;
 
 namespace XVNML.XVNMLUtility
 {
@@ -23,8 +22,9 @@ namespace XVNML.XVNMLUtility
         }
 
         public bool IsBeingUsedAsSource => source != null;
-        Parser xvnmlParser = new Parser();
-        XVNMLObj(Parser origin)
+
+        private readonly Parser xvnmlParser = new Parser();
+        private XVNMLObj(Parser origin)
         {
             xvnmlParser = origin;
             if (xvnmlParser._rootTag == null) return;
@@ -48,8 +48,7 @@ namespace XVNML.XVNMLUtility
         public static XVNMLObj? Create(string fileTarget)
         {
             DefinedTagsCollection.ManifestTagTypes();
-            MacroManager.ManifestMacros();
-            Console.OutputEncoding = System.Text.Encoding.Unicode;
+            DefinedMacrosCollection.ManifestMacros();
             var xvnmlParser = new Parser();
             xvnmlParser.SetTarget(fileTarget);
             xvnmlParser.Parse();
