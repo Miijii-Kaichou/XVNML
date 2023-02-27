@@ -14,6 +14,7 @@ class Program
 
     static void Main(string[] args)
     {
+        DialogueWriter.AllocateChannels(1);
         finished = false;
         XVNMLObj? name = XVNMLObj.Create("E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLConsoleTest\\TestXVNML.xvnml");
         var dialogue1 = name?.Root?.GetElement<Dialogue>(0)?.dialogueOutput;

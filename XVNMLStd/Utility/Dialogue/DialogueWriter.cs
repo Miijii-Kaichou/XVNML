@@ -2,17 +2,11 @@
 
 using System;
 using System.Linq;
-using System.Numerics;
 using System.Threading;
-using System.Threading.Tasks;
 using XVNML.Core.Dialogue;
-using System.Text;
 using Timer = System.Timers.Timer;
-using static System.Net.Mime.MediaTypeNames;
 using System.Collections.Concurrent;
 using XVNML.Core.Macros;
-using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace XVNML.Utility.Dialogue
 {
@@ -48,7 +42,7 @@ namespace XVNML.Utility.Dialogue
         public static void AllocateChannels(int totalChannels = DefaultTotalChannelsAllocated)
         {
             if (IsInitialized) return;
-            ThreadPool.SetMaxThreads(1, 1);
+
             totalChannels = totalChannels < 1 ? DefaultTotalChannelsAllocated : totalChannels;
 
             WriterProcesses = new DialogueWriterProcessor[totalChannels];
@@ -106,7 +100,10 @@ namespace XVNML.Utility.Dialogue
             Console.Clear();
             cancelationTokenSource = new CancellationTokenSource();
             IsInitialized = true;
-            _writingThread = new Thread(new ParameterizedThreadStart(WriterThread));
+            _writingThread = new Thread(new ParameterizedThreadStart(WriterThread))
+            {
+                Priority = ThreadPriority.BelowNormal
+            };
             MacroInvoker.Init();
             _writingThread.Start(cancelationTokenSource);
         }
@@ -117,6 +114,7 @@ namespace XVNML.Utility.Dialogue
             while (IsInitialized && !cancelationToken.IsCancellationRequested)
             {
                 DoConcurrentDialogueProcesses();
+                Thread.Sleep(1);
             }
         }
 
@@ -209,7 +207,12 @@ namespace XVNML.Utility.Dialogue
             lock (process.processLock)
             {
                 ProcessStalling![process.ID] = true;
-                ProcessTimers![process.ID] = new Timer(process.ProcessRate);
+                ProcessTimers![process.ID] ??= new Timer(process.ProcessRate);
+                ProcessTimers![process.ID].Interval = process.ProcessRate;
+                if (ProcessTimers![process.ID] != null)
+                {
+                    ProcessTimers![process.ID].Enabled = true;
+                }
                 ProcessTimers[process.ID].AutoReset = false;
                 ProcessTimers[process.ID].Elapsed += (s, e) =>
                 {
@@ -223,7 +226,6 @@ namespace XVNML.Utility.Dialogue
         private static void DialogueWriter_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             ProcessStalling![(int)sender] = false;
-
         }
 
         public static void ShutDown()

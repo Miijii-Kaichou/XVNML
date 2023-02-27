@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Diagnostics;
+﻿using System.Collections.Concurrent;
 using System.Text;
 using System.Timers;
-using XVNML.Core.Dialogue;
 using XVNML.Core.Macros;
 using XVNML.Utility.Dialogue;
 

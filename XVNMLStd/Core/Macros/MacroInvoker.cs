@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using XVNML.Core.Dialogue;
 using XVNML.Utility.Dialogue;
 using XVNML.Utility.Macros;
-
-using Timer = System.Timers.Timer;
 
 namespace XVNML.Core.Macros
 {
@@ -76,8 +71,8 @@ namespace XVNML.Core.Macros
 
             for (int i = 0; i < args.Length; i++)
             {
-                var currentArg = args[i];
-                var requiredArg = targetMacro?.argumentTypes[i];
+                object? currentArg = args[i];
+                Type? requiredArg = targetMacro?.argumentTypes[i];
 
                 // TODO: Convert to whatever type the attribute has
                 currentArg = Convert.ChangeType(currentArg, requiredArg);
