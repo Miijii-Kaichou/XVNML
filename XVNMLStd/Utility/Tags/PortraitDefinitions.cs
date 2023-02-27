@@ -17,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        Portrait? GetPortrait(string name) => Portraits.First(portrait => portrait.tagName?.Equals(name) == true);
+        Portrait? GetPortrait(string name) => Portraits.First(portrait => portrait.TagName?.Equals(name) == true);
     }
 }

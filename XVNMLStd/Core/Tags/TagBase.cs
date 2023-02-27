@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using XVNML.Core.Dialogue;
 using XVNML.Core.Extensions;
 using XVNML.Core.TagParser;
 
@@ -9,7 +11,7 @@ namespace XVNML.Core.Tags
     public class TagBase : IResolvable
     {
         public string? tagTypeName;
-        public string? tagName
+        public string? TagName
         {
             get
             {
@@ -23,7 +25,20 @@ namespace XVNML.Core.Tags
             }
         }
 
-        public string[]? alternativeTagNames
+        public int TagID
+        {
+            get
+            {
+                var id = GetParameterValue("id")?.ToString();
+                if (id != null)
+                {
+                    return Convert.ToInt32(id);
+                }
+                return 0;
+            }
+        }
+
+        public string[]? AlternativeTagNames
         {
             get
             {
@@ -31,19 +46,56 @@ namespace XVNML.Core.Tags
             }
         }
 
-        public TagParameterInfo? parameterInfo;
+        internal string[]? _allowParameters;
+        public string[]? AllowedParameters
+        {
+            get
+            {
+                return _allowParameters;
+            }
+            set
+            {
+                _allowParameters = value;
+            }
+        }
+
+        internal string[]? _allowFlags;
+        public string[]? AllowedFlags
+        {
+            get
+            {
+                return _allowFlags;
+            }
+            set
+            {
+                _allowFlags = value;
+            }
+        }
+
         public List<TagBase>? elements;
         public TagBase? parentTag;
         public object? value;
         public bool isSelfClosing = false;
-        internal Parser? parserRef;
 
+        internal Parser? parserRef;
         internal TagEvaluationState tagState;
         internal bool isSettingFlag;
+        internal TagParameterInfo? _parameterInfo;
 
-        public object this[ReadOnlySpan<char> name]
+        private bool _allowParametersValidated = false;
+        private bool _allowFlagsValidated = false;
+
+
+        private readonly string[] DefaultAllowedParameters = new string[3]
         {
-            get { return parameterInfo?[name.ToString()] ?? new object(); }
+            "name",
+            "altName",
+            "id"
+        };
+
+        public object? this[ReadOnlySpan<char> name]
+        {
+            get { return _parameterInfo?.GetParameter(name.ToString())?.value; }
         }
 
         /// <summary>
@@ -56,8 +108,8 @@ namespace XVNML.Core.Tags
         public T? GetElement<T>(string tagName) where T : TagBase
         {
             if (elements == null) return null;
-            T? element = (T?)elements.Find(e => e.tagName == tagName ||
-                                                (e.alternativeTagNames?.Length > 0 && e.alternativeTagNames?.Contains(tagName) == true));
+            T? element = (T?)elements.Find(e => e.TagName == tagName ||
+                                                (e.AlternativeTagNames?.Length > 0 && e.AlternativeTagNames?.Contains(tagName) == true));
             return element;
         }
 
@@ -87,7 +139,7 @@ namespace XVNML.Core.Tags
             //Check if id's are already provided
             foreach (T? e in elements)
             {
-                int? id = (int?)e?.parameterInfo?["id"];
+                int? id = (int?)e?._parameterInfo?["id"];
                 if (id == null) continue;
                 if (id == index) return e;
             }
@@ -104,17 +156,21 @@ namespace XVNML.Core.Tags
 
         public object? GetParameterValue(string parameterName)
         {
-            try
-            {
-                if (parameterInfo == null) return parameterInfo;
+            return GetParameter(parameterName)?.value;
+        }
 
-                TagParameter? parameter = parameterInfo.GetParameter(parameterName);
-                return parameter?.value;
-            }
-            catch
-            {
-                return null;
-            }
+        public TagParameter? GetParameter(string parameterName)
+        {
+            if (_parameterInfo == null) return null;
+            if (_allowParametersValidated == false) ValidateAllowedParameters();
+            return _parameterInfo.GetParameter(parameterName);
+        }
+
+        public bool HasFlag(string flagName)
+        {
+            if (_parameterInfo == null) return false;
+            if (_allowFlagsValidated == false) ValidateAllowedFlags();
+            return _parameterInfo.HasFlag(flagName);
         }
 
         /// <summary>
@@ -133,10 +189,9 @@ namespace XVNML.Core.Tags
             {
                 if (appearanceLocation.Contains(parentTag!) && currentFile == parserRef!.fileTarget)
                 {
-                    msg = $"This tag already exists within the scope {parentTag!.tagName}. There can only be 1: Tag Name {tagName}: {parserRef.fileTarget}";
+                    msg = $"This tag already exists within the scope {parentTag!.TagName}. There can only be 1: Tag Name {TagName}: {parserRef.fileTarget}";
                     Console.WriteLine(msg);
-                    Parser.Abort(msg);
-
+                    Complain(msg);
                     return;
                 }
 
@@ -149,9 +204,9 @@ namespace XVNML.Core.Tags
             {
                 if (appearanceLocation.Count > 0 && currentFile == parserRef!.fileTarget)
                 {
-                    msg = $"This tag already exists within the document. There can only be 1: Tag Name {tagName}: {parserRef.fileTarget}";
+                    msg = $"This tag already exists within the document. There can only be 1: Tag Name {TagName}: {parserRef.fileTarget}";
                     Console.WriteLine(msg);
-                    Parser.Abort(msg);
+                    Complain(msg);
                     return;
                 }
 
@@ -166,7 +221,7 @@ namespace XVNML.Core.Tags
             {
                 msg = $"Invalid Depending Tag {parentTag}. The tag {tagTypeName} depends on {config.DependingTags.JoinStringArray()}: {parserRef!.fileTarget}";
                 Console.WriteLine(msg);
-                TagParser.Parser.Abort(msg);
+                Complain(msg);
                 return;
             }
 
@@ -175,7 +230,7 @@ namespace XVNML.Core.Tags
             {
                 msg = $"The tag {tagTypeName} depends on {config.DependingTags}, but there is nothing.: {parserRef!.fileTarget}";
                 Console.WriteLine(msg);
-                TagParser.Parser.Abort(msg);
+                Complain(msg);
                 return;
             }
         }
@@ -190,6 +245,52 @@ namespace XVNML.Core.Tags
         public static TInput Construct<TInput>(out TInput result) where TInput : new()
         {
             return result = new TInput();
+        }
+
+        private void ValidateAllowedParameters()
+        {
+            _allowParametersValidated = true;
+            if (AllowedParameters == null ||
+                AllowedParameters.Length == 0)
+            {
+                AllowedParameters = DefaultAllowedParameters;
+            }
+
+            for (int i = 0; i < _parameterInfo!.paramters.Keys.Count; i++)
+            {
+                var currentSymbol = _parameterInfo.paramters.Keys.ToArray()[i];
+                if (AllowedParameters.Contains(currentSymbol) == false
+                    && DefaultAllowedParameters.Contains(currentSymbol) == false)
+                {
+                    Complain($"{currentSymbol} is not an allowed parameter" +
+                        $" for tag \"{TagName}\" (typeof \"{tagTypeName}\")");
+                    return;
+                }
+
+            }
+        }
+
+        private void ValidateAllowedFlags()
+        {
+            if (AllowedFlags == null || AllowedFlags.Length == 0) return;
+
+            for (int i = 0; i < _parameterInfo!.flagParameters.Count; i++)
+            {
+                var currentSymbol = _parameterInfo.flagParameters[i];
+                if (AllowedFlags.Contains(currentSymbol) == false)
+                {
+                    Complain($"{currentSymbol} is not an allowed flag" +
+                        $" for tag \"{TagName}\" (typeof \"{tagTypeName}\")");
+                    return;
+                }
+            }
+            _allowFlagsValidated = true;
+        }
+
+
+        private void Complain(string msg)
+        {
+            Parser.Abort(msg);
         }
     }
 }

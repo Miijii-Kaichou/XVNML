@@ -11,8 +11,13 @@ namespace XVNML.XVNMLUtility.Tags
 
         public override void OnResolve(string? fileOrigin)
         {
+            AllowedParameters = new[]
+            {
+                "src"
+            };
+
             base.OnResolve(fileOrigin);
-            string src = (string?)parameterInfo?["src"] ?? string.Empty;
+            string src = (string?)GetParameterValue("src") ?? string.Empty;
             dirInfo = new DirectoryInfo(fileOrigin + _CastDir + src);
         }
 

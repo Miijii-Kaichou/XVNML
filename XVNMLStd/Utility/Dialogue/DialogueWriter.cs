@@ -30,7 +30,7 @@ namespace XVNML.Utility.Dialogue
         private static bool IsInitialized = false;
         private static Timer[]? ProcessTimers;
         private static bool[]? ProcessStalling;
-        private static ConcurrentQueue<string> LogQueue = new ConcurrentQueue<string>();
+
 
         private const int DefaultTotalChannelsAllocated = 12;
 
@@ -267,21 +267,6 @@ namespace XVNML.Utility.Dialogue
                 process.linePosition = -1;
                 process.Clear();
             }
-        }
-
-        public static void CollectLog(out string? message)
-        {
-            if (LogQueue.Count == 0)
-            {
-                message = null;
-                return;
-            }
-            LogQueue.TryDequeue(out message);
-        }
-
-        internal static void WriteLog(string message)
-        {
-            LogQueue.Enqueue(message);
         }
     }
 }

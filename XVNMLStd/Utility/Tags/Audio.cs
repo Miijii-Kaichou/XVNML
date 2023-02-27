@@ -18,9 +18,16 @@ namespace XVNML.XVNMLUtility.Tags
 
         public override void OnResolve(string? fileOrigin)
         {
+            AllowedParameters = new[]
+            {
+                "rel",
+                "src"
+            };
+
             base.OnResolve(fileOrigin);
-            var rel = parameterInfo?["rel"];
-            string src = (string?)parameterInfo?["src"] ?? string.Empty;
+            
+            var rel = GetParameterValue("rel");
+            string src = (string?)GetParameterValue("src") ?? string.Empty;
             relativity = rel == null ? default : (DirectoryRelativity)Enum.Parse(typeof(DirectoryRelativity), rel.ToString()!);
             var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + src : src;
             dirInfo = new DirectoryInfo(pathFlow);

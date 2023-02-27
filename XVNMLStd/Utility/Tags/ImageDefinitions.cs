@@ -17,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        Image? GetImage(string name) => Images.First(img => img.tagName?.Equals(name) == true);
+        Image? GetImage(string name) => Images.First(img => img.TagName?.Equals(name) == true);
     }
 }

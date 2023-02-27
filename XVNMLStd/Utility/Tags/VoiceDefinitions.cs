@@ -17,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        Voice? GetVoice(string name) => Voices.First(voice => voice.tagName?.Equals(name) == true);
+        Voice? GetVoice(string name) => Voices.First(voice => voice.TagName?.Equals(name) == true);
     }
 }

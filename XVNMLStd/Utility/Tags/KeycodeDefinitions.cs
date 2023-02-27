@@ -17,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        public Keycode? GetKeyCode(string name) => KeyCodes.First(keyCode => keyCode.tagName?.Equals(name) == true);
+        public Keycode? GetKeyCode(string name) => KeyCodes.First(keyCode => keyCode.TagName?.Equals(name) == true);
     }
 }

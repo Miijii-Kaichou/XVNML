@@ -227,7 +227,7 @@ namespace XVNML.Core.TagParser
                             }
 
                             _topOfStack.tagState = TagEvaluationState.Open;
-                            _topOfStack.parameterInfo = _cachedTagParameterInfo;
+                            _topOfStack._parameterInfo = _cachedTagParameterInfo;
                             _cachedTagParameterInfo = null;
 
                             if (Peek(1)?.Type == TokenType.OpenBracket) continue;
@@ -265,7 +265,7 @@ namespace XVNML.Core.TagParser
                                     _cachedTagParameterInfo = new TagParameterInfo();
 
                                 //Check if flag
-                                if (_topOfStack!.isSettingFlag == true && Peek(1)?.Type != TokenType.DoubleColon)
+                                if (_topOfStack!.isSettingFlag == true && Peek(1,true)?.Type != TokenType.DoubleColon)
                                 {
                                     //This means this is a Flag for the tag
                                     _cachedTagParameterInfo.flagParameters.Add(_Current?.Text!);
@@ -383,7 +383,7 @@ namespace XVNML.Core.TagParser
         {
             //Now the object can be closed
             _topOfStack!.tagState = TagEvaluationState.Close;
-            _topOfStack.parameterInfo = _topOfStack.parameterInfo ?? _cachedTagParameterInfo;
+            _topOfStack._parameterInfo = _topOfStack._parameterInfo ?? _cachedTagParameterInfo;
 
             _cachedTagParameterInfo = null;
             _cachedTagName = string.Empty;

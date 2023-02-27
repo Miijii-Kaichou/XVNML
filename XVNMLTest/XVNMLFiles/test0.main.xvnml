@@ -1,0 +1,5 @@
+﻿<proxy name::"test0.main" lang::"CSharp" engine::"native">
+	<dialogue name::"FlagTest">
+		@ If you are reading this{delay::750}, great job!{delay::5000}<<
+	</dialogue>
+</proxy>

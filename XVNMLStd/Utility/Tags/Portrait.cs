@@ -10,8 +10,14 @@ namespace XVNML.XVNMLUtility.Tags
         public Image? image;
         public override void OnResolve(string? fileOrigin)
         {
+            AllowedParameters = new[]
+            {
+                "img"
+            };
+
             base.OnResolve(fileOrigin);
-            var imgRef = parameterInfo?.GetParameter("img");
+
+            var imgRef = GetParameter("img");
             if (imgRef != null && imgRef.isReferencing)
             {
                 // We'll request a ReferenceSolve by stating who
@@ -33,13 +39,13 @@ namespace XVNML.XVNMLUtility.Tags
             {
                 //Iterate through until you find the right source target;
                 imageDefinitions = parserRef!._rootTag?.elements?.Where(tag => tag.GetType() == typeof(ImageDefinitions)).First();
-                value = parameterInfo?["img"];
+                value = GetParameterValue("img");
                 target = imageDefinitions?.GetElement<Image>(value?.ToString()!);
                 image = (Image)Convert.ChangeType(target, typeof(Image))!;
             }
             catch
             {
-                throw new Exception($"Could not find reference called {parameterInfo?.GetParameter("img").value?.ToString()!}" +
+                throw new Exception($"Could not find reference called {value?.ToString()!}" +
                     $": img {imageDefinitions!.tagTypeName}");
             }
         }

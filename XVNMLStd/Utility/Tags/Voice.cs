@@ -10,8 +10,9 @@ namespace XVNML.XVNMLUtility.Tags
         internal Audio? audio;
         public override void OnResolve(string? fileOrigin)
         {
+            AllowedParameters = new[] { "audio" };
             base.OnResolve(fileOrigin);
-            var audioRef = parameterInfo?.GetParameter("audio");
+            var audioRef = GetParameter("audio");
             if (audioRef != null && audioRef.isReferencing)
             {
                 // We'll request a ReferenceSolve by stating who
@@ -28,16 +29,17 @@ namespace XVNML.XVNMLUtility.Tags
         {
             TagBase? source = null;
             TagBase? target = null;
+            var audio = GetParameterValue("audio");
             try
             {
                 //Iterate through until you find the right source target;
                 source = parserRef!._rootTag?.elements?.Where(tag => tag.GetType() == typeof(ImageDefinitions)).First();
-                target = source?.GetElement<Audio>(parameterInfo?.GetParameter("audio").ToString()!);
+                target = source?.GetElement<Audio>(audio?.ToString()!);
                 audio = (Audio)Convert.ChangeType(target, typeof(Audio))!;
             }
             catch
             {
-                throw new Exception($"Could not find reference called {parameterInfo?.GetParameter("img").ToString()!}" +
+                throw new Exception($"Could not find reference called {audio}" +
                     $"audio {source!.tagTypeName}");
             }
         }

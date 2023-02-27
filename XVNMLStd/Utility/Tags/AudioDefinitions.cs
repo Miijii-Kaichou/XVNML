@@ -17,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        Audio? GetCast(string name) => AudioCollection.First(audio => audio.tagName?.Equals(name) == true);
+        Audio? GetCast(string name) => AudioCollection.First(audio => audio.TagName?.Equals(name) == true);
     }
 }

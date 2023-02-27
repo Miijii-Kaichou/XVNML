@@ -7,7 +7,6 @@ namespace XVNML.XVNMLUtility.Tags
     public sealed class Dialogue : TagBase
     {
         public string? Script { get; private set; }
-        public string? ID { get; private set; }
         public string? Name { get; private set; }
         public bool DoNotDetain { get; private set; } = false;
         public Cast[]? includedCasts;
@@ -16,15 +15,28 @@ namespace XVNML.XVNMLUtility.Tags
 
         public override void OnResolve(string? fileOrigin)
         {
+            // Allow Parameters and Flags
+            // Before you resolve!
+            AllowedParameters = new[]{
+                "cast"
+            };
+
+            AllowedFlags = new[]
+            {
+                "dontDetain",
+                "allowOverride"
+            };
+
             base.OnResolve(fileOrigin);
+            
             Script = value?.ToString();
-            ID = parameterInfo?["id"]?.ToString();
-            Name = tagName;
+            Name = TagName;
 
             // Flags
-            DoNotDetain = parameterInfo!.HasFlag("dontDetain");
+            DoNotDetain = HasFlag("dontDetain");
 
             AnalyzeDialogue();
+
         }
 
         private void AnalyzeDialogue()

@@ -17,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        public Dependency? GetDependency(string name) => Dependencies.First(dependency => dependency.tagName?.Equals(name) == true);
+        public Dependency? GetDependency(string name) => Dependencies.First(dependency => dependency.TagName?.Equals(name) == true);
     }
 }
