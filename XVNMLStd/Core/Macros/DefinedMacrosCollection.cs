@@ -19,8 +19,9 @@ namespace XVNML.Core.Macros
             ValidMacros = new SortedDictionary<string, MacroAttribute>();
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             Type[] libraryTypes;
-            foreach (Assembly assembly in assemblies)
+            for (int i = 0; i < assemblies.Length; i++)
             {
+                Assembly assembly = assemblies[i];
                 libraryTypes = assembly.GetTypes().Where(c => c.IsClass && c.GetCustomAttribute<MacroLibraryAttribute>() != null).ToArray();
                 EstablishLibraries(libraryTypes);
             }
@@ -30,8 +31,9 @@ namespace XVNML.Core.Macros
 
         private static void EstablishLibraries(Type[] libraryTypes)
         {
-            foreach (Type lib in libraryTypes)
+            for(int i = 0; i < libraryTypes.Length; i++)
             {
+                Type lib = libraryTypes[i];
                 var methods = lib.GetRuntimeMethods();
 
                 ProcessMethods(lib, methods);

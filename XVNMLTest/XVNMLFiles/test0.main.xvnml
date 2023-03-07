@@ -1,5 +1,67 @@
 ﻿<proxy name::"test0.main" lang::"CSharp" engine::"native">
+	<castDefinitions>
+		<cast name::"Hana">
+			<portraitDefinitions>
+				<portrait name::"Happy" 	img::$nil/>
+				<portrait name::"Sad" 		img::$nil/>
+				<portrait name::"Angry" 	img::$nil/>
+				<portrait name::"Neutral" 	img::$nil/>
+			</portraitDefinitions>
+			<voiceDefinitions>
+				<voice name::"Yay" 	audio::$nil/>
+				<voice name::"Sigh" audio::$nil/>
+				<voice name::"Omg" 	audio::$nil/>
+				<voice name::"Aww" 	audio::$nil/>
+			</voiceDefinitions>
+		</cast>
+	</castDefinitions>
+
 	<dialogue name::"FlagTest">
-		@ If you are reading this{delay::750}, great job!{delay::5000}<<
+		@Hana>Happy {sts::60}If you are reading this{del::750}, great job!<
+		@* Now, it's time to incoporate Cast data, such as what emotion{n}
+		they are showing, or how they sound!<
+		@* This will be a new chapter in our XVNML journey!
+		{n}We'll be going over the following concepts:
+		{n|w|bul1|w|ins::"Dialogues"|n|del::500
+		|w|bul1|w|ins::"Prompts"|n|del::500
+		|w|bul1|w|ins::"Prompts"|paren|ins::"Input"|paren_end|n|del::500
+		|w|bul1|w|ins::"Cast Signatures"|n|del::500
+		|w|bul1|w|ins::"Cast Definitions"|n|del::500
+		|w|bul1|w|ins::"Custom Tags"|n|del::500
+		|w|bul1|w|ins::"Custom Macros"|n|del::500
+		|w|bul1|w|ins::"Expressions"|n|del::500
+		|w|bul1|w|ins::"Voices"|n|del::500
+		|w|bul1|w|ins::"Settings Up Poses"|n|del::500
+		|w|bul1|w|ins::"The Dialogue Writer"|n|del::500
+		|w|bul1|w|ins::"Different Dialogue Writer Events"|n|del::500
+		|w|bul1|w|ell|ins::"and much, much more!"|n}<
+		@* I don't even know how far I can even take this.<
+		@* There's a lot of stuff that we have to consider{n}
+		when it comes to implementing the Cast Expressions and Voices.<
+		@* First is the actually stashing of the current cast.<
+		@* As I last checked{del::500}, the DialogueLine only has{n}
+		information for the Name{del::500}, the Expression{del::500}, and Voice{del::500}, but not necessarily{n}
+		the Cast that this dialogue pertains to.<
+		@* The CLOSEST information that we got on{del::500|ins::" THAT"|del::500} is the{n}
+		CastSignatureInfo that's attached to the DialogueLine...{del::500|clr}
+		But nothing more.<
+		@* So we're goinig to have to do some refactoring on our DialogueLine...{del::500|n}
+		to make sure that we're able to have access to the Cast.<
+		@* That way, when we need to change expressions, we can tell the Cast associated with the DialogueLine{n}
+		to change expressions {paren}and{slash}or voice{paren_end|del::500|n}
+		and then do the proper callbacks!<
+		@* The last thing we need to consider{del::500} is the actual raw data of the image and audio files.<
+		@* We want to be able to take those bytes{del::500}, and have it be converted to a specific type.<
+		@* We want to try to limit the heavy-lifting for the person using this tool{del::500|n}
+		but honestly{del::500}, that's our goal!<
+		@* We want to make creating Visual Novels{del::500} and Story-Centric games{del::500} as easy as possible to implement!<
+		@* So with that said{del::1000} let's get on with it!<<
+	</dialogue>
+
+	<dialogue name::"CDPTest" #dontDetain>
+		@ We're going to have this just in case we mess up our{n}
+		CDP implementation.{del::4000}<
+		@ We'll be using this for the remaining duration of the{n}
+		XVNML2U project creation process.{del::4000}<<
 	</dialogue>
 </proxy>

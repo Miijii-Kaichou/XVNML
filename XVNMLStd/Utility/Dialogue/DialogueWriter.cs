@@ -4,9 +4,9 @@ using System;
 using System.Linq;
 using System.Threading;
 using XVNML.Core.Dialogue;
-using Timer = System.Timers.Timer;
-using System.Collections.Concurrent;
 using XVNML.Core.Macros;
+
+using Timer = System.Timers.Timer;
 
 namespace XVNML.Utility.Dialogue
 {
@@ -20,13 +20,22 @@ namespace XVNML.Utility.Dialogue
         public static DialogueWriterCallback?[]? OnNextLine;
         public static DialogueWriterCallback?[]? OnDialogueFinish;
 
+        // Cast-Specific Callbacks
+        public static DialogueWriterCallback?[]? OnCastChange;
+        public static DialogueWriterCallback?[]? OnCastExpressionChange;
+        public static DialogueWriterCallback?[]? OnCastVoiceChange;
+
+        // Prompt-Specific Callbacks
+        public static DialogueWriterCallback?[]? OnPrompt;
+        public static DialogueWriterCallback?[]? OnPromptResonse;
+
         public static int TotalProcesses => WriterProcesses!.Length;
 
         internal static DialogueWriterProcessor?[]? WriterProcesses { get; private set; }
         internal static bool[]? WaitingForUnpauseCue { get; private set; }
 
         private static Thread? _writingThread;
-        private static CancellationTokenSource cancelationTokenSource = new CancellationTokenSource();
+        private static CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private static bool IsInitialized = false;
         private static Timer[]? ProcessTimers;
         private static bool[]? ProcessStalling;
@@ -45,15 +54,22 @@ namespace XVNML.Utility.Dialogue
 
             totalChannels = totalChannels < 1 ? DefaultTotalChannelsAllocated : totalChannels;
 
-            WriterProcesses = new DialogueWriterProcessor[totalChannels];
-            ProcessTimers = new Timer[totalChannels];
-            ProcessStalling = new bool[totalChannels];
-            OnLineStart = new DialogueWriterCallback[totalChannels];
-            OnLineSubstringChange = new DialogueWriterCallback[totalChannels];
-            OnLinePause = new DialogueWriterCallback[totalChannels];
-            OnNextLine = new DialogueWriterCallback[totalChannels];
-            OnDialogueFinish = new DialogueWriterCallback[totalChannels];
-            WaitingForUnpauseCue = new bool[totalChannels];
+            WriterProcesses         = new DialogueWriterProcessor[totalChannels];
+            OnLineStart             = new DialogueWriterCallback[totalChannels];
+            OnLineSubstringChange   = new DialogueWriterCallback[totalChannels];
+            OnLinePause             = new DialogueWriterCallback[totalChannels];
+            OnNextLine              = new DialogueWriterCallback[totalChannels];
+            OnDialogueFinish        = new DialogueWriterCallback[totalChannels];
+            OnCastChange            = new DialogueWriterCallback[totalChannels];
+            OnCastExpressionChange  = new DialogueWriterCallback[totalChannels];
+            OnCastVoiceChange       = new DialogueWriterCallback[totalChannels];
+            OnPrompt                = new DialogueWriterCallback[totalChannels];
+            OnPromptResonse         = new DialogueWriterCallback[totalChannels];
+            
+            ProcessTimers           = new Timer[totalChannels];
+            
+            ProcessStalling         = new bool[totalChannels];
+            WaitingForUnpauseCue    = new bool[totalChannels];
         }
 
         /// <summary>
@@ -65,9 +81,7 @@ namespace XVNML.Utility.Dialogue
             if (WriterProcesses == null || WriterProcesses.Length == 0)
                 AllocateChannels();
 
-            int i = 0;
-
-            for (; i < WriterProcesses!.Length; i++)
+            for (int i = 0; i < WriterProcesses!.Length; i++)
             {
                 if (WriterProcesses[i] == null)
                 {
@@ -98,14 +112,14 @@ namespace XVNML.Utility.Dialogue
         private static void Initialize()
         {
             Console.Clear();
-            cancelationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource = new CancellationTokenSource();
             IsInitialized = true;
             _writingThread = new Thread(new ParameterizedThreadStart(WriterThread))
             {
                 Priority = ThreadPriority.BelowNormal
             };
             MacroInvoker.Init();
-            _writingThread.Start(cancelationTokenSource);
+            _writingThread.Start(cancellationTokenSource);
         }
 
         private static void WriterThread(object obj)
@@ -159,11 +173,8 @@ namespace XVNML.Utility.Dialogue
                 }
 
                 Next(process);
-
                 process.currentLine!.ReadPosAndExecute(process);
-
                 UpdateSubString(process);
-
                 Yield(process);
             }
         }
@@ -185,6 +196,7 @@ namespace XVNML.Utility.Dialogue
                 if (process.linePosition > process.currentLine?.Content?.Length - 1) return;
                 process.CurrentLetter = process.currentLine?.Content?[process.linePosition];
                 WriterProcesses![id] = process;
+                if (IsRestricting(process)) return;
                 OnLineSubstringChange?[id]?.Invoke(process);
             }
         }
@@ -230,7 +242,7 @@ namespace XVNML.Utility.Dialogue
 
         public static void ShutDown()
         {
-            cancelationTokenSource.Cancel();
+            cancellationTokenSource.Cancel();
         }
 
         public static void MoveNextLine(DialogueWriterProcessor process)

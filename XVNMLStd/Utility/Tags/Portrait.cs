@@ -7,7 +7,7 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("portrait", typeof(PortraitDefinitions), TagOccurance.Multiple)]
     public sealed class Portrait : TagBase
     {
-        public Image? image;
+        public Image? imageTarget;
         public override void OnResolve(string? fileOrigin)
         {
             AllowedParameters = new[]
@@ -20,6 +20,7 @@ namespace XVNML.XVNMLUtility.Tags
             var imgRef = GetParameter("img");
             if (imgRef != null && imgRef.isReferencing)
             {
+                
                 // We'll request a ReferenceSolve by stating who
                 // we are, the value we want to resolve, the type of that
                 // value we want to resolve, and where you may be able to resolve it.
@@ -34,18 +35,19 @@ namespace XVNML.XVNMLUtility.Tags
         {
             TagBase? imageDefinitions = null;
             TagBase? target = null;
-            object? value = null;
+            var img = GetParameterValue("img");
             try
             {
+                if (img.ToString().ToLower() == "nil") return;
                 //Iterate through until you find the right source target;
                 imageDefinitions = parserRef!._rootTag?.elements?.Where(tag => tag.GetType() == typeof(ImageDefinitions)).First();
-                value = GetParameterValue("img");
-                target = imageDefinitions?.GetElement<Image>(value?.ToString()!);
-                image = (Image)Convert.ChangeType(target, typeof(Image))!;
+                
+                target = imageDefinitions?.GetElement<Image>(img?.ToString()!);
+                imageTarget = (Image)Convert.ChangeType(target, typeof(Image))!;
             }
             catch
             {
-                throw new Exception($"Could not find reference called {value?.ToString()!}" +
+                throw new Exception($"Could not find reference called {img?.ToString()!}" +
                     $": img {imageDefinitions!.tagTypeName}");
             }
         }

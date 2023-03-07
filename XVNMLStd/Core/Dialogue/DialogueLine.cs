@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Lexer;
 using XVNML.Core.Macros;
 using XVNML.Utility.Macros;
-using System.Threading.Tasks;
 
 namespace XVNML.Core.Dialogue
 {
@@ -15,47 +14,11 @@ namespace XVNML.Core.Dialogue
     {
         private static DialogueLine Instance;
 
-        string? _castName;
-        public string? CastName
-        {
-            get
-            {
-                return _castName;
-            }
-            set
-            {
-                _castName = value;
-                GenerateCast();
-            }
-        }
+        public string? CastName { get; internal set; }
 
-        string? _expression;
-        public string? Expression
-        {
-            get
-            {
-                return _expression;
-            }
-            set
-            {
-                _expression = value;
-                GenerateExpression();
-            }
-        }
+        public string? Expression { get; internal set; }
 
-        string? _voice;
-        public string? Voice
-        {
-            get
-            {
-                return _voice;
-            }
-            set
-            {
-                _voice = value;
-                GenerateVoice();
-            }
-        }
+        public string? Voice { get; internal set; }
 
         private readonly StringBuilder _ContentStringBuilder = new StringBuilder();
         public string? Content { get; private set; }
@@ -80,38 +43,13 @@ namespace XVNML.Core.Dialogue
             }
         }
 
-        /// <summary>
-        /// Resolves expression states on object to fully control it
-        /// in code
-        /// </summary>
-        void GenerateExpression([CallerMemberName] string expName = "")
-        {
-
-        }
-
-        /// <summary>
-        /// Resolves voice states on object to fully control it
-        /// in code
-        /// </summary>
-        void GenerateVoice([CallerMemberName] string voiceName = "")
-        {
-
-        }
-
-        /// <summary>
-        /// Resolves Cast Association when used in other part of XVNNML document
-        /// </summary>
-        /// <param name="castName"></param>
-        void GenerateCast([CallerMemberName] string castName = "")
-        {
-
-        }
-
         internal void AppendContent(string text) => _ContentStringBuilder.Append(text);
+
         internal void SetNewChoice(string choice, int lineID)
         {
             PromptContent.Add(choice, (lineID, int.MaxValue));
         }
+
         internal void SetEndPointOnAllChoices(int lineID)
         {
             for (int i = 0; i < PromptContent.Count(); i++)
@@ -188,13 +126,12 @@ namespace XVNML.Core.Dialogue
             string? macroName = null;
             List<object> macroArgs = new List<object>();
             bool multiArgs = false;
-            SyntaxToken? currentToken = null;
             while (finished == false)
             {
                 macroInvocationList ??= new List<MacroBlockInfo>();
 
                 Next();
-                currentToken = tokenizer[pos];
+                SyntaxToken? currentToken = tokenizer[pos];
 
                 if (currentToken?.Type == TokenType.WhiteSpace)
                     continue;
@@ -336,6 +273,8 @@ namespace XVNML.Core.Dialogue
                         expectingType = TokenType.CloseCurlyBracket |
                                         TokenType.Line;
                         continue;
+                    default:
+                        break;
                 }
             }
 
@@ -344,10 +283,16 @@ namespace XVNML.Core.Dialogue
 
         private static void PopulateBlock(MacroBlockInfo newBlock, int macroCount, string? macroSymbol, List<object> macroArgs)
         {
-            if (macroSymbol == null || DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == false)
+            if (macroSymbol == null)
+            {
+                throw new ArgumentNullException(macroSymbol, "There was no macro symbol present");
+            }
+
+            if (DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == false)
             {
                 throw new InvalidMacroException(macroSymbol, Instance);
             }
+
             newBlock!.macroCalls![macroCount].macroSymbol = macroSymbol;
             newBlock.macroCalls[macroCount].args = macroArgs.ToArray();
         }
@@ -376,7 +321,8 @@ namespace XVNML.Core.Dialogue
         {
             if (Content == null) return;
             Content = Content.Replace("\r", string.Empty).
-                              Replace("\n", string.Empty);
+                              Replace("\n", string.Empty).
+                              Replace("\t", string.Empty);
         }
     }
 

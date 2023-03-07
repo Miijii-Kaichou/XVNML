@@ -25,7 +25,7 @@ namespace XVNML.Core.Macros
                 if (IsBlocked[info.process.ID])
                 {
                     SendForRetry((macroSymbol, args, info));
-                    Thread.Sleep(10);
+                    Thread.Sleep(1);
                     AttemptRetries();
                     return;
                 }

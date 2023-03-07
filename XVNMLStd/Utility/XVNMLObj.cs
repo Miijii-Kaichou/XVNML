@@ -49,9 +49,12 @@ namespace XVNML.XVNMLUtility
         {
             DefinedTagsCollection.ManifestTagTypes();
             DefinedMacrosCollection.ManifestMacros();
+
             var xvnmlParser = new Parser();
+
             xvnmlParser.SetTarget(fileTarget);
             xvnmlParser.Parse();
+
             Instance = new XVNMLObj(xvnmlParser);
             return Instance;
         }

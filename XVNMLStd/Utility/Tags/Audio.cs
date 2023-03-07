@@ -30,6 +30,7 @@ namespace XVNML.XVNMLUtility.Tags
             string src = (string?)GetParameterValue("src") ?? string.Empty;
             relativity = rel == null ? default : (DirectoryRelativity)Enum.Parse(typeof(DirectoryRelativity), rel.ToString()!);
             var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + src : src;
+            if (pathFlow == string.Empty) return;
             dirInfo = new DirectoryInfo(pathFlow);
         }
     }

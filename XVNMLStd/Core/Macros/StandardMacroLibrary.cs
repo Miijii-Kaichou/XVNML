@@ -1,16 +1,19 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 
-using XVNML.Core.Dialogue;
 using XVNML.Utility.Macros;
-using XVNML.Utility.Dialogue;
-using System.Threading;
 using System.Text;
+using System;
 
 [MacroLibrary(typeof(StandardMacroLibrary))]
 internal static class StandardMacroLibrary
 {
     #region Control Macros
+    [Macro("del")]
+    internal static void DelayMacroShortHand(MacroCallInfo info, uint milliseconds)
+    {
+        DelayMacro(info, milliseconds);
+    }
     [Macro("delay")]
     internal static void DelayMacro(MacroCallInfo info, uint milliseconds)
     {
@@ -18,6 +21,11 @@ internal static class StandardMacroLibrary
         info.process.Wait(milliseconds);
     }
 
+    [Macro("ins")]
+    internal static void InsertMacroShortHand(MacroCallInfo info, string text)
+    {
+        InsertMacro(info, text);
+    }
     [Macro("insert")]
     internal static void InsertMacro(MacroCallInfo info, string text)
     {
@@ -28,6 +36,12 @@ internal static class StandardMacroLibrary
         info.process.Append(finalText.ToString());
     }
 
+    [Macro("sts")]
+    internal static void SetTextSpeedShortHand(MacroCallInfo info, uint level)
+    {
+        // Speed macro logic here.
+        SetTextSpeed(info, level);
+    }
     [Macro("set_text_speed")]
     internal static void SetTextSpeed(MacroCallInfo info, uint level)
     {
@@ -35,6 +49,11 @@ internal static class StandardMacroLibrary
         info.process.SetProcessRate(level == 0 ? level : 1000 / level);
     }
 
+    [Macro("clr")]
+    internal static void ClearTextShortHand(MacroCallInfo info)
+    {
+        ClearText(info);
+    }
     [Macro("clear")]
     internal static void ClearText(MacroCallInfo info)
     {
@@ -49,10 +68,52 @@ internal static class StandardMacroLibrary
     #endregion
 
     #region Character Insert Macros
+    [Macro("n")]
+    internal static void NewLineMacroShortHand1(MacroCallInfo info)
+    {
+        NewLineMacro(info);
+    }
+    [Macro("nl")]
+    internal static void NewLineMacroShortHand2(MacroCallInfo info)
+    {
+        NewLineMacro(info);
+    }
     [Macro("new_line")]
     internal static void NewLineMacro(MacroCallInfo info)
     {
         info.process.Append('\n');
+    }
+
+    [Macro("t")]
+    internal static void TabMacroShortHand1(MacroCallInfo info)
+    {
+        TabMacro(info);
+    }
+    [Macro("tb")]
+    internal static void TabMacroShortHand2(MacroCallInfo info)
+    {
+        TabMacro(info);
+    }
+    [Macro("tab")]
+    internal static void TabMacro(MacroCallInfo info)
+    {
+        info.process.Append("\t");
+    }
+
+    [Macro("w")]
+    internal static void WhiteSpaceMacroShortHand1(MacroCallInfo info)
+    {
+        WhiteSpaceMacro(info);
+    }
+    [Macro("ws")]
+    internal static void WhiteSpaceMacroShortHand2(MacroCallInfo info)
+    {
+        WhiteSpaceMacro(info);
+    }
+    [Macro("space")]
+    internal static void WhiteSpaceMacro(MacroCallInfo info)
+    {
+        info.process.Append(" ");
     }
 
     [Macro("paren")]
@@ -219,10 +280,55 @@ internal static class StandardMacroLibrary
     #endregion
 
     #region Debug Macros
+    [Macro("pid")]
+    internal static void GetProcessIDMacroShortHand(MacroCallInfo info)
+    {
+        GetProcessIDMacro(info);
+    }
     [Macro("process_id")]
     internal static void GetProcessIDMacro(MacroCallInfo info)
     {
         info.process.Append(info.process.ID.ToString());
+    }
+    #endregion
+
+    #region Cast Macros
+    [Macro("expr")]
+    internal static void SetCastExpressionMacroShortHand(MacroCallInfo info, object value)
+    {
+        SetCastExpressionMacro(info, value);
+    }
+
+    [Macro("expression")]
+    internal static void SetCastExpressionMacro(MacroCallInfo info, object value)
+    {
+        if(value.GetType() == typeof(string))
+        {
+            info.process.ChangeCastExpression(info, value.ToString());
+            return;
+        }
+
+        if (value.GetType() == typeof(int))
+        {
+            info.process.ChangeCastExpression(info, Convert.ToInt32(value));
+            return;
+        }
+    }
+
+    [Macro("voice")]
+    internal static void SetCastVoice(MacroCallInfo info, object value)
+    {
+        if(value.GetType() == typeof(string))
+        {
+            info.process.ChangeCastVoice(info, value.ToString());
+            return;
+        }
+
+        if(value.GetType() == typeof(int))
+        {
+            info.process.ChangeCastVoice(info, Convert.ToInt32(value));
+            return;
+        }
     }
     #endregion
 }

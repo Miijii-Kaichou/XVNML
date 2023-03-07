@@ -1,14 +1,16 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Text;
 using System.Timers;
 using XVNML.Core.Macros;
 using XVNML.Utility.Dialogue;
+using XVNML.Utility.Macros;
 
 namespace XVNML.Core.Dialogue
 {
     public sealed class DialogueWriterProcessor
     {
-        internal static DialogueWriterProcessor Instance { get; private set; }
+        internal static DialogueWriterProcessor? Instance { get; private set; }
 
         public int ID { get; internal set; }
         public string? DisplayingContent
@@ -64,7 +66,7 @@ namespace XVNML.Core.Dialogue
             lock (processLock)
             {
                 _processBuilder.Append(text);
-                DialogueWriter.OnLineSubstringChange?[ID].Invoke(this);
+                DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
             }
         }
 
@@ -73,7 +75,7 @@ namespace XVNML.Core.Dialogue
             lock (processLock)
             {
                 _processBuilder.Append(letter);
-                DialogueWriter.OnLineSubstringChange?[ID].Invoke(this);
+                DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
             }
         }
 
@@ -86,6 +88,7 @@ namespace XVNML.Core.Dialogue
         {
             MacroInvoker.Block(this);
             WasControlledPause = true;
+            CurrentLetter = currentLine?.Content![linePosition];
             DialogueWriter.WaitingForUnpauseCue![ID] = WasControlledPause;
             DialogueWriter.OnLinePause?[ID]?.Invoke(this);
         }
@@ -95,12 +98,6 @@ namespace XVNML.Core.Dialogue
             MacroInvoker.UnBlock(this);
             WasControlledPause = false;
             DialogueWriter.WaitingForUnpauseCue![ID] = WasControlledPause;
-        }
-
-        private void StashLineState()
-        {
-            if (linePosition > currentLine?.Content?.Length - 1) return;
-            CurrentLetter = currentLine?.Content?[linePosition];
         }
 
         internal void Feed()
@@ -126,6 +123,26 @@ namespace XVNML.Core.Dialogue
             delayTimer = null;
         }
 
+        internal void ChangeCastVoice(MacroCallInfo info, string voiceName)
+        {
+
+        }
+
+        internal void ChangeCastVoice(MacroCallInfo info, int voiceIndex)
+        {
+
+        }
+
+        internal void ChangeCastExpression(MacroCallInfo info, string expressionName)
+        {
+
+        }
+
+        internal void ChangeCastExpression(MacroCallInfo info, int expressionIndex)
+        {
+
+        }
+
         internal static DialogueWriterProcessor? Initialize(DialogueScript input, int id)
         {
             if (id < 0) return null;
@@ -149,5 +166,6 @@ namespace XVNML.Core.Dialogue
 
             return Instance;
         }
+
     }
 }
