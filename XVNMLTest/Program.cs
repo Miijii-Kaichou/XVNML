@@ -7,9 +7,11 @@ using XVNML.XVNMLUtility.Tags;
 
 static class Program
 {
+    private static bool finished = false;
     static void Main(string[] args)
     {
-        XVNMLObj obj = XVNMLObj.Create(@"E:\Documents\Repositories\C#\XVNML\XVNMLTest\XVNMLFiles\test0.main.xvnml");
+        XVNMLObj? obj = XVNMLObj.Create(@"E:\Documents\Repositories\C#\XVNML\XVNMLTest\XVNMLFiles\test0.main.xvnml");
+
         if (obj == null) return;
         if (obj.Root == null) return;
 
@@ -23,7 +25,10 @@ static class Program
         DialogueWriter.OnLinePause![0] += MoveNext;
         DialogueWriter.OnDialogueFinish![0] += Finish;
         DialogueWriter.Write(script);
-        return;
+        Console.Clear();
+
+        while (finished == false)
+            continue;
     }
 
     private static void MoveNext(DialogueWriterProcessor sender)

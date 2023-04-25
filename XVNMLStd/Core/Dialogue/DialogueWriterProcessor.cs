@@ -28,12 +28,13 @@ namespace XVNML.Core.Dialogue
         public uint ProcessRate { get; internal set; } = 60;
         public bool IsPaused { get; internal set; }
 
-        public static bool IsStagnant => Instance.lineProcesses.Count == 0;
+        public static bool IsStagnant => Instance?.lineProcesses.Count == 0;
 
         internal ConcurrentQueue<DialogueLine> lineProcesses = new ConcurrentQueue<DialogueLine>();
         internal DialogueLine? currentLine;
         internal bool doDetain;
         internal int linePosition;
+        private int previousLinePosition;
 
         internal bool IsOnDelay => delayTimer != null;
 
@@ -42,6 +43,7 @@ namespace XVNML.Core.Dialogue
         private Timer? delayTimer;
 
         internal object processLock = new object();
+        internal bool HasChanged => previousLinePosition != linePosition;
 
         internal char? CurrentLetter
         {
@@ -141,6 +143,11 @@ namespace XVNML.Core.Dialogue
         internal void ChangeCastExpression(MacroCallInfo info, int expressionIndex)
         {
 
+        }
+
+        internal void UpdatePrevious()
+        {
+            previousLinePosition = linePosition;
         }
 
         internal static DialogueWriterProcessor? Initialize(DialogueScript input, int id)

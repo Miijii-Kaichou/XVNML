@@ -42,10 +42,10 @@
 		@* As I last checked{del::500}, the DialogueLine only has{n}
 		information for the Name{del::500}, the Expression{del::500}, and Voice{del::500}, but not necessarily{n}
 		the Cast that this dialogue pertains to.<
-		@* The CLOSEST information that we got on{del::500|ins::" THAT"|del::500} is the{n}
+		@* The CLOSEST information that we got on{del::500|ins::"THAT"|del::500} is the{n}
 		CastSignatureInfo that's attached to the DialogueLine...{del::500|clr}
-		But nothing more.<
-		@* So we're goinig to have to do some refactoring on our DialogueLine...{del::500|n}
+		But nothing more.< 
+		@* So we're going to have to do some refactoring on our DialogueLine...{del::500|n}
 		to make sure that we're able to have access to the Cast.<
 		@* That way, when we need to change expressions, we can tell the Cast associated with the DialogueLine{n}
 		to change expressions {paren}and{slash}or voice{paren_end|del::500|n}

@@ -9,13 +9,17 @@ namespace XVNML.Core.Macros
 {
     internal static class MacroInvoker
     {
-        private static ConcurrentQueue<(string, object[], MacroCallInfo)> RetryQueue = new ConcurrentQueue<(string, object[], MacroCallInfo)>();
+        internal static bool[] RetriesQueued = new bool[0];
+
+        private static ConcurrentQueue<(string, object[], MacroCallInfo)>[]? RetryQueues;
 
         private static bool[] IsBlocked = new bool[0];
 
         internal static void Init()
         {
+            RetriesQueued = new bool[DialogueWriter.TotalProcesses];
             IsBlocked = new bool[DialogueWriter.TotalProcesses];
+            RetryQueues = new ConcurrentQueue<(string, object[], MacroCallInfo)>[DialogueWriter.TotalProcesses];
         }
 
         internal static void Call(string macroSymbol, object[] args, MacroCallInfo info)
@@ -23,13 +27,10 @@ namespace XVNML.Core.Macros
             lock (info.process.processLock)
             {
                 if (IsBlocked[info.process.ID])
-                {
+                {    
                     SendForRetry((macroSymbol, args, info));
-                    Thread.Sleep(1);
-                    AttemptRetries();
                     return;
                 }
-
 
                 var targetMacro = DefinedMacrosCollection.ValidMacros?[macroSymbol];
 
@@ -43,7 +44,22 @@ namespace XVNML.Core.Macros
 
         private static void SendForRetry((string macroSymbol, object[] args, MacroCallInfo info) value)
         {
-            RetryQueue.Enqueue(value);
+            lock (value.info.process.processLock)
+            {
+                if (RetryQueues == null) return;
+                RetryQueues[value.info.process.ID] ??= new ConcurrentQueue<(string, object[], MacroCallInfo)>();
+                RetryQueues[value.info.process.ID].Enqueue(value);
+                UpdateRetryQueuedFlags(value.info.process);
+            }
+        }
+
+        private static void UpdateRetryQueuedFlags(DialogueWriterProcessor process)
+        {
+            lock (process.processLock)
+            {
+                if (RetryQueues == null) return;
+                RetriesQueued[process.ID] = RetryQueues[process.ID].Count > 0;
+            }
         }
 
         private static object[] FinalizeArgumentData(object[] args, MacroCallInfo info)
@@ -72,7 +88,7 @@ namespace XVNML.Core.Macros
             for (int i = 0; i < args.Length; i++)
             {
                 object? currentArg = args[i];
-                Type? requiredArg = targetMacro?.argumentTypes[i];
+                Type? requiredArg = targetMacro?.argumentTypes?[i];
 
                 // TODO: Convert to whatever type the attribute has
                 currentArg = Convert.ChangeType(currentArg, requiredArg);
@@ -86,18 +102,26 @@ namespace XVNML.Core.Macros
         {
             lock (callInfo.process.processLock)
             {
-                foreach (var (macroSymbol, args) in blockInfo.macroCalls)
+                for (int i = 0; i < blockInfo.macroCalls.Length;)
                 {
+                    var (macroSymbol, args) = blockInfo.macroCalls[i];
                     Call(macroSymbol, args, callInfo);
-                };
+                    i++;
+                }
             }
         }
 
-        private static void AttemptRetries()
+        internal static void AttemptRetries(DialogueWriterProcessor process)
         {
-            if (RetryQueue.IsEmpty) return;
-            RetryQueue.TryDequeue(out var call);
-            Call(call.Item1, call.Item2, call.Item3);
+            lock (process.processLock)
+            {
+                if (RetryQueues == null) return;
+                if (RetryQueues[process.ID] == null) return; 
+                if (RetryQueues[process.ID].IsEmpty) return;
+                RetryQueues[process.ID].TryDequeue(out var call);
+                Call(call.Item1, call.Item2, call.Item3);
+                UpdateRetryQueuedFlags(process);
+            }
         }
 
         internal static void Block(DialogueWriterProcessor process)

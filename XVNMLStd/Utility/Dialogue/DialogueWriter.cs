@@ -54,22 +54,22 @@ namespace XVNML.Utility.Dialogue
 
             totalChannels = totalChannels < 1 ? DefaultTotalChannelsAllocated : totalChannels;
 
-            WriterProcesses         = new DialogueWriterProcessor[totalChannels];
-            OnLineStart             = new DialogueWriterCallback[totalChannels];
-            OnLineSubstringChange   = new DialogueWriterCallback[totalChannels];
-            OnLinePause             = new DialogueWriterCallback[totalChannels];
-            OnNextLine              = new DialogueWriterCallback[totalChannels];
-            OnDialogueFinish        = new DialogueWriterCallback[totalChannels];
-            OnCastChange            = new DialogueWriterCallback[totalChannels];
-            OnCastExpressionChange  = new DialogueWriterCallback[totalChannels];
-            OnCastVoiceChange       = new DialogueWriterCallback[totalChannels];
-            OnPrompt                = new DialogueWriterCallback[totalChannels];
-            OnPromptResonse         = new DialogueWriterCallback[totalChannels];
-            
-            ProcessTimers           = new Timer[totalChannels];
-            
-            ProcessStalling         = new bool[totalChannels];
-            WaitingForUnpauseCue    = new bool[totalChannels];
+            WriterProcesses = new DialogueWriterProcessor[totalChannels];
+            OnLineStart = new DialogueWriterCallback[totalChannels];
+            OnLineSubstringChange = new DialogueWriterCallback[totalChannels];
+            OnLinePause = new DialogueWriterCallback[totalChannels];
+            OnNextLine = new DialogueWriterCallback[totalChannels];
+            OnDialogueFinish = new DialogueWriterCallback[totalChannels];
+            OnCastChange = new DialogueWriterCallback[totalChannels];
+            OnCastExpressionChange = new DialogueWriterCallback[totalChannels];
+            OnCastVoiceChange = new DialogueWriterCallback[totalChannels];
+            OnPrompt = new DialogueWriterCallback[totalChannels];
+            OnPromptResonse = new DialogueWriterCallback[totalChannels];
+
+            ProcessTimers = new Timer[totalChannels];
+
+            ProcessStalling = new bool[totalChannels];
+            WaitingForUnpauseCue = new bool[totalChannels];
         }
 
         /// <summary>
@@ -104,19 +104,18 @@ namespace XVNML.Utility.Dialogue
             if (newProcess == null) { return; }
 
             if (IsInitialized == false) Initialize();
-
             WriterProcesses![channel] = newProcess;
         }
 
 
         private static void Initialize()
         {
-            Console.Clear();
             cancellationTokenSource = new CancellationTokenSource();
             IsInitialized = true;
             _writingThread = new Thread(new ParameterizedThreadStart(WriterThread))
             {
-                Priority = ThreadPriority.BelowNormal
+                Priority = ThreadPriority.BelowNormal,
+                IsBackground = true
             };
             MacroInvoker.Init();
             _writingThread.Start(cancellationTokenSource);
@@ -128,7 +127,7 @@ namespace XVNML.Utility.Dialogue
             while (IsInitialized && !cancelationToken.IsCancellationRequested)
             {
                 DoConcurrentDialogueProcesses();
-                Thread.Sleep(1);
+                Thread.Sleep(10);
             }
         }
 
@@ -153,9 +152,12 @@ namespace XVNML.Utility.Dialogue
             {
                 int id = process.ID;
 
+                process.UpdatePrevious();
+
                 if (process.lineProcesses.Count == 0 && process.currentLine == null) return;
                 if (IsRestricting(process)) return;
 
+                
                 if (process.currentLine == null)
                 {
                     process.lineProcesses.TryDequeue(out process.currentLine);
@@ -164,6 +166,7 @@ namespace XVNML.Utility.Dialogue
 
                 if (process.linePosition > process.currentLine.Content?.Length - 1)
                 {
+                    if (CheckForRetries(process)) return;
                     if (IsRestricting(process)) return;
                     process.IsPaused = true;
                     WriterProcesses![id] = process;
@@ -172,10 +175,28 @@ namespace XVNML.Utility.Dialogue
                     return;
                 }
 
+                if (CheckForRetries(process))
+                {                  
+                    return;
+                }
                 Next(process);
                 process.currentLine!.ReadPosAndExecute(process);
                 UpdateSubString(process);
                 Yield(process);
+            }
+        }
+
+        private static bool CheckForRetries(DialogueWriterProcessor process)
+        {
+            lock (process.processLock)
+            {
+                if (MacroInvoker.RetriesQueued[process.ID])
+                {
+                    MacroInvoker.AttemptRetries(process);
+                    UpdateSubString(process);
+                    return true;
+                }
+                return false;
             }
         }
 
@@ -191,12 +212,16 @@ namespace XVNML.Utility.Dialogue
         private static void UpdateSubString(DialogueWriterProcessor process)
         {
             lock (process.processLock)
-            {
+            {           
                 var id = process.ID;
+
+                if (process.linePosition == -1) return;
                 if (process.linePosition > process.currentLine?.Content?.Length - 1) return;
+                
+                if (IsRestricting(process)) return;
+
                 process.CurrentLetter = process.currentLine?.Content?[process.linePosition];
                 WriterProcesses![id] = process;
-                if (IsRestricting(process)) return;
                 OnLineSubstringChange?[id]?.Invoke(process);
             }
         }
@@ -210,6 +235,7 @@ namespace XVNML.Utility.Dialogue
                 if (process.WasControlledPause) return true;
                 if (process.IsOnDelay) return true;
                 if (WaitingForUnpauseCue![process.ID]) return true;
+
                 return false;
             }
         }
