@@ -90,7 +90,6 @@ namespace XVNML.Core.Dialogue
         {
             MacroInvoker.Block(this);
             WasControlledPause = true;
-            CurrentLetter = currentLine?.Content![linePosition];
             DialogueWriter.WaitingForUnpauseCue![ID] = WasControlledPause;
             DialogueWriter.OnLinePause?[ID]?.Invoke(this);
         }
@@ -113,6 +112,7 @@ namespace XVNML.Core.Dialogue
         internal void Wait(uint milliseconds)
         {
             MacroInvoker.Block(this);
+            WasControlledPause = true;
             delayTimer = new Timer(milliseconds);
             delayTimer.Elapsed += OnTimedEvent;
             delayTimer.AutoReset = false;
@@ -122,6 +122,7 @@ namespace XVNML.Core.Dialogue
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
             MacroInvoker.UnBlock(this);
+            WasControlledPause = false;
             delayTimer = null;
         }
 

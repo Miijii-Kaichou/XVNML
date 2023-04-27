@@ -17,7 +17,7 @@
 	</castDefinitions>
 
 	<dialogue name::"FlagTest">
-		@Hana>Happy {sts::60}If you are reading this{del::750}, great job!<
+		@Hana>Happy {sts::60}If you are reading this{del::750|n}, great job!<
 		@* Now, it's time to incoporate Cast data, such as what emotion{n}
 		they are showing, or how they sound!<
 		@* This will be a new chapter in our XVNML journey!
@@ -42,7 +42,7 @@
 		@* As I last checked{del::500}, the DialogueLine only has{n}
 		information for the Name{del::500}, the Expression{del::500}, and Voice{del::500}, but not necessarily{n}
 		the Cast that this dialogue pertains to.<
-		@* The CLOSEST information that we got on{del::500|ins::"THAT"|del::500} is the{n}
+		@* The CLOSEST information that we got on{del::500|ins::" THAT"|del::500} is the{n}
 		CastSignatureInfo that's attached to the DialogueLine...{del::500|clr}
 		But nothing more.< 
 		@* So we're going to have to do some refactoring on our DialogueLine...{del::500|n}

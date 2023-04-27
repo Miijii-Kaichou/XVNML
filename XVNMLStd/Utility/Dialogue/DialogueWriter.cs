@@ -157,7 +157,7 @@ namespace XVNML.Utility.Dialogue
                 if (process.lineProcesses.Count == 0 && process.currentLine == null) return;
                 if (IsRestricting(process)) return;
 
-                
+
                 if (process.currentLine == null)
                 {
                     process.lineProcesses.TryDequeue(out process.currentLine);
@@ -168,20 +168,21 @@ namespace XVNML.Utility.Dialogue
                 {
                     if (CheckForRetries(process)) return;
                     if (IsRestricting(process)) return;
+
                     process.IsPaused = true;
+
                     WriterProcesses![id] = process;
                     OnLineSubstringChange?[id]?.Invoke(process);
                     OnLinePause?[id]?.Invoke(process!);
+
                     return;
                 }
 
-                if (CheckForRetries(process))
-                {                  
-                    return;
-                }
+
+                if (CheckForRetries(process)) return;
+
                 Next(process);
                 process.currentLine!.ReadPosAndExecute(process);
-                UpdateSubString(process);
                 Yield(process);
             }
         }
@@ -193,9 +194,9 @@ namespace XVNML.Utility.Dialogue
                 if (MacroInvoker.RetriesQueued[process.ID])
                 {
                     MacroInvoker.AttemptRetries(process);
-                    UpdateSubString(process);
                     return true;
                 }
+                UpdateSubString(process);
                 return false;
             }
         }
@@ -212,15 +213,16 @@ namespace XVNML.Utility.Dialogue
         private static void UpdateSubString(DialogueWriterProcessor process)
         {
             lock (process.processLock)
-            {           
+            {
                 var id = process.ID;
 
                 if (process.linePosition == -1) return;
                 if (process.linePosition > process.currentLine?.Content?.Length - 1) return;
-                
+
                 if (IsRestricting(process)) return;
 
                 process.CurrentLetter = process.currentLine?.Content?[process.linePosition];
+
                 WriterProcesses![id] = process;
                 OnLineSubstringChange?[id]?.Invoke(process);
             }
