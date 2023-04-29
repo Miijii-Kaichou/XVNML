@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using XVNML.Core.Dialogue.Enums;
+using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
 using XVNML.Core.Macros;
 using XVNML.Utility.Macros;
@@ -12,20 +13,16 @@ namespace XVNML.Core.Dialogue
 
     public sealed class DialogueLine
     {
-        private static DialogueLine Instance;
+        private static DialogueLine? Instance;
 
-        public string? CastName { get; internal set; }
-
-        public string? Expression { get; internal set; }
-
-        public string? Voice { get; internal set; }
+        internal CastMemberSignature SignatureInfo { get; set; }
+        internal CastInfo CastInfo { get; set; }
 
         private readonly StringBuilder _ContentStringBuilder = new StringBuilder();
         public string? Content { get; private set; }
         public Dictionary<string, (int, int)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
 
         public DialogueLineMode Mode { get; set; }
-        internal CastMemberSignature? SignatureInfo { get; set; }
 
         // Macro Data
         internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
@@ -290,7 +287,7 @@ namespace XVNML.Core.Dialogue
 
             if (DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == false)
             {
-                throw new InvalidMacroException(macroSymbol, Instance);
+                throw new InvalidMacroException(macroSymbol, Instance!);
             }
 
             newBlock!.macroCalls![macroCount].macroSymbol = macroSymbol;
@@ -323,20 +320,6 @@ namespace XVNML.Core.Dialogue
             Content = Content.Replace("\r", string.Empty).
                               Replace("\n", string.Empty).
                               Replace("\t", string.Empty);
-        }
-    }
-
-    internal struct MacroBlockInfo
-    {
-        internal int blockPosition;
-        internal (string macroSymbol, object[] args)[] macroCalls;
-        internal void Initialize(int size)
-        {
-            macroCalls = new (string macroSymbol, object[] args)[size];
-        }
-        internal void SetPosition(int position)
-        {
-            blockPosition = position;
         }
     }
 }

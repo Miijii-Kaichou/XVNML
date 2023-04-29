@@ -137,6 +137,7 @@ namespace XVNML.Core.Lexer
         {
             JumpPosition(1);
         }
+
         public SyntaxToken NextToken()
         {
             if (_position >= SourceText?.Length)

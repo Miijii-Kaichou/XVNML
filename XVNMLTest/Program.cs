@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Text;
 using XVNML.Core.Dialogue;
+using XVNML.Core.Dialogue.Structs;
 using XVNML.Utility.Dialogue;
 using XVNML.XVNMLUtility;
 using XVNML.XVNMLUtility.Tags;

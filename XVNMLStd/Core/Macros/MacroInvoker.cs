@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using XVNML.Core.Dialogue;
+using XVNML.Core.Dialogue.Structs;
 using XVNML.Utility.Dialogue;
 using XVNML.Utility.Macros;
 

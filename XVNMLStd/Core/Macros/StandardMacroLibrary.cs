@@ -128,6 +128,12 @@ internal static class StandardMacroLibrary
         info.process.Append(')');
     }
 
+    [Macro("quot")]
+    internal static void QuoteMacro(MacroCallInfo info)
+    {
+        info.process.Append('"');
+    }
+
     [Macro("curly")]
     internal static void CurlyBracketMacro(MacroCallInfo info)
     {

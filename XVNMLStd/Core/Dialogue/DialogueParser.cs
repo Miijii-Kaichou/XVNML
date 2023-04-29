@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using XVNML.Core.Dialogue.Enums;
+using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
 using XVNML.Core.Tags;
 
@@ -280,9 +281,13 @@ namespace XVNML.Core.Dialogue
                             line = new DialogueLine()
                             {
                                 Mode = (DialogueLineMode)CurrentMode,
-                                CastName = definedSignature.IsPersistent == true ? (_PreviousCast ?? _DefaultCast).Character : cachedData.Character,
-                                Expression = cachedData.Expression,
-                                Voice = cachedData.Voice,
+
+                                CastInfo = new CastInfo() {
+                                    name = definedSignature.IsPersistent == true ? (_PreviousCast ?? _DefaultCast).Character : cachedData.Character,
+                                    expression = cachedData.Expression,
+                                    voice = cachedData.Voice
+                                },
+
                                 SignatureInfo = definedSignature
                             };
                             _evaluatingCast = false;
@@ -316,7 +321,7 @@ namespace XVNML.Core.Dialogue
                 var prompt = promptCacheStack.Pop();
                 var dialogueData = prompt.Item1.Item1;
                 output.Lines[prompt.Item1.Item2].SetEndPointOnAllChoices(linePos);
-                _PreviousCast = (dialogueData.CastName, dialogueData.Expression, dialogueData.Voice);
+                _PreviousCast = (dialogueData.CastInfo.name, dialogueData.CastInfo.expression, dialogueData.CastInfo.voice);
             }
         }
 

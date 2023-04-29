@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Text;
 using System.Timers;
+using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Macros;
 using XVNML.Utility.Dialogue;
 using XVNML.Utility.Macros;
@@ -44,6 +45,9 @@ namespace XVNML.Core.Dialogue
 
         internal object processLock = new object();
         internal bool HasChanged => previousLinePosition != linePosition;
+
+        //Cast Data
+        public CastInfo? CastInfo => currentLine!.CastInfo;
 
         internal char? CurrentLetter
         {
