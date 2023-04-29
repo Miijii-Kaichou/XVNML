@@ -47,6 +47,8 @@ namespace XVNML.Core.TagParser
         //This is important for anything in between tags (for example) <title>Hi</title>
         private StringBuilder _tagValueStringBuilder = new StringBuilder();
         private readonly Queue<Action> _solvingQueue = new Queue<Action>();
+
+        internal Action onParserCompleted;
         #endregion
 
         public void Parse()
@@ -367,6 +369,8 @@ namespace XVNML.Core.TagParser
 
                 nextSolvee();
             }
+
+           onParserCompleted?.Invoke();
         }
 
         internal void QueueForReferenceSolve(Action method)

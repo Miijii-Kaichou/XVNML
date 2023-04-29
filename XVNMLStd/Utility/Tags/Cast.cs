@@ -1,4 +1,5 @@
 ﻿using XVNML.Core.Tags;
+using XVNML.Utility.Diagnostics;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -8,6 +9,9 @@ namespace XVNML.XVNMLUtility.Tags
         const string _CastDir = @"\Cast\";
         PortraitDefinitions? _portraitDefinitions;
         VoiceDefinitions? _voiceDefinitions;
+
+        public Portrait[]? Portraits => _portraitDefinitions?.Portraits;
+        public Voice[]? Voices => _voiceDefinitions?.Voices;
 
         public override void OnResolve(string? fileOrigin)
         {
@@ -24,9 +28,10 @@ namespace XVNML.XVNMLUtility.Tags
             if (source != null)
             {
                 var xvnml = XVNMLObj.Create(fileOrigin + _CastDir + source!.ToString());
+
                 if (xvnml == null) return;
-                var target = xvnml?.source?.GetElement<Cast>(TagName ?? string.Empty) ??
-                           xvnml?.source?.GetElement<Cast>();
+                var target = xvnml?.source?.GetElement<CastDefinitions>().GetCast(TagName ?? string.Empty) ??
+                           xvnml?.source?.GetElement<CastDefinitions>().GetElement<Cast>();
                 if (target == null) return;
                 _portraitDefinitions = target!._portraitDefinitions;
                 _voiceDefinitions = target!._voiceDefinitions;

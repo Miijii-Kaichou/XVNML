@@ -76,6 +76,7 @@ namespace XVNML.Core.Tags
         public TagBase? parentTag;
         public object? value;
         public bool isSelfClosing = false;
+        public bool IsResolved { get; internal set; }
 
         internal Parser? parserRef;
         internal TagEvaluationState tagState;
@@ -84,6 +85,7 @@ namespace XVNML.Core.Tags
 
         private bool _allowParametersValidated = false;
         private bool _allowFlagsValidated = false;
+        
 
 
         private readonly string[] DefaultAllowedParameters = new string[3]
@@ -233,6 +235,8 @@ namespace XVNML.Core.Tags
                 Complain(msg);
                 return;
             }
+
+            IsResolved = true;
         }
 
         protected T[] Collect<T>()

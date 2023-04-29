@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using XVNML.Core.Tags;
+using XVNML.Utility.Diagnostics;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -38,10 +39,16 @@ namespace XVNML.XVNMLUtility.Tags
             var img = GetParameterValue("img");
             try
             {
-                if (img.ToString().ToLower() == "nil") return;
+                if (img.ToString().ToLower() == "nil")
+                {
+                    XVNMLLogger.LogWarning($"Image Source was set to null for: {TagName}", this);
+                    return;
+                }
                 //Iterate through until you find the right source target;
-                imageDefinitions = parserRef!._rootTag?.elements?.Where(tag => tag.GetType() == typeof(ImageDefinitions)).First();
-                
+                imageDefinitions = parserRef!._rootTag?.elements?
+                    .Where(tag => tag.GetType() == typeof(ImageDefinitions))
+                    .First();
+               
                 target = imageDefinitions?.GetElement<Image>(img?.ToString()!);
                 imageTarget = (Image)Convert.ChangeType(target, typeof(Image))!;
             }

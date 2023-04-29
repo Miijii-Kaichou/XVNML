@@ -283,9 +283,9 @@ namespace XVNML.Core.Dialogue
                                 Mode = (DialogueLineMode)CurrentMode,
 
                                 CastInfo = new CastInfo() {
-                                    name = definedSignature.IsPersistent == true ? (_PreviousCast ?? _DefaultCast).Character : cachedData.Character,
-                                    expression = cachedData.Expression,
-                                    voice = cachedData.Voice
+                                    name = definedSignature.IsPersistent ? (_PreviousCast ?? _DefaultCast).Character : cachedData.Character,
+                                    expression = definedSignature.IsPersistent ? (_PreviousCast ?? _DefaultCast).Expression : cachedData.Expression,
+                                    voice = definedSignature.IsPersistent ? (_PreviousCast ?? _DefaultCast).Voice : cachedData.Voice
                                 },
 
                                 SignatureInfo = definedSignature

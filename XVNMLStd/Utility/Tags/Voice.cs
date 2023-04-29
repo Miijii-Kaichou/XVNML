@@ -7,11 +7,16 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("voice", typeof(VoiceDefinitions), TagOccurance.Multiple)]
     public sealed class Voice : TagBase
     {
-        internal Audio? audioTarget;
+        public Audio? audioTarget;
         public override void OnResolve(string? fileOrigin)
         {
-            AllowedParameters = new[] { "audio" };
+            AllowedParameters = new[] 
+            { 
+                "audio" 
+            };
+
             base.OnResolve(fileOrigin);
+
             var audioRef = GetParameter("audio");
             if (audioRef != null && audioRef.isReferencing)
             {
@@ -35,8 +40,9 @@ namespace XVNML.XVNMLUtility.Tags
                 if (audio?.ToString().ToLower() == "nil") return;
                 //Iterate through until you find the right source target;
                 source = parserRef!._rootTag?.elements?
-                    .Where(tag => tag.GetType() == typeof(ImageDefinitions))
+                    .Where(tag => tag.GetType() == typeof(VoiceDefinitions))
                     .First();
+
                 target = source?.GetElement<Audio>(audio?.ToString()!);
                 audioTarget = (Audio)Convert.ChangeType(target, typeof(Audio))!;
             }

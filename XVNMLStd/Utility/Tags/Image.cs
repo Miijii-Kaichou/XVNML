@@ -2,6 +2,7 @@
 using System.IO;
 using XVNML.Core.IO.Enums;
 using XVNML.Core.Tags;
+using XVNML.Utility.Diagnostics;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -39,8 +40,16 @@ namespace XVNML.XVNMLUtility.Tags
         private void ProcessData()
         {
             if (dirInfo == null) return;
-            if (File.Exists(dirInfo.FullName) == false) return;
-            data = File.ReadAllBytes(dirInfo.FullName);
+            if (File.Exists(GetImageTargetPath()) == false)
+            {
+                XVNMLLogger.LogError($"The path {dirInfo.FullName} doesn't exist.", this, this);
+                return;
+            }
+            data = File.ReadAllBytes(GetImageTargetPath());
         }
+
+        public byte[] GetImageData() { return data; }
+
+        public string? GetImageTargetPath() { return dirInfo?.FullName; }
     }
 }

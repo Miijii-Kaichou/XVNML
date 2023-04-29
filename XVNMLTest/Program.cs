@@ -11,7 +11,7 @@ static class Program
     private static bool finished = false;
     static void Main(string[] args)
     {
-        XVNMLObj? obj = XVNMLObj.Create(@"E:\Documents\Repositories\C#\XVNML\XVNMLTest\XVNMLFiles\test0.main.xvnml");
+        var obj = XVNMLObj.Create(@"E:\Documents\Repositories\C#\XVNML\XVNMLTest\XVNMLFiles\test0.main.xvnml");
 
         if (obj == null) return;
         if (obj.Root == null) return;
@@ -19,7 +19,7 @@ static class Program
         Console.OutputEncoding = Encoding.UTF8;
 
         DialogueScript script = obj.Root.GetElement<Dialogue>()?.dialogueOutput!;
-        
+
         DialogueWriter.AllocateChannels(1);
         DialogueWriter.OnLineSubstringChange![0] += UpdateConsole;
         DialogueWriter.OnNextLine![0] += ClearConsole;

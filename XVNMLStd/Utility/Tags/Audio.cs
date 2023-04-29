@@ -34,5 +34,14 @@ namespace XVNML.XVNMLUtility.Tags
             if (pathFlow == string.Empty) return;
             dirInfo = new DirectoryInfo(pathFlow);
         }
+
+        private void ProcessData()
+        {
+            if (dirInfo == null) return;
+            if (File.Exists(GetAudioTargetPath()) == false) return;
+            data = File.ReadAllBytes(GetAudioTargetPath());
+        }
+
+        public string? GetAudioTargetPath() { return dirInfo?.FullName; }
     }
 }

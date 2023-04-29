@@ -8,7 +8,7 @@
 	<castDefinitions>
 		<cast name::"Hana">
 			<portraitDefinitions>
-				<portrait name::"Happy" 	img::$HanaHapp/>
+				<portrait name::"Happy" 	img::$HanaHappy/>
 				<portrait name::"Sad" 		img::$HanaSad/>
 				<portrait name::"Angry" 	img::$HanaAngry/>
 				<portrait name::"Neutral" 	img::$HanaNeutral/>

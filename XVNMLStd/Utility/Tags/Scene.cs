@@ -7,7 +7,7 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("scene", typeof(SceneDefinitions), TagOccurance.Multiple)]
     public sealed class Scene : TagBase
     {
-        internal Image? img;
+        public Image? imageTarget;
         public override void OnResolve(string? fileOrigin)
         {
             AllowedParameters = new[]
@@ -34,9 +34,12 @@ namespace XVNML.XVNMLUtility.Tags
             try
             {
                 //Iterate through until you find the right source target;
-                source = parserRef!._rootTag?.elements?.Where(tag => tag.GetType() == typeof(ImageDefinitions)).First();
+                source = parserRef!._rootTag?.elements?
+                    .Where(tag => tag.GetType() == typeof(ImageDefinitions))
+                    .First();
+
                 target = source?.GetElement<Image>(GetParameter("img")?.ToString()!);
-                img = (Image)Convert.ChangeType(target, typeof(Image))!;
+                imageTarget = (Image)Convert.ChangeType(target, typeof(Image))!;
             }
             catch
             {

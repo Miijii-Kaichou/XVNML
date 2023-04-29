@@ -2,6 +2,7 @@
 using XVNML.Core.Tags;
 using XVNML.XVNMLUtility.Tags;
 using XVNML.Core.Macros;
+using System;
 
 namespace XVNML.XVNMLUtility
 {
@@ -45,18 +46,19 @@ namespace XVNML.XVNMLUtility
             }
         }
 
-        public static XVNMLObj? Create(string fileTarget)
+        public static XVNMLObj Create(string fileTarget)
         {
             DefinedTagsCollection.ManifestTagTypes();
             DefinedMacrosCollection.ManifestMacros();
 
             var xvnmlParser = new Parser();
-
             xvnmlParser.SetTarget(fileTarget);
             xvnmlParser.Parse();
 
             Instance = new XVNMLObj(xvnmlParser);
+
             return Instance;
+
         }
     }
 }
