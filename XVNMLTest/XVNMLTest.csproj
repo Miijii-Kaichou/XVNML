@@ -11,4 +11,8 @@
     <ProjectReference Include="..\XVNMLStd\XVNMLStd.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="XVNMLFiles\Cast\Hana\Voices\" />
+  </ItemGroup>
+
 </Project>

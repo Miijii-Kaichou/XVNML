@@ -1,19 +1,6 @@
 ﻿<proxy name::"test0.main" lang::"CSharp" engine::"native">
 	<castDefinitions>
-		<cast name::"Hana">
-			<portraitDefinitions>
-				<portrait name::"Happy" 	img::$nil/>
-				<portrait name::"Sad" 		img::$nil/>
-				<portrait name::"Angry" 	img::$nil/>
-				<portrait name::"Neutral" 	img::$nil/>
-			</portraitDefinitions>
-			<voiceDefinitions>
-				<voice name::"Yay" 	audio::$nil/>
-				<voice name::"Sigh" audio::$nil/>
-				<voice name::"Omg" 	audio::$nil/>
-				<voice name::"Aww" 	audio::$nil/>
-			</voiceDefinitions>
-		</cast>
+		<cast name::"Hana" src::"Hana/Hana.cast.xvnml"/>
 	</castDefinitions>
 
 	<dialogue name::"FlagTest">
