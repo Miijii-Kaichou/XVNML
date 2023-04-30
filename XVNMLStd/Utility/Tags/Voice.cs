@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using XVNML.Core.Tags;
+using XVNML.Utility.Diagnostics;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -10,9 +11,9 @@ namespace XVNML.XVNMLUtility.Tags
         public Audio? audioTarget;
         public override void OnResolve(string? fileOrigin)
         {
-            AllowedParameters = new[] 
-            { 
-                "audio" 
+            AllowedParameters = new[]
+            {
+                "audio"
             };
 
             base.OnResolve(fileOrigin);
@@ -32,24 +33,29 @@ namespace XVNML.XVNMLUtility.Tags
 
         void OnAudioReferenceSolve()
         {
-            TagBase? source = null;
+            TagBase? audioDefinitions = null;
             TagBase? target = null;
             var audio = GetParameterValue("audio");
             try
             {
-                if (audio?.ToString().ToLower() == "nil") return;
+                if (audio?.ToString().ToLower() == "nil")
+                {
+                    XVNMLLogger.LogWarning($"Audio Source was set to null for: {TagName}", this);
+                    return;
+                }
+
                 //Iterate through until you find the right source target;
-                source = parserRef!._rootTag?.elements?
-                    .Where(tag => tag.GetType() == typeof(VoiceDefinitions))
+                audioDefinitions = parserRef!._rootTag?.elements?
+                    .Where(tag => tag.GetType() == typeof(AudioDefinitions))
                     .First();
 
-                target = source?.GetElement<Audio>(audio?.ToString()!);
+                target = audioDefinitions?.GetElement<Audio>(audio?.ToString()!);
                 audioTarget = (Audio)Convert.ChangeType(target, typeof(Audio))!;
             }
             catch
             {
                 throw new Exception($"Could not find reference called {audio}" +
-                    $"audio {source!.tagTypeName}");
+                    $"audio {audioDefinitions!.tagTypeName}");
             }
         }
     }

@@ -106,13 +106,11 @@ namespace XVNML.Core.Dialogue
 
             int _position = -1;
             int evaluationValue = 0;
-            
+
             string? expression = null;
             string? voice = null;
-            
+
             CastEvaluationMode mode = CastEvaluationMode.Expression;
-            void RaiseCastEvaluationState() => mode = (CastEvaluationMode)(++evaluationValue);
-            void LowerCastEvaluationState() => mode = (CastEvaluationMode)(--evaluationValue);
 
             for (int i = 0; i < tokenizer.Length; i++)
             {
@@ -122,26 +120,26 @@ namespace XVNML.Core.Dialogue
 
                 SyntaxToken? token = Peek(0, true);
 
-
                 if (token?.Type == TokenType.CloseBracket)
                 {
                     Next();
+                    token = Peek(0, true);
                     if (token.Type == TokenType.DoubleColon)
                     {
                         continue;
                     }
 
-                    var isQualifiedToken = tokenizer[_position]?.Type == TokenType.Identifier ||
+                    var isQualifiedToken = token?.Type == TokenType.Identifier ||
                     token.Type == TokenType.Number;
 
 
                     // We have 2 outputs for this one: Expression or Voice
                     // Check for E:: or V::
                     if (isQualifiedToken &&
-                        (tokenizer[_position]?.Text == ExpressionCode.ToString() ||
-                        tokenizer[_position]?.Text == VoiceCode.ToString()))
+                        (token?.Text == ExpressionCode[0].ToString() ||
+                        token?.Text == VoiceCode[0].ToString()))
                     {
-                        mode = tokenizer[_position]?.Text == ExpressionCode.ToString() ? CastEvaluationMode.Expression : CastEvaluationMode.Voice;
+                        mode = token?.Text == ExpressionCode[0].ToString() ? CastEvaluationMode.Expression : CastEvaluationMode.Voice;
 
                         //Otherwise, see where we are. If one of them is null,
                         //check if the other one isn't. If it isn't, we have to fill
@@ -163,23 +161,23 @@ namespace XVNML.Core.Dialogue
                         Next();
                         continue;
                     }
+                }
 
-                    //Otherwise, check the phase
-                    if (mode == CastEvaluationMode.Expression)
-                    {
-                        expression = tokenizer[_position]?.Text;
-                        RaiseCastEvaluationState();
-                        Next();
-                        continue;
-                    }
+                if (token?.Type == TokenType.EOF) break;
 
-                    if (mode == CastEvaluationMode.Voice)
-                    {
-                        voice = tokenizer[_position]?.Text;
-                        LowerCastEvaluationState();
-                        Next();
-                        continue;
-                    }
+                //Otherwise, check the phase
+                if (mode == CastEvaluationMode.Expression)
+                {
+                    expression = token?.Text;
+                    mode = CastEvaluationMode.Voice;
+                    continue;
+                }
+
+                if (mode == CastEvaluationMode.Voice)
+                {
+                    voice = token?.Text;
+                    mode = CastEvaluationMode.Expression;
+                    continue;
                 }
             }
 

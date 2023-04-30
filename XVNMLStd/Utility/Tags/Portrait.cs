@@ -25,14 +25,14 @@ namespace XVNML.XVNMLUtility.Tags
                 // We'll request a ReferenceSolve by stating who
                 // we are, the value we want to resolve, the type of that
                 // value we want to resolve, and where you may be able to resolve it.
-                parserRef!.QueueForReferenceSolve(OnImgReferenceSolve);
+                parserRef!.QueueForReferenceSolve(OnImageReferenceSolve);
                 return;
             }
 
             throw new Exception("\"img\" parameter must pass a reference");
         }
 
-        void OnImgReferenceSolve()
+        void OnImageReferenceSolve()
         {
             TagBase? imageDefinitions = null;
             TagBase? target = null;

@@ -4,6 +4,7 @@ using System.Text;
 using System.Timers;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Macros;
+using XVNML.Utility.Diagnostics;
 using XVNML.Utility.Dialogue;
 using XVNML.Utility.Macros;
 
@@ -168,6 +169,8 @@ namespace XVNML.Core.Dialogue
                 expression = _currentCastInfo!.Value.expression,
                 voice = voiceName
             };
+
+            XVNMLLogger.Log(CurrentCastInfo.ToString(), this);
         }
 
         internal void ChangeCastExpression(MacroCallInfo info, string expressionName)

@@ -30,9 +30,11 @@ namespace XVNML.XVNMLUtility.Tags
             var rel = GetParameterValue("rel");
             string src = (string?)GetParameterValue("src") ?? string.Empty;
             relativity = rel == null ? default : (DirectoryRelativity)Enum.Parse(typeof(DirectoryRelativity), rel.ToString()!);
-            var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + src : src;
+            var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + "Audio\\" + src : src;
+            //var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + XVNMLConfig.RelativePath["Audio"] + src : src;
             if (pathFlow == string.Empty) return;
             dirInfo = new DirectoryInfo(pathFlow);
+            ProcessData();
         }
 
         private void ProcessData()
@@ -42,6 +44,7 @@ namespace XVNML.XVNMLUtility.Tags
             data = File.ReadAllBytes(GetAudioTargetPath());
         }
 
+        public byte[] GetAudioData() { return data; }
         public string? GetAudioTargetPath() { return dirInfo?.FullName; }
     }
 }
