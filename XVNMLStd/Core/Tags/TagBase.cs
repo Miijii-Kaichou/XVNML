@@ -25,7 +25,8 @@ namespace XVNML.Core.Tags
             }
         }
 
-        public int TagID
+        private int? _tagId = null;
+        public int? TagID
         {
             get
             {
@@ -34,7 +35,11 @@ namespace XVNML.Core.Tags
                 {
                     return Convert.ToInt32(id);
                 }
-                return 0;
+                return _tagId;
+            }
+            internal set
+            {
+                _tagId = value;
             }
         }
 
@@ -239,10 +244,23 @@ namespace XVNML.Core.Tags
             IsResolved = true;
         }
 
-        protected T[] Collect<T>()
+        protected T[] Collect<T>() where T : TagBase
         {
+            int id = 0;
             Construct<List<T>>(out var list);
-            elements?.ForEach(item => list.Add((T)Convert.ChangeType(item, typeof(T))));
+            elements?.ForEach(item =>
+            {
+                if (item.TagID == null)
+                {
+                    item.TagID = id++;
+                    list.Add((T)Convert.ChangeType(item, typeof(T)));
+                    return;
+                }
+
+                id = item.TagID.Value;
+                list.Add((T)Convert.ChangeType(item, typeof(T)));
+                id++;
+            });
             return list.ToArray();
         }
 

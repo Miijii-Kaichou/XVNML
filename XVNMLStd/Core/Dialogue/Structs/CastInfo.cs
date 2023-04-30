@@ -11,8 +11,5 @@ namespace XVNML.Core.Dialogue.Structs
         public string? expression;
 
         public string? voice;
-
-        public byte[] expressionData;
-        public byte[] voiceData;
     }
 }

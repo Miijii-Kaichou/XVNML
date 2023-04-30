@@ -4,10 +4,10 @@
 	</castDefinitions>
 
 	<dialogue name::"FlagTest">
-		@ {sts::60}Not sure if this works...>Happy>Wow But I'm going to do the thing anyways.<
-		@Hana>Neutral {sts::60}Hello!<
-		@Hana>Happy If you are reading this{del::750|n|ins::"GREAT JOB!"}<
-		@* Now, it's time to incoporate Cast data{del::500}, such as what emotion{n}
+		@Hana>Smile {sts::60}Not sure if this works...>Happy>Wow But I'm going to do the thing anyways.<
+		@Hana>Smile {sts::60}Hello!<
+		@* If you are reading this{del::750|exp::"Happy"} GREAT JOB!<
+		@Hana>Smile Now, it's time to incoporate Cast data{del::500}, such as what emotion{n}
 		they are showing{del::500}, or how they sound!<
 		@* This will be a new chapter in our XVNML journey!
 		{n}We'll be going over the following concepts:
@@ -36,15 +36,15 @@
 		But nothing more.< 
 		@* So we're going to have to do some refactoring on our DialogueLine...{del::500|n}
 		to make sure that we're able to have access to the Cast.<
-		@* That way{del::250}, when we need to change expressions, we can tell the Cast associated with the DialogueLine{n}
+		@Hana>V::Wow>E::Happy That way{del::250}, when we need to change expressions, we can tell the Cast associated with the DialogueLine{n}
 		to change expressions {paren}and{slash}or voice{paren_end|del::500|n}
 		and then do the proper callbacks!<
-		@* The last thing we need to consider{del::500} is the actual raw data of the image and audio files.<
+		@Hana>Smile The last thing we need to consider{del::500} is the actual raw data of the image and audio files.<
 		@* We want to be able to take those bytes{del::500}, and have it be converted to a specific type.<
 		@* We want to try to limit the heavy-lifting for the person using this tool{del::500|n}
 		but honestly{del::500}, that's our goal!<
-		@* We want to make creating Visual Novels{del::500} and Story-Centric games{del::500} as easy as possible to implement!<
-		@* So with that said{del::1000} let's get on with it!<<
+		@Hana>Happy We want to make creating Visual Novels{del::500} and Story-Centric games{del::500} as easy as possible to implement!<
+		@Hana>Smile So with that said{del::1000|exp::"Happy"|vo::"Wow"} let's get on with it!<<
 	</dialogue>
 
 	<dialogue name::"CDPTest" #dontDetain>

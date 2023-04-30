@@ -105,7 +105,6 @@ namespace XVNML.Core.Dialogue
             const string VoiceCode = "V::";
 
             int _position = -1;
-            int evaluationValue = 0;
 
             string? expression = null;
             string? voice = null;
@@ -124,13 +123,13 @@ namespace XVNML.Core.Dialogue
                 {
                     Next();
                     token = Peek(0, true);
-                    if (token.Type == TokenType.DoubleColon)
+                    if (token?.Type == TokenType.DoubleColon)
                     {
                         continue;
                     }
 
                     var isQualifiedToken = token?.Type == TokenType.Identifier ||
-                    token.Type == TokenType.Number;
+                    token?.Type == TokenType.Number;
 
 
                     // We have 2 outputs for this one: Expression or Voice
@@ -235,12 +234,6 @@ namespace XVNML.Core.Dialogue
             SyntaxToken? Next()
             {
                 _position++;
-                return Peek(0, true);
-            }
-
-            SyntaxToken? StepBack()
-            {
-                _position--;
                 return Peek(0, true);
             }
         }

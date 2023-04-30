@@ -169,8 +169,6 @@ namespace XVNML.Core.Dialogue
                 expression = _currentCastInfo!.Value.expression,
                 voice = voiceName
             };
-
-            XVNMLLogger.Log(CurrentCastInfo.ToString(), this);
         }
 
         internal void ChangeCastExpression(MacroCallInfo info, string expressionName)

@@ -213,6 +213,11 @@ namespace XVNML.Core.Parser
                         ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
                         continue;
 
+                    case TokenType.Number:
+                        if (!_evaluatingCast) continue;
+                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
+                        continue;
+
                     //Direct reference to something (whatever that may be)
                     case TokenType.DollarSign:
                         continue;
@@ -457,7 +462,7 @@ namespace XVNML.Core.Parser
                     }
 
                     var isQualifiedToken = queue[evaluationPos].Type == TokenType.Identifier ||
-        queue[evaluationPos].Type == TokenType.Number;
+                    queue[evaluationPos].Type == TokenType.Number;
 
 
                     // We have 2 outputs for this one: Expression or Voice
@@ -555,12 +560,6 @@ namespace XVNML.Core.Parser
         private static SyntaxToken? Next()
         {
             _position++;
-            return Current;
-        }
-
-        private static SyntaxToken? StepBack()
-        {
-            _position--;
             return Current;
         }
     }
