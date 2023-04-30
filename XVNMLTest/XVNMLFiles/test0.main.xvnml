@@ -4,6 +4,7 @@
 	</castDefinitions>
 
 	<dialogue name::"FlagTest">
+		@ {sts::60}Not sure if this works...>Happy But I'm going to do the thing anyways.<
 		@Hana>Neutral {sts::60}Hello!<
 		@Hana>Happy If you are reading this{del::750|n|ins::"GREAT JOB!"}<
 		@* Now, it's time to incoporate Cast data{del::500}, such as what emotion{n}

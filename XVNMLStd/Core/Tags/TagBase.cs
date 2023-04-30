@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Extensions;
-using XVNML.Core.TagParser;
+using XVNML.Core.Parser;
 
 namespace XVNML.Core.Tags
 {
@@ -78,7 +78,7 @@ namespace XVNML.Core.Tags
         public bool isSelfClosing = false;
         public bool IsResolved { get; internal set; }
 
-        internal Parser? parserRef;
+        internal TagParser? parserRef;
         internal TagEvaluationState tagState;
         internal bool isSettingFlag;
         internal TagParameterInfo? _parameterInfo;
@@ -294,7 +294,7 @@ namespace XVNML.Core.Tags
 
         private void Complain(string msg)
         {
-            Parser.Abort(msg);
+            TagParser.Abort(msg);
         }
     }
 }

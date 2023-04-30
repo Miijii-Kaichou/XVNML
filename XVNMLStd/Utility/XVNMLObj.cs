@@ -1,4 +1,4 @@
-﻿using XVNML.Core.TagParser;
+﻿using XVNML.Core.Parser;
 using XVNML.Core.Tags;
 using XVNML.XVNMLUtility.Tags;
 using XVNML.Core.Macros;
@@ -24,8 +24,8 @@ namespace XVNML.XVNMLUtility
 
         public bool IsBeingUsedAsSource => source != null;
 
-        private readonly Parser xvnmlParser = new Parser();
-        private XVNMLObj(Parser origin)
+        private readonly TagParser xvnmlParser = new TagParser();
+        private XVNMLObj(TagParser origin)
         {
             xvnmlParser = origin;
             if (xvnmlParser._rootTag == null) return;
@@ -51,7 +51,7 @@ namespace XVNML.XVNMLUtility
             DefinedTagsCollection.ManifestTagTypes();
             DefinedMacrosCollection.ManifestMacros();
 
-            var xvnmlParser = new Parser();
+            var xvnmlParser = new TagParser();
             xvnmlParser.SetTarget(fileTarget);
             xvnmlParser.Parse();
 

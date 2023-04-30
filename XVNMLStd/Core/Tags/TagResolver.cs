@@ -11,7 +11,7 @@ namespace XVNML.Core.Tags
                 {
                     var msg = $"Error in Tag Resolver: There is no association with tag {text}";
                     Console.WriteLine(msg);
-                    TagParser.Parser.Abort(msg);
+                    Parser.TagParser.Abort(msg);
                 }
             }
 

@@ -1,5 +1,6 @@
 ﻿using XVNML.Core.Dialogue;
 using XVNML.Core.Tags;
+using XVNML.Core.Parser;
 
 namespace XVNML.XVNMLUtility.Tags
 {

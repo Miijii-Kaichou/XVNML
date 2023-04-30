@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using XVNML.Core.Lexer;
-using XVNML.Core.TagParser.Enums;
+using XVNML.Core.Parser.Enums;
 using XVNML.Core.Tags;
 
-namespace XVNML.Core.TagParser
+namespace XVNML.Core.Parser
 {
-    internal class Parser
+    internal class TagParser
     {
         #region Fields and Properties
         protected int _position = -1;

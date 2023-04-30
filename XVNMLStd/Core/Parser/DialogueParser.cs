@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using XVNML.Core.Dialogue;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
 using XVNML.Core.Tags;
 
 internal delegate void ReferenceLinkerHandler(TagBase? sender, TagBase? referencingTag, Type type);
-namespace XVNML.Core.Dialogue
+
+namespace XVNML.Core.Parser
 {
     internal sealed class DialogueParser
     {
@@ -80,7 +82,7 @@ namespace XVNML.Core.Dialogue
                 {
 
                     ReadyToBuild = false;
-                    line?.AppendContent(token?.Type == TokenType.String  ? $"\"{token?.Text!}\"" : token?.Text!);
+                    line?.AppendContent(token?.Type == TokenType.String ? $"\"{token?.Text!}\"" : token?.Text!);
                     IsReadingLineContent = token?.Type != TokenType.DoubleOpenBracket &&
                     token?.Type != TokenType.OpenBracket;
                     ReadyToBuild = !IsReadingLineContent.Value;
@@ -282,7 +284,8 @@ namespace XVNML.Core.Dialogue
                             {
                                 Mode = (DialogueLineMode)CurrentMode,
 
-                                InitialCastInfo = new CastInfo() {
+                                InitialCastInfo = new CastInfo()
+                                {
                                     name = definedSignature.IsPersistent ? (_PreviousCast ?? _DefaultCast).Character : cachedData.Character,
                                     expression = definedSignature.IsPersistent ? (_PreviousCast ?? _DefaultCast).Expression : cachedData.Expression,
                                     voice = definedSignature.IsPersistent ? (_PreviousCast ?? _DefaultCast).Voice : cachedData.Voice
@@ -298,6 +301,7 @@ namespace XVNML.Core.Dialogue
                             continue;
                         }
                         if (!ReadyToBuild || FindFirstLine) continue;
+
                         line?.FinalizeAndCleanBuilder();
 
                         output.ComposeNewLine(line);
@@ -506,11 +510,11 @@ namespace XVNML.Core.Dialogue
                     continue;
                 }
             }
-            output.Character = (signature.IsAnonymous == true ||
-                                signature.IsNarrative == true) ? string.Empty :
+            output.Character = signature.IsAnonymous == true ||
+                                signature.IsNarrative == true ? string.Empty :
                                 signature.IsPersistent == true ? (_PreviousCast ?? _DefaultCast).Character : characterSymbol.Text;
-            signature.IsPartial = (output.Expression != null && output.Voice == null) ||
-                                    (output.Expression == null && output.Voice != null);
+            signature.IsPartial = output.Expression != null && output.Voice == null ||
+                                    output.Expression == null && output.Voice != null;
             signature.IsFull = !signature.IsPartial;
             signatureDataOutput = signature;
             return;
@@ -530,7 +534,7 @@ namespace XVNML.Core.Dialogue
                 {
                     token = Tokenizer[_position + offset];
 
-                    if ((token?.Type == TokenType.WhiteSpace && includeSpaces == false) ||
+                    if (token?.Type == TokenType.WhiteSpace && includeSpaces == false ||
                         token?.Type == TokenType.SingleLineComment ||
                         token?.Type == TokenType.MultilineComment)
                     {

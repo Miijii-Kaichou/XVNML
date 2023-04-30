@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
@@ -59,13 +60,191 @@ namespace XVNML.Core.Dialogue
             Content = _ContentStringBuilder
                 .ToString()
                 .TrimEnd('<')
-                .Replace(">>", string.Empty)
-                .Replace(">", "{pause}");
+                .Replace(">>", string.Empty);
+
+            // Replacing .Replace(">", "{pause}"); with
+            // with a method that checks if it has >ExpName>VoiceName or anything like that
+            // We'll convert it to BlockNotation just like how we did for the pause
+            for (int i = 0; i < Content.Length; i++)
+            {
+                var character = Content[i];
+
+                if (character == '>') ParsePauseControlCharacter(i);
+            }
 
             // Get rid of excess white spaces
             CleanOutExcessWhiteSpaces();
             RemoveReturnCarriages();
             ExtractMacroBlocks();
+        }
+
+        private void ParsePauseControlCharacter(int startIndex)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = startIndex; i < Content?.Length; i++)
+            {
+                var character = Content[i];
+
+                if (char.IsWhiteSpace(character))
+                {
+                    ConvertToCallBlock(stringBuilder);
+                    break;
+                }
+                stringBuilder.Append(character);
+            }
+        }
+
+        private void ConvertToCallBlock(StringBuilder stringBuilder)
+        {
+            // Use this as reference
+            // @Me Hi!>Smile>000 {clr}How's it going?<<
+
+            Tokenizer tokenizer = new Tokenizer(stringBuilder.ToString(), TokenizerReadState.Local, out bool conflictResult);
+
+            const string ExpressionCode = "E::";
+            const string VoiceCode = "V::";
+
+            int _position = -1;
+            int evaluationValue = 0;
+            
+            string? expression = null;
+            string? voice = null;
+            
+            CastEvaluationMode mode = CastEvaluationMode.Expression;
+            void RaiseCastEvaluationState() => mode = (CastEvaluationMode)(++evaluationValue);
+            void LowerCastEvaluationState() => mode = (CastEvaluationMode)(--evaluationValue);
+
+            for (int i = 0; i < tokenizer.Length; i++)
+            {
+                if (conflictResult) return;
+
+                Next();
+
+                SyntaxToken? token = Peek(0, true);
+
+
+                if (token?.Type == TokenType.CloseBracket)
+                {
+                    Next();
+                    if (token.Type == TokenType.DoubleColon)
+                    {
+                        continue;
+                    }
+
+                    var isQualifiedToken = tokenizer[_position]?.Type == TokenType.Identifier ||
+                    token.Type == TokenType.Number;
+
+
+                    // We have 2 outputs for this one: Expression or Voice
+                    // Check for E:: or V::
+                    if (isQualifiedToken &&
+                        (tokenizer[_position]?.Text == ExpressionCode.ToString() ||
+                        tokenizer[_position]?.Text == VoiceCode.ToString()))
+                    {
+                        mode = tokenizer[_position]?.Text == ExpressionCode.ToString() ? CastEvaluationMode.Expression : CastEvaluationMode.Voice;
+
+                        //Otherwise, see where we are. If one of them is null,
+                        //check if the other one isn't. If it isn't, we have to fill
+                        //information for the one that doesnt' have anything.
+                        if (expression == null && voice != null && isQualifiedToken)
+                        {
+                            expression = voice;
+                            Next();
+                            continue;
+                        }
+
+                        if (voice == null && expression != null && isQualifiedToken)
+                        {
+                            voice = expression;
+                            Next();
+                            continue;
+                        }
+
+                        Next();
+                        continue;
+                    }
+
+                    //Otherwise, check the phase
+                    if (mode == CastEvaluationMode.Expression)
+                    {
+                        expression = tokenizer[_position]?.Text;
+                        RaiseCastEvaluationState();
+                        Next();
+                        continue;
+                    }
+
+                    if (mode == CastEvaluationMode.Voice)
+                    {
+                        voice = tokenizer[_position]?.Text;
+                        LowerCastEvaluationState();
+                        Next();
+                        continue;
+                    }
+                }
+            }
+
+            StringBuilder blockStringBuilder = new StringBuilder("{pause");
+
+            if (expression != null)
+            {
+                blockStringBuilder.Append("|expression::");
+                blockStringBuilder.Append("\"");
+                blockStringBuilder.Append(expression.ToString());
+                blockStringBuilder.Append("\"");
+            }
+
+            if (voice != null)
+            {
+                blockStringBuilder.Append("|voice::");
+                blockStringBuilder.Append("\"");
+                blockStringBuilder.Append(voice.ToString());
+                blockStringBuilder.Append("\"");
+            }
+
+            blockStringBuilder.Append("}");
+
+            Content = Content?.Replace(stringBuilder.ToString(), blockStringBuilder.ToString());
+
+            SyntaxToken? Peek(int offset, bool includeSpaces = false)
+            {
+                if (tokenizer == null) return null;
+                try
+                {
+                    var token = tokenizer[_position + offset];
+
+                    while (true)
+                    {
+                        token = tokenizer[_position + offset];
+
+                        if (token?.Type == TokenType.WhiteSpace && includeSpaces == false ||
+                            token?.Type == TokenType.SingleLineComment ||
+                            token?.Type == TokenType.MultilineComment)
+                        {
+                            _position++;
+                            continue;
+                        }
+
+                        return token;
+                    }
+
+                }
+                catch
+                {
+                    return tokenizer[tokenizer.Length];
+                }
+            }
+
+            SyntaxToken? Next()
+            {
+                _position++;
+                return Peek(0, true);
+            }
+
+            SyntaxToken? StepBack()
+            {
+                _position--;
+                return Peek(0, true);
+            }
         }
 
         private void ExtractMacroBlocks()
