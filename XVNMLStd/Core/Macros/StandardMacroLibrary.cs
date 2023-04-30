@@ -299,7 +299,7 @@ internal static class StandardMacroLibrary
     #endregion
 
     #region Cast Macros
-    [Macro("expr")]
+    [Macro("exp")]
     internal static void SetCastExpressionMacroShortHand(MacroCallInfo info, object value)
     {
         SetCastExpressionMacro(info, value);
@@ -308,33 +308,39 @@ internal static class StandardMacroLibrary
     [Macro("expression")]
     internal static void SetCastExpressionMacro(MacroCallInfo info, object value)
     {
-        if(value.GetType() == typeof(string))
+        if (value.GetType() == typeof(string))
         {
             info.process.ChangeCastExpression(info, value.ToString());
             return;
         }
 
-        if (value.GetType() == typeof(int))
-        {
-            info.process.ChangeCastExpression(info, Convert.ToInt32(value));
-            return;
-        }
+        //if (value.GetType() == typeof(int))
+        //{
+        //    info.process.ChangeCastExpression(info, Convert.ToInt32(value));
+        //    return;
+        //}
+    }
+
+    [Macro("vo")]
+    internal static void SetCastVoiceShortHand(MacroCallInfo info, object value)
+    {
+        SetCastVoice(info, value);
     }
 
     [Macro("voice")]
     internal static void SetCastVoice(MacroCallInfo info, object value)
     {
-        if(value.GetType() == typeof(string))
+        if (value.GetType() == typeof(string))
         {
             info.process.ChangeCastVoice(info, value.ToString());
             return;
         }
 
-        if(value.GetType() == typeof(int))
-        {
-            info.process.ChangeCastVoice(info, Convert.ToInt32(value));
-            return;
-        }
+        //if (value.GetType() == typeof(int))
+        //{
+        //    info.process.ChangeCastVoice(info, Convert.ToInt32(value));
+        //    return;
+        //}
     }
     #endregion
 }

@@ -282,7 +282,7 @@ namespace XVNML.Core.Dialogue
                             {
                                 Mode = (DialogueLineMode)CurrentMode,
 
-                                CastInfo = new CastInfo() {
+                                InitialCastInfo = new CastInfo() {
                                     name = definedSignature.IsPersistent ? (_PreviousCast ?? _DefaultCast).Character : cachedData.Character,
                                     expression = definedSignature.IsPersistent ? (_PreviousCast ?? _DefaultCast).Expression : cachedData.Expression,
                                     voice = definedSignature.IsPersistent ? (_PreviousCast ?? _DefaultCast).Voice : cachedData.Voice
@@ -321,7 +321,7 @@ namespace XVNML.Core.Dialogue
                 var prompt = promptCacheStack.Pop();
                 var dialogueData = prompt.Item1.Item1;
                 output.Lines[prompt.Item1.Item2].SetEndPointOnAllChoices(linePos);
-                _PreviousCast = (dialogueData.CastInfo.name, dialogueData.CastInfo.expression, dialogueData.CastInfo.voice);
+                _PreviousCast = (dialogueData.InitialCastInfo.name, dialogueData.InitialCastInfo.expression, dialogueData.InitialCastInfo.voice);
             }
         }
 

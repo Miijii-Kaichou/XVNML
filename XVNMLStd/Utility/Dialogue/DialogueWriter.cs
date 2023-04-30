@@ -161,6 +161,7 @@ namespace XVNML.Utility.Dialogue
                 if (process.currentLine == null)
                 {
                     process.lineProcesses.TryDequeue(out process.currentLine);
+                    process.CurrentCastInfo = process.currentLine.InitialCastInfo;
                     OnLineStart?[id]?.Invoke(process);
                 }
 

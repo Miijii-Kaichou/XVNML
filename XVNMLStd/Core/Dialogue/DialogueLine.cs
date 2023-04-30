@@ -16,7 +16,7 @@ namespace XVNML.Core.Dialogue
         private static DialogueLine? Instance;
 
         internal CastMemberSignature SignatureInfo { get; set; }
-        internal CastInfo CastInfo { get; set; }
+        internal CastInfo InitialCastInfo { get; set; }
 
         private readonly StringBuilder _ContentStringBuilder = new StringBuilder();
         public string? Content { get; private set; }

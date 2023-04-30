@@ -46,8 +46,38 @@ namespace XVNML.Core.Dialogue
         internal object processLock = new object();
         internal bool HasChanged => previousLinePosition != linePosition;
 
+        private CastInfo? _currentCastInfo;
         //Cast Data
-        public CastInfo? CastInfo => currentLine!.CastInfo;
+        public CastInfo? CurrentCastInfo
+        {
+            get
+            {
+                return _currentCastInfo;
+            }
+            set
+            {
+                var previous = _currentCastInfo;
+
+                _currentCastInfo = value;
+
+                if (previous == null) return;
+
+                if (_currentCastInfo!.Value.name?.Equals(previous!.Value.name) == false)
+                {
+                    DialogueWriter.OnCastChange?[ID]?.Invoke(this);
+                }
+
+                if (_currentCastInfo!.Value.expression?.Equals(previous!.Value.expression) == false)
+                {
+                    DialogueWriter.OnCastExpressionChange?[ID]?.Invoke(this);
+                }
+
+                if (_currentCastInfo!.Value.voice?.Equals(previous!.Value.voice) == false)
+                {
+                    DialogueWriter.OnCastVoiceChange?[ID]?.Invoke(this);
+                }
+            }
+        }
 
         internal char? CurrentLetter
         {
@@ -132,22 +162,22 @@ namespace XVNML.Core.Dialogue
 
         internal void ChangeCastVoice(MacroCallInfo info, string voiceName)
         {
-
-        }
-
-        internal void ChangeCastVoice(MacroCallInfo info, int voiceIndex)
-        {
-
+            CurrentCastInfo = new CastInfo()
+            {
+                name = _currentCastInfo!.Value.name,
+                expression = _currentCastInfo!.Value.expression,
+                voice = voiceName
+            };
         }
 
         internal void ChangeCastExpression(MacroCallInfo info, string expressionName)
         {
-
-        }
-
-        internal void ChangeCastExpression(MacroCallInfo info, int expressionIndex)
-        {
-
+            CurrentCastInfo = new CastInfo()
+            {
+                name = _currentCastInfo!.Value.name,
+                expression = expressionName,
+                voice = _currentCastInfo!.Value.voice,
+            };
         }
 
         internal void UpdatePrevious()
