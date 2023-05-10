@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using XVNML.Core.Dialogue;
@@ -33,6 +34,7 @@ namespace XVNML.Utility.Dialogue
 
         internal static DialogueWriterProcessor?[]? WriterProcesses { get; private set; }
         internal static bool[]? WaitingForUnpauseCue { get; private set; }
+        public static Stack<string>? ResponseStack { get; private set; } = new Stack<string>();
 
         private static Thread? _writingThread;
         private static CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -154,26 +156,53 @@ namespace XVNML.Utility.Dialogue
 
                 process.UpdatePrevious();
 
-                if (process.lineProcesses.Count == 0 && process.currentLine == null) return;
+                if (process.AtEnd && process.currentLine == null)
+                {
+                    // That was the last dialogue
+                    OnDialogueFinish?[process!.ID]?.Invoke(process);
+                    Reset(process);
+                    return;
+                }
+
                 if (IsRestricting(process)) return;
 
 
                 if (process.currentLine == null)
                 {
-                    process.lineProcesses.TryDequeue(out process.currentLine);
-                    process.CurrentCastInfo = process.currentLine.InitialCastInfo;
+                    process.UpdateProcess();
+                    process.CurrentCastInfo = process.currentLine?.InitialCastInfo;
                     OnLineStart?[id]?.Invoke(process);
                 }
 
-                if (process.linePosition > process.currentLine.Content?.Length - 1)
+                if (process.linePosition > process.currentLine?.Content?.Length - 1)
                 {
                     if (CheckForRetries(process)) return;
                     if (IsRestricting(process)) return;
 
-                    process.IsPaused = true;
 
                     WriterProcesses![id] = process;
                     OnLineSubstringChange?[id]?.Invoke(process);
+
+                    if (process.currentLine?.SignatureInfo?.CurrentRole == Role.Interrogative && process.inPrompt == false && process.Response == null)
+                    {
+                        process.inPrompt = true;
+                        OnPrompt?[id]?.Invoke(process);
+                        return;
+                    }
+
+                    if (process.currentLine?.SignatureInfo?.CurrentRole == Role.Interrogative &&
+                        process.Response != null)
+                    {
+                        ResponseStack?.Push(process.Response);
+                        process.Response = null;
+                        Reset(process);
+                        OnPromptResonse?[id]?.Invoke(process);
+                        process.inPrompt = false;
+                        return;
+                    }
+
+
+                    process.IsPaused = true;
                     OnLinePause?[id]?.Invoke(process!);
 
                     return;
@@ -183,7 +212,7 @@ namespace XVNML.Utility.Dialogue
                 if (CheckForRetries(process)) return;
 
                 Next(process);
-                process.currentLine!.ReadPosAndExecute(process);
+                process.currentLine?.ReadPosAndExecute(process);
                 Yield(process);
             }
         }
@@ -235,6 +264,7 @@ namespace XVNML.Utility.Dialogue
             {
                 if (ProcessStalling![process.ID]) return true;
                 if (process.IsPaused) return true;
+                if (process.inPrompt) return true;
                 if (process.WasControlledPause) return true;
                 if (process.IsOnDelay) return true;
                 if (WaitingForUnpauseCue![process.ID]) return true;
@@ -287,13 +317,7 @@ namespace XVNML.Utility.Dialogue
                 }
                 if (process.IsPaused == false) return;
                 process.IsPaused = false;
-                if (process.lineProcesses.Count == 0)
-                {
-                    // That was the last dialogue
-                    OnDialogueFinish?[process!.ID]?.Invoke(process);
-                    Reset(process);
-                    return;
-                }
+
                 OnNextLine?[process.ID]?.Invoke(process);
                 Reset(process);
             }

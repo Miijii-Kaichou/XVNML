@@ -3,7 +3,7 @@
 		<cast name::"Hana" src::"Hana/Hana.cast.xvnml"/>
 	</castDefinitions>
 
-	<dialogue name::"FlagTest">
+	<dialogue name::"Introduction">
 		@Hana>Smile {sts::60}Not sure if this works...>Happy>Wow But I'm going to do the thing anyways.<
 		@Hana>Smile {sts::60}Hello!<
 		@* If you are reading this{del::750|exp::"Happy"} GREAT JOB!<
@@ -45,6 +45,27 @@
 		but honestly{del::500}, that's our goal!<
 		@Hana>Happy We want to make creating Visual Novels{del::500} and Story-Centric games{del::500} as easy as possible to implement!<
 		@Hana>Smile So with that said{del::1000|exp::"Happy"|vo::"Wow"} let's get on with it!<<
+	</dialogue>
+
+	<dialogue name::"PromptsExample">
+		@ {del::1000|sts::100}HEY THERE!!!<
+		? Are you winning son?>>
+		(
+			("Yes")>
+				@ That's my boi!<<
+			("No")>
+				? Why are you not winning?>>
+				(
+					("I'm not confident in myself")>
+						@ Well you need to fix it!<<
+					("Today's just not the time for me to win anything...")>
+						@ Well, there is always tomorrow.<
+					    @ The standard library is pretty wonky...<<
+				)
+				@ Ahhhh! Okay.<<
+		)
+		@ Wow...<
+		@ That should of worked I hope...<<
 	</dialogue>
 
 	<dialogue name::"CDPTest" #dontDetain>

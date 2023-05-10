@@ -4,6 +4,7 @@
 using XVNML.Utility.Macros;
 using System.Text;
 using System;
+using System.Runtime.CompilerServices;
 
 [MacroLibrary(typeof(StandardMacroLibrary))]
 internal static class StandardMacroLibrary
@@ -222,6 +223,18 @@ internal static class StandardMacroLibrary
     internal static void PercentMacro(MacroCallInfo info)
     {
         info.process.Append('%');
+    }
+
+    [Macro("plus")]
+    internal static void PlusMacro(MacroCallInfo info)
+    {
+        info.process.Append('+');
+    }
+
+    [Macro("equals")]
+    internal static void EqualsMacro(MacroCallInfo info)
+    {
+        info.process.Append('=');
     }
 
     [Macro("trade")]

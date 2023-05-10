@@ -18,9 +18,11 @@ static class Program
 
         Console.OutputEncoding = Encoding.UTF8;
 
-        DialogueScript script = obj.Root.GetElement<Dialogue>()?.dialogueOutput!;
+        DialogueScript script = obj.Root.GetElement<Dialogue>("PromptsExample")?.dialogueOutput!;
 
         DialogueWriter.AllocateChannels(1);
+        DialogueWriter.OnPrompt![0] += DisplayPrompts;
+        DialogueWriter.OnPromptResonse![0] += RespondToPrompt;
         DialogueWriter.OnLineSubstringChange![0] += UpdateConsole;
         DialogueWriter.OnNextLine![0] += ClearConsole;
         DialogueWriter.OnLinePause![0] += MoveNext;
@@ -30,6 +32,32 @@ static class Program
 
         while (finished == false)
             continue;
+    }
+
+    private static void DisplayPrompts(DialogueWriterProcessor sender)
+    {
+        // We need to somehow graph the current line's prompt answers,
+        // as well as where the process to hope to in response.
+        var prompts = sender.FetchPrompts();
+        Console.Write('\n');
+        List<string> responses = prompts!.Keys.ToList();
+        for(int i = 0; i < responses.Count; i++)
+        {
+            var promptData = responses[i];
+            Console.Write($"{i}) {promptData}\n");
+        }
+
+        var response = Console.ReadLine();
+        sender.JumpToStartingLineFromResponse(responses[Convert.ToInt32(response)]);
+    }
+
+    private static void RespondToPrompt(DialogueWriterProcessor sender)
+    {
+        // This is the point where we take the answer of our prompt
+        // and tell the process to hope to a specified index of DialogueLines that it has.
+        // This luckily will increment as normal, because jumping to a dialogue line is already
+        // simple with predetermined indexes to go to.
+        ClearConsole(sender);
     }
 
     private static void MoveNext(DialogueWriterProcessor sender)
@@ -42,6 +70,7 @@ static class Program
     private static void Finish(DialogueWriterProcessor sender)
     {
         DialogueWriter.ShutDown();
+        finished = true;
         return;
     }
 

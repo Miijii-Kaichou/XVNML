@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Timers;
 using XVNML.Core.Dialogue.Structs;
@@ -26,18 +28,21 @@ namespace XVNML.Core.Dialogue
             }
         }
 
+        public string? Response { get; internal set; }
+        public bool AtEnd => lineProcessIndex > lineProcesses.Count - 1;
         public bool WasControlledPause { get; private set; }
         public uint ProcessRate { get; internal set; } = 60;
         public bool IsPaused { get; internal set; }
 
         public static bool IsStagnant => Instance?.lineProcesses.Count == 0;
 
-        internal ConcurrentQueue<DialogueLine> lineProcesses = new ConcurrentQueue<DialogueLine>();
+        internal ConcurrentBag<DialogueLine> lineProcesses = new ConcurrentBag<DialogueLine>();
         internal DialogueLine? currentLine;
+        internal int lineProcessIndex = -1;
         internal bool doDetain;
         internal int linePosition;
-        private int previousLinePosition;
 
+        private int previousLinePosition;
         internal bool IsOnDelay => delayTimer != null;
 
         private StringBuilder _processBuilder = new StringBuilder();
@@ -46,8 +51,12 @@ namespace XVNML.Core.Dialogue
 
         internal object processLock = new object();
         internal bool HasChanged => previousLinePosition != linePosition;
+        internal bool inPrompt;
 
         private CastInfo? _currentCastInfo;
+        private Stack<int> _returnPointStack = new Stack<int>();
+        private bool _lastProcessWasClosing;
+
         //Cast Data
         public CastInfo? CurrentCastInfo
         {
@@ -62,6 +71,7 @@ namespace XVNML.Core.Dialogue
                 _currentCastInfo = value;
 
                 if (previous == null) return;
+                if (_currentCastInfo == null) return;
 
                 if (_currentCastInfo!.Value.name?.Equals(previous!.Value.name) == false)
                 {
@@ -92,6 +102,7 @@ namespace XVNML.Core.Dialogue
                 Feed();
             }
         }
+
 
         internal void SetProcessRate(uint rate)
         {
@@ -193,7 +204,7 @@ namespace XVNML.Core.Dialogue
             Instance = new DialogueWriterProcessor()
             {
                 ID = id,
-                lineProcesses = new ConcurrentQueue<DialogueLine>(),
+                lineProcesses = new ConcurrentBag<DialogueLine>(),
                 _processBuilder = new StringBuilder(),
                 currentLine = null,
                 CurrentLetter = null,
@@ -202,13 +213,50 @@ namespace XVNML.Core.Dialogue
                 doDetain = false
             };
 
-            foreach (DialogueLine line in input.Lines)
+            foreach (DialogueLine line in input.Lines.Reverse())
             {
-                Instance.lineProcesses.Enqueue(line);
+                Instance.lineProcesses.Add(line);
             }
-
-            return Instance;
+                return Instance;
         }
 
+        public Dictionary<string, (int, int)>? FetchPrompts()
+        {
+            return currentLine?.PromptContent;
+        }
+
+        public void JumpToStartingLineFromResponse(string response)
+        {
+            if (currentLine == null) return;
+            inPrompt = false;
+            var prompt = currentLine.PromptContent[response];
+            _returnPointStack.Push(prompt.rp);
+            lineProcessIndex = prompt.sp-1;
+            Response = response;
+        }
+
+        public void JumpToReturningLineFromResponse()
+        {
+            if (currentLine == null) return;
+            if (_returnPointStack.Count == 0) return;
+            lineProcessIndex = _returnPointStack.Pop();
+        }
+
+        internal void NextProcess() => lineProcessIndex++;
+
+        internal void UpdateProcess()
+        {
+            if (_returnPointStack.Count != 0 && _lastProcessWasClosing)
+            {
+                lineProcessIndex = _returnPointStack.Pop();
+                currentLine = lineProcesses.ElementAt(lineProcessIndex);
+                _lastProcessWasClosing = currentLine.data.isClosingLine;
+                return;
+            }
+            NextProcess();
+            if (AtEnd) return;
+            currentLine = lineProcesses.ElementAt(lineProcessIndex);
+            _lastProcessWasClosing = currentLine.data.isClosingLine;
+        }
     }
 }

@@ -11,24 +11,30 @@ using XVNML.Utility.Macros;
 
 namespace XVNML.Core.Dialogue
 {
+    internal struct LineDataInfo
+    {
+        internal int lineIndex;
+        internal bool isPartOfResponse;
+        internal bool isClosingLine;
+        public DialogueLineMode Mode { get; set; }
+    }
 
     public sealed class DialogueLine
     {
         private static DialogueLine? Instance;
 
-        internal CastMemberSignature SignatureInfo { get; set; }
+        internal string? lastAddedResponse;
+        internal LineDataInfo data;
+        internal Stack<string> LastAddedResponseStack = new Stack<string>();
+        internal CastMemberSignature? SignatureInfo { get; set; }
         internal CastInfo InitialCastInfo { get; set; }
 
         private readonly StringBuilder _ContentStringBuilder = new StringBuilder();
         public string? Content { get; private set; }
-        public Dictionary<string, (int, int)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
-
-        public DialogueLineMode Mode { get; set; }
+        public Dictionary<string, (int sp, int rp)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
 
         // Macro Data
         internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
-        internal int textRate;
-        private const int _DefaultPromptCapacity = 4;
 
         internal void ReadPosAndExecute(DialogueWriterProcessor process)
         {
@@ -45,14 +51,25 @@ namespace XVNML.Core.Dialogue
 
         internal void SetNewChoice(string choice, int lineID)
         {
-            PromptContent.Add(choice, (lineID, int.MaxValue));
+            if (PromptContent.ContainsKey(choice)) return;
+            PromptContent.Add(choice, (lineID, -1));
+            LastAddedResponseStack.Push(choice);
         }
 
-        internal void SetEndPointOnAllChoices(int lineID)
+        internal void SetReturnPointOnAllChoices(int lineID)
         {
-            for (int i = 0; i < PromptContent.Count(); i++)
-                PromptContent[PromptContent.Keys.ToArray()[i]] = (PromptContent[PromptContent.Keys.ToArray()[i]].Item1, lineID);
+            if (LastAddedResponseStack.Count == 0) return;
+            while (LastAddedResponseStack.Count > 0)
+            {
+                var response = LastAddedResponseStack.Pop();
+                var sp = PromptContent[response].Item1;
+                PromptContent[response] = (sp, lineID);
+            }
+            data.isPartOfResponse = true;
         }
+
+        internal void MarkAsClosing() => data.isClosingLine = true;
+
 
         internal void FinalizeAndCleanBuilder()
         {
@@ -490,6 +507,11 @@ namespace XVNML.Core.Dialogue
             Content = Content.Replace("\r", string.Empty).
                               Replace("\n", string.Empty).
                               Replace("\t", string.Empty);
+        }
+
+        internal void UpdateStartPosition(int sp)
+        {
+
         }
     }
 }
