@@ -109,6 +109,7 @@ namespace XVNML.Core.Parser
                     //Denote the start of a dialoge
                     case TokenType.At:
                         if (FindFirstLine) FindFirstLine = !FindFirstLine;
+                        TryPopFromPromptCacheStack(promptCacheStack, linesCollected + 1, ref output);
                         castSignatureCollection = new List<SyntaxToken>();
                         castSignatureString = new StringBuilder();
                         ChangeDialogueParserMode(DialogueParserMode.Dialogue);
@@ -119,6 +120,7 @@ namespace XVNML.Core.Parser
                     //Denote the start of a prompt
                     case TokenType.Prompt:
                         if (FindFirstLine) FindFirstLine = !FindFirstLine;
+                        TryPopFromPromptCacheStack(promptCacheStack, linesCollected + 1, ref output);
                         castSignatureCollection = new List<SyntaxToken>();
                         castSignatureString = new StringBuilder();
                         ChangeDialogueParserMode(DialogueParserMode.Prompt);
@@ -249,10 +251,7 @@ namespace XVNML.Core.Parser
                             {
                                 var expected = Peek(1)?.Type;
                                 IsCreatingPromptChoices = expected == TokenType.Identifier || expected == TokenType.String;
-                                if (promptCacheStack?.Peek().Item2.Count != 0 && promptCacheStack?.Peek().Item2.Peek() != null)
-                                {
-                                    _ = promptCacheStack?.Peek().Item2.Pop();
-                                }
+
                                 continue;
                             }
                             if (!IsCreatingPromptChoices == true) throw new InvalidDataException($"Expected a {TokenType.String} or {TokenType.Identifier} at Line {token?.Line}, Position {token?.Position + 1}");
@@ -277,7 +276,8 @@ namespace XVNML.Core.Parser
                                     continue;
                                 }
                             }
-                            TryPopFromPromptCacheStack(promptCacheStack, linesCollected+1, ref output);
+                            if (promptCacheStack?.Peek().Item2.Count != 0) promptCacheStack?.Peek().Item2.Clear();
+                            TryPopFromPromptCacheStack(promptCacheStack, linesCollected + 1, ref output);
                             continue;
                         }
                         throw new InvalidDataException($"Invalid Token at Line {token?.Line}, Position {token?.Position}");
@@ -315,7 +315,7 @@ namespace XVNML.Core.Parser
                         }
                         if (!ReadyToBuild || FindFirstLine) continue;
 
-                        line.data.lineIndex = linesCollected+1;
+                        line.data.lineIndex = linesCollected + 1;
                         line.data.isPartOfResponse = promptCacheStack?.Count == 0 ? false : promptCacheStack?.Peek().Item1.Item2 != 0;
                         if (isClosingLine) line.MarkAsClosing();
                         isClosingLine = false;
@@ -323,13 +323,6 @@ namespace XVNML.Core.Parser
                         output.ComposeNewLine(line);
 
                         linesCollected++;
-                        if (responseLengthStack.Count > 0)
-                        {
-                            var temp = responseLengthStack.Pop();
-                            temp.Up();
-                            responseLengthStack.Push(temp);
-                            Console.Write(responseLengthStack.Peek());
-                        }
                         if (line?.SignatureInfo?.CurrentRole != Role.Interrogative) continue;
                         promptCacheStack?.Push(((line, linesCollected), new Stack<string>()));
                         continue;

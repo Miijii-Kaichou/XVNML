@@ -49,23 +49,53 @@
 
 	<dialogue name::"PromptsExample">
 		@ {del::1000|sts::100}HEY THERE!!!<
-		? Are you winning son?>>
+		@ Oh no...> Some rando is talking to me...<
+		@ You start to panick and pace back and forth.<
+		? I've got to come up with something{del::500} and fast...>>
 		(
-			("Yes")>
-				@ That's my boi!<<
-			("No")>
-				? Why are you not winning?>>
+			("Simply greet back...")>
+				@ Uhhh... Hello!<
+				@ Good morning!<
+				@ Do I...> happen to know you by any chance?<
+				? I'm not sure... Have we meet anywhere?>>
 				(
-					("I'm not confident in myself")>
-						@ Well you need to fix it!<<
-					("Today's just not the time for me to win anything...")>
-						@ Well, there is always tomorrow.<
-					    @ The standard library is pretty wonky...<<
+					("Go with it and say that you have.")>
+						@ Oh wow. Interesting.<
+						@ We might of gone to the same school, I suppose.<<
+					("Be honest and say that you haven't")>
+						@ Well, I know this is out of no where...<
+						@ But let's just be friends.<
+						@ You two then proceed to exchange numbers.<<
 				)
-				@ Ahhhh! Okay.<<
+				@ From then on, your conversation with this person went swimmingly.<<
+			("Tell them a weird and bizarre joke...")>
+				@ You...<
+				@ What?!<
+				@ They proceed to start laughing.<
+				@ You are absolutely a weirdo!<
+				@ I like that.<
+				@ The person then presents a smile.<
+				@ From then on, you share each others humour.<< 
+			("Be rude and ignore them...")>
+				@ HEY!!!!<
+				? WHY ARE YOU IGNORING ME?!>>
+				(
+					("Proceed to ignore them.")>
+						@ Sadly, a friendship that would of came to be...<
+						@ Never did...<<
+					("Be honest and say that you weren't sure if they were calling out to you")>
+						@ The person begins to apologize for yelling.<
+						@ They go on to explain that they have a strange social disorder where they
+						think everyone is there friend...<
+						@ Despite knowing full well they don't know them, and they're practically strangers.<
+						@ You also explain how you are a socially awkward person, and have a hard time interacting with people.<
+						@ From then on, you two grow a beautiful bond.<<
+				)
 		)
-		@ Wow...<
-		@ That should of worked I hope...<<
+		@ If you had made it this far, congratulations!<
+		@ Prompts are now fully functional...<
+		@ That also means that XVNML is OUT OF ALPHA STAGE!!!<
+		@ All Core Features have officially been implemented.<<
 	</dialogue>
 
 	<dialogue name::"CDPTest" #dontDetain>
