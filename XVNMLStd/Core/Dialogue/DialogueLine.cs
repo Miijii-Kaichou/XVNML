@@ -56,16 +56,26 @@ namespace XVNML.Core.Dialogue
             LastAddedResponseStack.Push(choice);
         }
 
-        internal void SetReturnPointOnAllChoices(int lineID)
+        internal void SetReturnPointOnAllChoices(int index)
         {
             if (LastAddedResponseStack.Count == 0) return;
             while (LastAddedResponseStack.Count > 0)
             {
                 var response = LastAddedResponseStack.Pop();
                 var sp = PromptContent[response].Item1;
-                PromptContent[response] = (sp, lineID);
+                PromptContent[response] = (sp, index);
             }
             data.isPartOfResponse = true;
+        }
+
+        internal void CorrectReturnPointOnAllChoices(int index)
+        {
+            var promptResponses = PromptContent.Keys;
+            foreach (var promptResponse in promptResponses )
+            {
+                var sp = PromptContent[promptResponse].sp;
+                PromptContent[promptResponse] = (sp, index);
+            }
         }
 
         internal void MarkAsClosing() => data.isClosingLine = true;

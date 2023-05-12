@@ -217,7 +217,7 @@ namespace XVNML.Core.Dialogue
             {
                 Instance.lineProcesses.Add(line);
             }
-                return Instance;
+            return Instance;
         }
 
         public Dictionary<string, (int, int)>? FetchPrompts()
@@ -231,15 +231,20 @@ namespace XVNML.Core.Dialogue
             inPrompt = false;
             var prompt = currentLine.PromptContent[response];
             _returnPointStack.Push(prompt.rp);
-            lineProcessIndex = prompt.sp-1;
+            lineProcessIndex = prompt.sp - 1;
             Response = response;
         }
 
         public void JumpToReturningLineFromResponse()
         {
-            if (currentLine == null) return;
             if (_returnPointStack.Count == 0) return;
-            lineProcessIndex = _returnPointStack.Pop();
+            var index = _returnPointStack.Pop();
+            if (lineProcessIndex == index + 1)
+            {
+                JumpToReturningLineFromResponse();
+                return;
+            }
+            lineProcessIndex = index;
         }
 
         internal void NextProcess() => lineProcessIndex++;
@@ -248,7 +253,7 @@ namespace XVNML.Core.Dialogue
         {
             if (_returnPointStack.Count != 0 && _lastProcessWasClosing)
             {
-                lineProcessIndex = _returnPointStack.Pop();
+                JumpToReturningLineFromResponse();
                 currentLine = lineProcesses.ElementAt(lineProcessIndex);
                 _lastProcessWasClosing = currentLine.data.isClosingLine;
                 return;
