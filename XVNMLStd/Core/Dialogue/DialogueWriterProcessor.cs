@@ -230,9 +230,10 @@ namespace XVNML.Core.Dialogue
             if (currentLine == null) return;
             inPrompt = false;
             var prompt = currentLine.PromptContent[response];
-            _returnPointStack.Push(prompt.rp);
             lineProcessIndex = prompt.sp - 1;
             Response = response;
+            if (_returnPointStack.Count != 0 && _returnPointStack.Peek() == prompt.rp) return;
+            _returnPointStack.Push(prompt.rp);
         }
 
         public void JumpToReturningLineFromResponse()
@@ -254,6 +255,7 @@ namespace XVNML.Core.Dialogue
             if (_returnPointStack.Count != 0 && _lastProcessWasClosing)
             {
                 JumpToReturningLineFromResponse();
+                if (AtEnd) return;
                 currentLine = lineProcesses.ElementAt(lineProcessIndex);
                 _lastProcessWasClosing = currentLine.data.isClosingLine;
                 return;

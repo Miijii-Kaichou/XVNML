@@ -104,7 +104,21 @@
 		@* Scene loading and transitions, Text Motions...<
 		@*>Happy>Wow And so much more!!!<
 		@*>Smile If you made it this far...<
-		@*>Happy Then we've officially implmented prompts!<<
+		@*>Happy Then we've officially implmented prompts!<
+		?Hana>Smile What do you want to do today?>>
+		(
+			("Create more visual novels...")>
+				@Hana>Happy Good choice!<
+				@* I actually have a really great story idea!<
+				@* Want to hear it?<<
+			("Hang out with you...")>
+				@Hana>Happy Hehe!<
+				@* That's very sweet!<
+				@* Let's hang out then!<<
+			("Sleep...")>
+				@* You must be tired then.<
+				@* I'll always be here if you want to do anything!<<
+		)
 	</dialogue>
 
 	<dialogue name::"CDPTest000" #dontDetain>
