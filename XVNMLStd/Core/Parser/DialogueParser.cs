@@ -307,8 +307,8 @@ namespace XVNML.Core.Parser
                                 InitialCastInfo = new CastInfo()
                                 {
                                     name = definedSignature.IsPersistent ? (_PreviousCast ?? _DefaultCast).Character : cachedData.Character,
-                                    expression = definedSignature.IsPersistent ? (_PreviousCast ?? _DefaultCast).Expression : cachedData.Expression,
-                                    voice = definedSignature.IsPersistent ? (_PreviousCast ?? _DefaultCast).Voice : cachedData.Voice
+                                    expression = definedSignature.IsPersistent && cachedData.Expression == string.Empty ? (_PreviousCast ?? _DefaultCast).Expression : cachedData.Expression,
+                                    voice = definedSignature.IsPersistent && cachedData.Expression == string.Empty ? (_PreviousCast ?? _DefaultCast).Voice : cachedData.Voice
                                 },
 
                                 SignatureInfo = definedSignature

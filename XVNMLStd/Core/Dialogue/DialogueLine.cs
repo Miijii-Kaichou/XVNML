@@ -71,11 +71,12 @@ namespace XVNML.Core.Dialogue
 
         internal void CorrectReturnPointOnAllChoices(int index)
         {
-            var promptResponses = PromptContent.Keys;
-            foreach (var promptResponse in promptResponses )
+            var temp = PromptContent;
+            PromptContent = new Dictionary<string, (int sp, int rp)>();
+            foreach (var kvp in temp)
             {
-                var sp = PromptContent[promptResponse].sp;
-                PromptContent[promptResponse] = (sp, index);
+                var response = kvp.Key;
+                PromptContent.Add(response, (temp[response].sp, index));
             }
         }
 

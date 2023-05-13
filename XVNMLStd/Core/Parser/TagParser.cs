@@ -48,7 +48,7 @@ namespace XVNML.Core.Parser
         private StringBuilder _tagValueStringBuilder = new StringBuilder();
         private readonly Queue<Action> _solvingQueue = new Queue<Action>();
 
-        internal Action onParserCompleted;
+        internal Action _onParserCompleted;
         #endregion
 
         public void Parse()
@@ -370,7 +370,7 @@ namespace XVNML.Core.Parser
                 nextSolvee();
             }
 
-           onParserCompleted?.Invoke();
+           _onParserCompleted?.Invoke();
         }
 
         internal void QueueForReferenceSolve(Action method)
