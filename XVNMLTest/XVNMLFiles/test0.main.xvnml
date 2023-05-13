@@ -48,54 +48,34 @@
 	</dialogue>
 
 	<dialogue name::"PromptsExample">
-		@ {del::1000|sts::100}HEY THERE!!!<
-		@ Oh no...> Some rando is talking to me...<
-		@ You start to panick and pace back and forth.<
-		? I've got to come up with something{del::500} and fast...>>
+		@Hana {sts::60}I've just received some great news!<
+		@*>Happy>Wow You definitely want to hear this.> 
+		Because this will change the way how we use XVNML2U from here one.<
+		@*>Smile It's a feature that XVNML2U definitely needed.<
+		@* And the feature in question...<
+		@* Can you guess?<
+		@* {del::500}.{del::500}.{del::500}.>Happy>Wow IT'S PROMPTS!!!<
+		@Hana>Smile We're in the process of taking the updated XVNML API and implementing prompts for you.<
+		@* The user should be able to type in a prompt{pause}, and inside the game, you can click on the different responses.<
+		@* From then, you can then have branching dialogues that does different things!<
+		@Hana>Happy A feature that's essential for creating Visual Novels!<
+		?Hana>Smile So tell me, how do you think about XVNML2U so far?>>
 		(
-			("Simply greet back...")>
-				@ Uhhh... Hello!<
-				@ Good morning!<
-				@ Do I...> happen to know you by any chance?<
-				? I'm not sure... Have we meet anywhere?>>
-				(
-					("Go with it and say that you have.")>
-						@ Oh wow. Interesting.<
-						@ We might of gone to the same school, I suppose.<<
-					("Be honest and say that you haven't")>
-						@ Well, I know this is out of no where...<
-						@ But let's just be friends.<
-						@ You two then proceed to exchange numbers.<<
-				)
-				@ From then on, your conversation with this person went swimmingly.<<
-			("Tell them a weird and bizarre joke...")>
-				@ You...<
-				@ What?!<
-				@ They proceed to start laughing.<
-				@ You are absolutely a weirdo!<
-				@ I like that.<
-				@ The person then presents a smile.<
-				@ From then on, you share each others humour.<< 
-			("Be rude and ignore them...")>
-				@ HEY!!!!<
-				? WHY ARE YOU IGNORING ME?!>>
-				(
-					("Proceed to ignore them.")>
-						@ Sadly, a friendship that would of came to be...<
-						@ Never did...<<
-					("Be honest and say that you weren't sure if they were calling out to you")>
-						@ The person begins to apologize for yelling.<
-						@ They go on to explain that they have a strange social disorder where they
-						think everyone is there friend...<
-						@ Despite knowing full well they don't know them, and they're practically strangers.<
-						@ You also explain how you are a socially awkward person, and have a hard time interacting with people.<
-						@ From then on, you two grow a beautiful bond.<<
-				)
+			("It's pretty awesome!")>
+			@Hana>Happy>Wow That's great to hear!<<
+
+			("I'm not too sure yet...")>
+			@Hana Well, this isn't all that XVNML2U can offer.<
+			@Hana Give it a couple of months{pause}, It'll come out super special.<
+			@Hana>Happy I promise you that!<<
+
+			("It could do better")>
+			@Hana Well of course it can.<
+			@Hana We're only beginning to scratch the service.<
+			@Hana Eventually, it'll be a tool that will change how people does
+			story-centric content inside Unity.<
+			@Hana>Happy You can bet your lucky stars on that one.<<
 		)
-		@ If you had made it this far, congratulations!<
-		@ Prompts are now fully functional...<
-		@ That also means that XVNML is OUT OF ALPHA STAGE!!!<
-		@ All Core Features have officially been implemented.<<
 	</dialogue>
 
 	<dialogue name::"CDPTest" #dontDetain>

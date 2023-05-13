@@ -32,6 +32,7 @@ namespace XVNML.Core.Dialogue
         private readonly StringBuilder _ContentStringBuilder = new StringBuilder();
         public string? Content { get; private set; }
         public Dictionary<string, (int sp, int rp)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
+        public DialogueLineMode Mode => data.Mode;
 
         // Macro Data
         internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
