@@ -36,8 +36,8 @@ namespace XVNML.Core.Dialogue
 
         public static bool IsStagnant => Instance?.lineProcesses.Count == 0;
 
-        internal ConcurrentBag<DialogueLine> lineProcesses = new ConcurrentBag<DialogueLine>();
-        internal DialogueLine? currentLine;
+        internal ConcurrentBag<SkripterLine> lineProcesses = new ConcurrentBag<SkripterLine>();
+        internal SkripterLine? currentLine;
         internal int lineProcessIndex = -1;
         internal bool doDetain;
         internal int linePosition;
@@ -204,7 +204,7 @@ namespace XVNML.Core.Dialogue
             Instance = new DialogueWriterProcessor()
             {
                 ID = id,
-                lineProcesses = new ConcurrentBag<DialogueLine>(),
+                lineProcesses = new ConcurrentBag<SkripterLine>(),
                 _processBuilder = new StringBuilder(),
                 currentLine = null,
                 CurrentLetter = null,
@@ -213,7 +213,7 @@ namespace XVNML.Core.Dialogue
                 doDetain = false
             };
 
-            foreach (DialogueLine line in input.Lines.Reverse())
+            foreach (SkripterLine line in input.Lines.Reverse())
             {
                 Instance.lineProcesses.Add(line);
             }

@@ -24,6 +24,13 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
             var rel = GetParameterValue("rel");
             string src = (string?)GetParameterValue("src") ?? string.Empty;
+
+            if (src?.ToString().ToLower() == "nil")
+            {
+                XVNMLLogger.LogWarning($"Image Source was set to null for: {TagName}", this);
+                return;
+            }
+
             relativity = rel == null ? default : (DirectoryRelativity)Enum.Parse(typeof(DirectoryRelativity), rel.ToString()!);
             var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + "Images\\" + src : src;
             //var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + XVNMLConfig.RelativePath["Image"] + src : src;

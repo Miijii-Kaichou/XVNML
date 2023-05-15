@@ -15,7 +15,7 @@ internal delegate void ReferenceLinkerHandler(TagBase? sender, TagBase? referenc
 
 namespace XVNML.Core.Parser
 {
-    internal sealed class DialogueParser
+    internal sealed class SkriptrParser
     {
         public string Source { get; }
 
@@ -40,9 +40,9 @@ namespace XVNML.Core.Parser
         public bool FindFirstLine { get; private set; }
 
         private bool _evaluatingCast = false;
-        private static Stack<DialogueLine> ResolveStack = new Stack<DialogueLine>();
+        private static Stack<SkripterLine> ResolveStack = new Stack<SkripterLine>();
 
-        public DialogueParser(string dialogueSource, out DialogueScript output)
+        public SkriptrParser(string dialogueSource, out DialogueScript output)
         {
             _position = -1;
             _Conflict = false;
@@ -66,9 +66,9 @@ namespace XVNML.Core.Parser
             if (Tokenizer == null) return null;
 
             DialogueScript output = new DialogueScript();
-            DialogueLine line = new DialogueLine();
+            SkripterLine line = new SkripterLine();
             int linesCollected = -1;
-            Stack<((DialogueLine, int), Stack<string>)>? promptCacheStack = new Stack<((DialogueLine, int), Stack<string>)>();
+            Stack<((SkripterLine, int), Stack<string>)>? promptCacheStack = new Stack<((SkripterLine, int), Stack<string>)>();
             Stack<int> responseLengthStack = new Stack<int>();
             
 
@@ -296,7 +296,7 @@ namespace XVNML.Core.Parser
                             DefineCastSignature(castSignatureString, castSignatureCollection, CurrentMode, out (string? Character, string? Expression, string? Voice) cachedData, out CastMemberSignature definedSignature);
 
                             //Create a line
-                            line = new DialogueLine()
+                            line = new SkripterLine()
                             {
                                 data = new LineDataInfo()
                                 {
@@ -338,16 +338,16 @@ namespace XVNML.Core.Parser
             return output;
         }
 
-        private static void PurgeResolveStack(int index, ref Stack<DialogueLine> resolveStack)
+        private static void PurgeResolveStack(int index, ref Stack<SkripterLine> resolveStack)
         {
             while (resolveStack.Count != 0)
             {
-                DialogueLine line = resolveStack.Pop();
+                SkripterLine line = resolveStack.Pop();
                 line.CorrectReturnPointOnAllChoices(index);
             }
         }
 
-        private static void TryPopFromPromptCacheStack(Stack<((DialogueLine, int), Stack<string>)>? promptCacheStack, int lineIndex, ref DialogueScript output)
+        private static void TryPopFromPromptCacheStack(Stack<((SkripterLine, int), Stack<string>)>? promptCacheStack, int lineIndex, ref DialogueScript output)
         {
             if (promptCacheStack == null) return;
             if (promptCacheStack?.Count != 0 &&

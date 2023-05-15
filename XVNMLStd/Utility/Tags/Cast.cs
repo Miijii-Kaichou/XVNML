@@ -6,7 +6,7 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("cast", new[] { typeof(Source), typeof(CastDefinitions) }, TagOccurance.Multiple)]
     public sealed class Cast : TagBase
     {
-        const string _CastDir = @"\Cast\";
+        const string _CastDir = @"\Casts\";
         PortraitDefinitions? _portraitDefinitions;
         VoiceDefinitions? _voiceDefinitions;
 
@@ -23,6 +23,12 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
 
             var source = GetParameterValue("src");
+
+            if (source?.ToString().ToLower() == "nil")
+            {
+                XVNMLLogger.LogWarning($"Cast Source was set to null for: {TagName}", this);
+                return;
+            }
 
             // Check if a source has been specified.
             if (source != null)

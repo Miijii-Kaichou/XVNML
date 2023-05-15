@@ -19,7 +19,10 @@ namespace XVNML.XVNMLUtility.Tags
             // Allow Parameters and Flags
             // Before you resolve!
             AllowedParameters = new[]{
-                "cast"
+                "cast",
+                "useScene",
+                "enterWith",
+                "exitWith",
             };
 
             AllowedFlags = new[]
@@ -43,7 +46,7 @@ namespace XVNML.XVNMLUtility.Tags
         private void AnalyzeDialogue()
         {
             if (Script == null) return;
-            _ = new DialogueParser(Script, out dialogueOutput);
+            _ = new SkriptrParser(Script, out dialogueOutput);
         }
     }
 }

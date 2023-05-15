@@ -1,7 +1,14 @@
-﻿<proxy name::"test0.main" lang::"CSharp" engine::"native">
+﻿<proxy name::"test0.main" lang::"CSharp" engine::"Native">
 	<castDefinitions>
 		<cast name::"Hana" src::"Hana/Hana.cast.xvnml"/>
 	</castDefinitions>
+
+	<sceneDefinitions>
+		<scene name::"Home" 			src::$nil/>
+		<scene name::"OutsideOfSchool" 	src::"School/OutsideOfSchool.scene.xvnml"/>
+		<scene name::"Class1A" 			src::$nil/>
+		<scene name::"Cafeteria" 		src::$nil/>
+	</sceneDefinitions>
 
 	<dialogue name::"BasicXVNMLTutorial">
 		@Hana>Smile {sts::60}Not sure if this works...>V::000>E::Happy But I'm going to do the thing anyways.<
@@ -50,7 +57,7 @@
 	<dialogue name::"PromptsExample">
 		@Hana>Smile {sts::60}I've just received some great news!<
 		@*>Happy>Wow You definitely want to hear this.> 
-		Because this will change the way how we use XVNML2U from here one.<
+		Because this will change the way how we use XVNML2U from here on.<
 		@*>Smile It's a feature that XVNML2U definitely needed.<
 		@* And the feature in question...<
 		?* Can you guess?{pause}>>
@@ -87,7 +94,7 @@
 
 			("I'm not too sure yet...")>
 			@Hana Well, this isn't all that XVNML2U can offer.<
-			@* Give it a couple of months{pause}, It'll come out super special.<
+			@* Give it a couple of months{pause}, it'll come out super special.<
 			@*>Happy I promise you that!<<
 
 			("It could do better")>
@@ -97,7 +104,7 @@
 			story-centric content inside Unity.<
 			@*>Happy You can bet your lucky stars on that one.<<
 		)
-		@*>Smile In the future, we'll be about to do
+		@*>Smile In the future, we'll be about to do 
 		a lot more with XVNML2U.<
 		@* Like Cast Reactions, playing audio {paren}not including Cast Voices{paren_end},
 		moving cast to a position of the screen...<
@@ -119,20 +126,5 @@
 				@* You must be tired then.<
 				@* I'll always be here if you want to do anything!<<
 		)
-	</dialogue>
-
-	<dialogue name::"CDPTest000" #dontDetain>
-		@ {sts::60}We're going to have this just in case we mess up our{n}
-		CDP implementation.{del::4000}<
-		@ We'll be using this for the remaining duration of the{n}
-		XVNML2U project creation process.{del::4000}<<
-	</dialogue>
-
-	<dialogue name::"CDPTest001" #dontDetain>
-		@ {sts::60}CDPTest #2{del::4000}<
-		@ If a woman owns a farm{del::1000|n}she's a smoker.{del::4000}<
-		@ {quot}What does that even mean?!{quot|del::1000|n}you may be asking...{del::4000}<
-		@ It means if she's a hard worker, she's a keeper, because she {quot|ins::"smokes"|quot|del::2000|n}
-		out the competition{del::4000}<
 	</dialogue>
 </proxy>

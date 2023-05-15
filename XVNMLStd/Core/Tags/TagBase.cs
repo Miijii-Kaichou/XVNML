@@ -82,8 +82,8 @@ namespace XVNML.Core.Tags
         public object? value;
         public bool isSelfClosing = false;
         public bool IsResolved { get; internal set; }
+        public TagParser? ParserRef { get; internal set; }
 
-        internal TagParser? parserRef;
         internal TagEvaluationState tagState;
         internal bool isSettingFlag;
         internal TagParameterInfo? _parameterInfo;
@@ -189,36 +189,36 @@ namespace XVNML.Core.Tags
             var validTagType = DefinedTagsCollection.ValidTagTypes![tagTypeName!];
             var config = validTagType.Item2;
             var appearanceLocation = validTagType.Item3;
-            var currentFile = validTagType.Item4 ?? parserRef!.fileTarget;
+            var currentFile = validTagType.Item4 ?? ParserRef!.fileTarget;
             var msg = string.Empty;
 
             if (config.TagOccurance == TagOccurance.PragmaLocalOnce)
             {
-                if (appearanceLocation.Contains(parentTag!) && currentFile == parserRef!.fileTarget)
+                if (appearanceLocation.Contains(parentTag!) && currentFile == ParserRef!.fileTarget)
                 {
-                    msg = $"This tag already exists within the scope {parentTag!.TagName}. There can only be 1: Tag Name {TagName}: {parserRef.fileTarget}";
+                    msg = $"This tag already exists within the scope {parentTag!.TagName}. There can only be 1: Tag Name {TagName}: {ParserRef.fileTarget}";
                     Console.WriteLine(msg);
                     Complain(msg);
                     return;
                 }
 
                 validTagType.Item3.Add(parentTag!);
-                validTagType.Item4 = parserRef!.fileTarget!;
+                validTagType.Item4 = ParserRef!.fileTarget!;
                 DefinedTagsCollection.ValidTagTypes[tagTypeName!] = validTagType;
             }
 
             if (config.TagOccurance == TagOccurance.PragmaOnce)
             {
-                if (appearanceLocation.Count > 0 && currentFile == parserRef!.fileTarget)
+                if (appearanceLocation.Count > 0 && currentFile == ParserRef!.fileTarget)
                 {
-                    msg = $"This tag already exists within the document. There can only be 1: Tag Name {TagName}: {parserRef.fileTarget}";
+                    msg = $"This tag already exists within the document. There can only be 1: Tag Name {TagName}: {ParserRef.fileTarget}";
                     Console.WriteLine(msg);
                     Complain(msg);
                     return;
                 }
 
                 validTagType.Item3.Add(parentTag!);
-                validTagType.Item4 = parserRef!.fileTarget!;
+                validTagType.Item4 = ParserRef!.fileTarget!;
                 DefinedTagsCollection.ValidTagTypes[tagTypeName!] = validTagType;
             }
 
@@ -226,7 +226,7 @@ namespace XVNML.Core.Tags
             //If there is a parent tag, but doesn't match the depending tag
             if (parentTag != null && config.DependingTags != null && config.DependingTags.Contains(parentTag.GetType().Name) == false)
             {
-                msg = $"Invalid Depending Tag {parentTag}. The tag {tagTypeName} depends on {config.DependingTags.JoinStringArray()}: {parserRef!.fileTarget}";
+                msg = $"Invalid Depending Tag {parentTag}. The tag {tagTypeName} depends on {config.DependingTags.JoinStringArray()}: {ParserRef!.fileTarget}";
                 Console.WriteLine(msg);
                 Complain(msg);
                 return;
@@ -235,7 +235,7 @@ namespace XVNML.Core.Tags
             //If there is no parent tag, but it depends on a tag
             if (parentTag == null && config.DependingTags != null)
             {
-                msg = $"The tag {tagTypeName} depends on {config.DependingTags}, but there is nothing.: {parserRef!.fileTarget}";
+                msg = $"The tag {tagTypeName} depends on {config.DependingTags}, but there is nothing.: {ParserRef!.fileTarget}";
                 Console.WriteLine(msg);
                 Complain(msg);
                 return;

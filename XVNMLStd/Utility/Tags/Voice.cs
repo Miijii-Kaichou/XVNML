@@ -24,7 +24,7 @@ namespace XVNML.XVNMLUtility.Tags
                 // We'll request a ReferenceSolve by stating who
                 // we are, the value we want to resolve, the type of that
                 // value we want to resolve, and where you may be able to resolve it.
-                parserRef!.QueueForReferenceSolve(OnAudioReferenceSolve);
+                ParserRef!.QueueForReferenceSolve(OnAudioReferenceSolve);
                 return;
             }
 
@@ -45,7 +45,7 @@ namespace XVNML.XVNMLUtility.Tags
                 }
 
                 //Iterate through until you find the right source target;
-                audioDefinitions = parserRef!._rootTag?.elements?
+                audioDefinitions = ParserRef!._rootTag?.elements?
                     .Where(tag => tag.GetType() == typeof(AudioDefinitions))
                     .First();
 

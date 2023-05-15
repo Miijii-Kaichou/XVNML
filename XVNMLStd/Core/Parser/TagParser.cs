@@ -8,7 +8,7 @@ using XVNML.Core.Tags;
 
 namespace XVNML.Core.Parser
 {
-    internal class TagParser
+    public sealed class TagParser
     {
         #region Fields and Properties
         protected int _position = -1;
@@ -400,7 +400,7 @@ namespace XVNML.Core.Parser
 
             var dirInfo = new DirectoryInfo(fileTarget!);
             var fileOrigin = dirInfo.Parent?.ToString();
-            _topOfStack.parserRef = this;
+            _topOfStack.ParserRef = this;
             _topOfStack.OnResolve(fileOrigin);
 
             _rootTag = _tagStackFrame.Pop();

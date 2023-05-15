@@ -23,7 +23,7 @@ namespace XVNML.XVNMLUtility.Tags
                 "lang",
                 "screenWidth",
                 "screenHeight",
-                "aspectRation"
+                "aspectRatio"
             };
 
             base.OnResolve(fileOrigin);

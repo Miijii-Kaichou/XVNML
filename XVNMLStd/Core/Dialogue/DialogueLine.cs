@@ -19,9 +19,9 @@ namespace XVNML.Core.Dialogue
         public DialogueLineMode Mode { get; set; }
     }
 
-    public sealed class DialogueLine
+    public sealed class SkripterLine
     {
-        private static DialogueLine? Instance;
+        private static SkripterLine? Instance;
 
         internal string? lastAddedResponse;
         internal LineDataInfo data;

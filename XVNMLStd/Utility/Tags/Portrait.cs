@@ -25,7 +25,7 @@ namespace XVNML.XVNMLUtility.Tags
                 // We'll request a ReferenceSolve by stating who
                 // we are, the value we want to resolve, the type of that
                 // value we want to resolve, and where you may be able to resolve it.
-                parserRef!.QueueForReferenceSolve(OnImageReferenceSolve);
+                ParserRef!.QueueForReferenceSolve(OnImageReferenceSolve);
                 return;
             }
 
@@ -45,7 +45,7 @@ namespace XVNML.XVNMLUtility.Tags
                     return;
                 }
                 //Iterate through until you find the right source target;
-                imageDefinitions = parserRef!._rootTag?.elements?
+                imageDefinitions = ParserRef!._rootTag?.elements?
                     .Where(tag => tag.GetType() == typeof(ImageDefinitions))
                     .First();
                
