@@ -21,6 +21,11 @@ namespace XVNML.XVNMLUtility.Tags
 
         public override void OnResolve(string? fileOrigin)
         {
+            AllowedParameters = new[] {
+                "enterWith",
+                "exitWith"
+            };
+
             AllowedFlags = new[]
             {
                 "dontDetain",
@@ -28,7 +33,7 @@ namespace XVNML.XVNMLUtility.Tags
             };
 
             base.OnResolve(fileOrigin);
-            
+
             Script = value?.ToString();
             Name = TagName;
 
