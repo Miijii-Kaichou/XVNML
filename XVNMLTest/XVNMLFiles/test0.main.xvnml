@@ -10,51 +10,8 @@
 		<scene name::"Cafeteria" 		src::$nil/>
 	</sceneDefinitions>
 
-	<dialogue name::"BasicXVNMLTutorial">
-		@Hana>Smile {sts::60}Not sure if this works...>V::000>E::Happy But I'm going to do the thing anyways.<
-		@Hana>Smile {sts::60}Hello!<
-		@* If you are reading this{del::750|exp::"Happy"} GREAT JOB!<
-		@Hana>Smile Now, it's time to incoporate Cast data{del::500}, such as what emotion{n}
-		they are showing{del::500}, or how they sound!<
-		@* This will be a new chapter in our XVNML journey!
-		{n}We'll be going over the following concepts:
-		{n|w|bul1|w|ins::"Dialogues"|del::500|n
-		|w|bul1|w|ins::"Prompts"|del::500|n
-		|w|bul1|w|ins::"Prompts"|paren|ins::"Input"|paren_end|del::500|n
-		|w|bul1|w|ins::"Cast Signatures"|del::500|n
-		|w|bul1|w|ins::"Cast Definitions"|del::500|n
-		|w|bul1|w|ins::"Custom Tags"|del::500|n
-		|w|bul1|w|ins::"Custom Macros"|del::500|n
-		|w|bul1|w|ins::"Expressions"|del::500|n
-		|w|bul1|w|ins::"Voices"|del::500|n
-		|w|bul1|w|ins::"Settings Up Poses"|del::500|n
-		|w|bul1|w|ins::"The Dialogue Writer"|del::500|n
-		|w|bul1|w|ins::"Different Dialogue Writer Events"|del::500|n
-		|w|bul1|w|ell|ins::"and much, much more!"}<
-		@* I don't even know how far I can even take this.<
-		@* There's a lot of stuff that we have to consider{n}
-		when it comes to implementing the Cast Expressions and Voices.<
-		@* First is the actually stashing of the current cast.<
-		@* As I last checked{del::500}, the DialogueLine only has{n}
-		information for the Name{del::500}, the Expression{del::500}, and Voice{del::500}, but not necessarily{n}
-		the Cast that this dialogue pertains to.<
-		@* The CLOSEST information that we got on{del::500|ins::" THAT"|del::500} is the{n}
-		CastSignatureInfo that's attached to the DialogueLine...{del::500|clr}
-		But nothing more.< 
-		@* So we're going to have to do some refactoring on our DialogueLine...{del::500|n}
-		to make sure that we're able to have access to the Cast.<
-		@Hana>V::Wow>E::Happy That way{del::250}, when we need to change expressions, we can tell the Cast associated with the DialogueLine{n}
-		to change expressions {paren}and{slash}or voice{paren_end|del::500|n}
-		and then do the proper callbacks!<
-		@Hana>Smile The last thing we need to consider{del::500} is the actual raw data of the image and audio files.<
-		@* We want to be able to take those bytes{del::500}, and have it be converted to a specific type.<
-		@* We want to try to limit the heavy-lifting for the person using this tool{del::500|n}
-		but honestly{del::500}, that's our goal!<
-		@Hana>Happy We want to make creating Visual Novels{del::500} and Story-Centric games{del::500} as easy as possible to implement!<
-		@Hana>Smile So with that said{del::1000|exp::"Happy"|vo::"Wow"} let's get on with it!<<
-	</dialogue>
-
 	<dialogue name::"PromptsExample">
+		[OutsideOfSchool]
 		@Hana>Smile {sts::60}I've just received some great news!<
 		@*>Happy>Wow You definitely want to hear this.> 
 		Because this will change the way how we use XVNML2U from here on.<

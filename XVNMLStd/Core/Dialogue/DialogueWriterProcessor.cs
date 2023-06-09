@@ -57,6 +57,8 @@ namespace XVNML.Core.Dialogue
         private Stack<int> _returnPointStack = new Stack<int>();
         private bool _lastProcessWasClosing;
 
+        private SceneInfo? _currentSceneInfo = null;
+
         //Cast Data
         public CastInfo? CurrentCastInfo
         {
@@ -73,19 +75,42 @@ namespace XVNML.Core.Dialogue
                 if (previous == null) return;
                 if (_currentCastInfo == null) return;
 
-                if (_currentCastInfo!.Value.name?.Equals(previous!.Value.name) == false)
+                if (_currentCastInfo!.Value.name?.Equals(previous?.name) == false)
                 {
                     DialogueWriter.OnCastChange?[ID]?.Invoke(this);
                 }
 
-                if (_currentCastInfo!.Value.expression?.Equals(previous!.Value.expression) == false)
+                if (_currentCastInfo!.Value.expression?.Equals(previous?.expression) == false)
                 {
                     DialogueWriter.OnCastExpressionChange?[ID]?.Invoke(this);
                 }
 
-                if (_currentCastInfo!.Value.voice?.Equals(previous!.Value.voice) == false)
+                if (_currentCastInfo!.Value.voice?.Equals(previous?.voice) == false)
                 {
                     DialogueWriter.OnCastVoiceChange?[ID]?.Invoke(this);
+                }
+            }
+        }
+
+        // Scene Data
+        public SceneInfo? CurrentSceneInfo
+        {
+            get
+            {
+                return _currentSceneInfo;
+            }
+            set
+            {
+                var previous = _currentSceneInfo;
+
+                _currentSceneInfo = value;
+
+                if (_currentSceneInfo == null) return;
+                if (previous?.name == _currentSceneInfo?.name) return;
+
+                if (_currentSceneInfo!.Value.name?.Equals(previous?.name) == false)
+                {
+                    DialogueWriter.OnSceneChange?[ID]?.Invoke(this);
                 }
             }
         }

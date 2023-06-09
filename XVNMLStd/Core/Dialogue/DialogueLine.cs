@@ -26,13 +26,18 @@ namespace XVNML.Core.Dialogue
         internal string? lastAddedResponse;
         internal LineDataInfo data;
         internal Stack<string> LastAddedResponseStack = new Stack<string>();
-        internal CastMemberSignature? SignatureInfo { get; set; }
-        internal CastInfo InitialCastInfo { get; set; }
 
         private readonly StringBuilder _ContentStringBuilder = new StringBuilder();
         public string? Content { get; private set; }
         public Dictionary<string, (int sp, int rp)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
         public DialogueLineMode Mode => data.Mode;
+
+        // Scene Data
+        internal SceneInfo? SceneLoadInfo { get; set; }
+
+        // Cast Data
+        internal CastMemberSignature? SignatureInfo { get; set; }
+        internal CastInfo? InitialCastInfo { get; set; }
 
         // Macro Data
         internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
@@ -521,9 +526,9 @@ namespace XVNML.Core.Dialogue
                               Replace("\t", string.Empty);
         }
 
-        internal void UpdateStartPosition(int sp)
+        internal void SetSceneLoadData(SceneInfo? cachedSceneInfo)
         {
-
+            SceneLoadInfo = cachedSceneInfo;
         }
     }
 }

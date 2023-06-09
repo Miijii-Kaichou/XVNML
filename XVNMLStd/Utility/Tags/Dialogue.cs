@@ -1,6 +1,9 @@
 ﻿using XVNML.Core.Dialogue;
 using XVNML.Core.Tags;
 using XVNML.Core.Parser;
+using XVNML.Utility.Diagnostics;
+using System;
+using System.Linq;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -10,21 +13,14 @@ namespace XVNML.XVNMLUtility.Tags
         public string? Script { get; private set; }
         public string? Name { get; private set; }
         public bool DoNotDetain { get; private set; } = false;
-        public Cast[]? includedCasts;
 
+        public Cast[]? includedCasts;
         public DialogueScript? dialogueOutput;
+
+        internal SkriptrParser? parserOrigin;
 
         public override void OnResolve(string? fileOrigin)
         {
-            // Allow Parameters and Flags
-            // Before you resolve!
-            AllowedParameters = new[]{
-                "cast",
-                "useScene",
-                "enterWith",
-                "exitWith",
-            };
-
             AllowedFlags = new[]
             {
                 "dontDetain",
@@ -40,13 +36,12 @@ namespace XVNML.XVNMLUtility.Tags
             DoNotDetain = HasFlag("dontDetain");
 
             AnalyzeDialogue();
-
         }
 
         private void AnalyzeDialogue()
         {
             if (Script == null) return;
-            _ = new SkriptrParser(Script, out dialogueOutput);
+            parserOrigin = new SkriptrParser(Script, out dialogueOutput);
         }
     }
 }

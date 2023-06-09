@@ -47,7 +47,7 @@ namespace XVNML.XVNMLUtility.Tags
             }
 
             //Otherwise, check for an image reference
-            imgRef = imgRef ?? GetParameter("img");
+            imgRef ??= GetParameter("img");
 
             if (imgRef != null && imgRef.isReferencing!)
             {
