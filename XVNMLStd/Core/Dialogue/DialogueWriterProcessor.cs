@@ -33,13 +33,13 @@ namespace XVNML.Core.Dialogue
         public bool WasControlledPause { get; private set; }
         public uint ProcessRate { get; internal set; } = 60;
         public bool IsPaused { get; internal set; }
+        public bool IsPass { get; internal set; } = false;
 
         public static bool IsStagnant => Instance?.lineProcesses.Count == 0;
 
         internal ConcurrentBag<SkripterLine> lineProcesses = new ConcurrentBag<SkripterLine>();
         internal SkripterLine? currentLine;
         internal int lineProcessIndex = -1;
-        internal bool doDetain;
         internal int linePosition;
 
         private int previousLinePosition;
@@ -155,6 +155,7 @@ namespace XVNML.Core.Dialogue
         internal void Clear()
         {
             _processBuilder.Clear();
+            DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
         }
 
         internal void Pause()
@@ -235,7 +236,6 @@ namespace XVNML.Core.Dialogue
                 CurrentLetter = null,
                 linePosition = -1,
                 IsPaused = false,
-                doDetain = false
             };
 
             foreach (SkripterLine line in input.Lines.Reverse())
@@ -289,6 +289,17 @@ namespace XVNML.Core.Dialogue
             if (AtEnd) return;
             currentLine = lineProcesses.ElementAt(lineProcessIndex);
             _lastProcessWasClosing = currentLine.data.isClosingLine;
+        }
+        
+        public void ResetPass()
+        {
+            IsPass = false;
+        }
+
+        public void AllowPass()
+        {
+            if (currentLine?.data.Mode == Enums.DialogueLineMode.Prompt) return;
+            IsPass = true;
         }
     }
 }

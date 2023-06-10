@@ -209,7 +209,6 @@ namespace XVNML.Utility.Dialogue
                         return;
                     }
 
-
                     process.IsPaused = true;
                     OnLinePause?[id]?.Invoke(process!);
 

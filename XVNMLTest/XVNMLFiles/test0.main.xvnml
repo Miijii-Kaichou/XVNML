@@ -12,6 +12,7 @@
 
 	<dialogue name::"PromptsExample">
 		[OutsideOfSchool]
+		@ {test::"Hello There!"|pass}<
 		@Hana>Smile {sts::60}I've just received some great news!<
 		@*>Happy>Wow You definitely want to hear this.> 
 		Because this will change the way how we use XVNML2U from here on.<

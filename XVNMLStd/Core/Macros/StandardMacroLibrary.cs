@@ -27,6 +27,7 @@ internal static class StandardMacroLibrary
     {
         InsertMacro(info, text);
     }
+
     [Macro("insert")]
     internal static void InsertMacro(MacroCallInfo info, string text)
     {
@@ -65,6 +66,12 @@ internal static class StandardMacroLibrary
     internal static void PauseMacro(MacroCallInfo info)
     {
         info.process.Pause();
+    }
+
+    [Macro("pass")]
+    internal static void PassMacro(MacroCallInfo info)
+    {
+        info.process.AllowPass();
     }
     #endregion
 
