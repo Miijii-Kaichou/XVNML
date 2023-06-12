@@ -291,12 +291,12 @@ namespace XVNML.Core.Dialogue
             _lastProcessWasClosing = currentLine.data.isClosingLine;
         }
         
-        public void ResetPass()
+        internal void ResetPass()
         {
             IsPass = false;
         }
 
-        public void AllowPass()
+        internal void AllowPass()
         {
             if (currentLine?.data.Mode == Enums.DialogueLineMode.Prompt) return;
             IsPass = true;

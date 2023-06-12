@@ -315,6 +315,7 @@ namespace XVNML.Utility.Dialogue
         {
             lock (process.processLock)
             {
+                process.ResetPass();
                 if (process.WasControlledPause)
                 {
                     process.Unpause();
