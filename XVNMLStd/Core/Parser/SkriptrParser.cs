@@ -41,9 +41,8 @@ namespace XVNML.Core.Parser
 
         private bool _evaluatingCast = false;
         private static Stack<SkripterLine> ResolveStack = new Stack<SkripterLine>();
-        private SceneInfo? _cachedSceneInfo;
-        private (string? sceneName, string? transition) _cachedSceneInfoData = (null, null);
-        private bool constructingSceneLoadingInfo;
+        private string? _cachedLineTag = null;
+        private bool isAttachingTagToLine;
 
         public SkriptrParser(string dialogueSource, out DialogueScript output)
         {
@@ -146,16 +145,10 @@ namespace XVNML.Core.Parser
                     case TokenType.Identifier:
                         if (!_evaluatingCast)
                         {
-                            if (constructingSceneLoadingInfo && _cachedSceneInfoData.sceneName == null)
+                            if (isAttachingTagToLine)
                             {
-                                _cachedSceneInfoData.sceneName ??= token?.Text;
+                                _cachedLineTag ??= token?.Text;
                                 continue;      
-                            }
-
-                            if (constructingSceneLoadingInfo && _cachedSceneInfoData.transition == null)
-                            {
-                                _cachedSceneInfoData.transition ??= token?.Text;
-                                continue;
                             }
 
                             if (promptCacheStack?.Count() != 0 &&
@@ -244,6 +237,14 @@ namespace XVNML.Core.Parser
                     //You will mainly find a string within curly brackets, or being
                     //used as a choice for a prompt.
                     case TokenType.String:
+                        if (_evaluatingCast) throw new InvalidDataException($"{token.Text} not expected");
+                        
+                        if (isAttachingTagToLine)
+                        {
+                            _cachedLineTag ??= token?.Text;
+                            continue;
+                        }
+
                         if (promptCacheStack?.Count != 0 &&
                             promptCacheStack?.Peek().Item1.Item1.SignatureInfo?.CurrentRole == Role.Interrogative &&
                             IsCreatingPromptChoices == true)
@@ -285,11 +286,13 @@ namespace XVNML.Core.Parser
                                 FindFirstLine = true;
                                 continue;
                             }
+                            
                             var expectedToken = Peek(1)?.Type;
+
                             if (expectedToken != TokenType.At &&
                                 expectedToken != TokenType.Prompt)
                             {
-                                ResolveStack.Push(promptCacheStack?.Peek().Item1.Item1);
+                                ResolveStack.Push(promptCacheStack?.Peek().Item1.Item1!);
                             }
 
                             if (expectedToken == TokenType.At ||
@@ -305,19 +308,18 @@ namespace XVNML.Core.Parser
 
                     case TokenType.OpenSquareBracket:
                         if (!_evaluatingCast)
-                            constructingSceneLoadingInfo = true;
-                        continue;
+                        {
+                            isAttachingTagToLine = true;
+                            continue;
+                        }
                         throw new InvalidDataException($"Invalid Token at Line {token?.Line}, Position {token?.Position}");
 
                     case TokenType.CloseSquareBracket:
                         if (!_evaluatingCast)
-                            _cachedSceneInfo = new SceneInfo()
-                            {
-                                name = _cachedSceneInfoData.sceneName,
-                                transition = _cachedSceneInfoData.transition
-                            };
-                        constructingSceneLoadingInfo = false;
-                        continue;
+                        {
+                            isAttachingTagToLine = false;
+                            continue;
+                        }
                         throw new InvalidDataException($"Invalid Token at Line {token?.Line}, Position {token?.Position}");
 
                     case TokenType.WhiteSpace:
@@ -351,18 +353,25 @@ namespace XVNML.Core.Parser
 
                             continue;
                         }
+
                         if (!ReadyToBuild || FindFirstLine) continue;
+                        if (line == null) continue;
 
                         line.data.lineIndex = linesCollected + 1;
                         line.data.isPartOfResponse = promptCacheStack?.Count == 0 ? false : promptCacheStack?.Peek().Item1.Item2 != 0;
+                        if (line.data.isPartOfResponse)
+                        {
+                            line.data.parentLine = promptCacheStack?.Peek().Item1.Item1;
+                            line.data.responseString = line.data.parentLine.PromptContent.Last().Key;
+                        }
                         if (isClosingLine) line.MarkAsClosing();
 
                         isClosingLine = false;
 
-                        if (_cachedSceneInfo != null)
+                        if (_cachedLineTag != null)
                         {
-                            line?.SetSceneLoadData(_cachedSceneInfo);
-                            _cachedSceneInfo = null;
+                            line?.SetLineTag(_cachedLineTag);
+                            _cachedLineTag = null;
                         }
 
                         line?.FinalizeAndCleanBuilder();
@@ -376,6 +385,7 @@ namespace XVNML.Core.Parser
                 }
             }
 
+            if (ResolveStack?.Count != 0) PurgeResolveStack(linesCollected+1, ref ResolveStack!);
             return output;
         }
 

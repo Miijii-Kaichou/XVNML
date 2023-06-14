@@ -62,6 +62,12 @@ static class Program
 
     private static void MoveNext(DialogueWriterProcessor sender)
     {
+        if (sender.IsPass)
+        {
+            DialogueWriter.MoveNextLine(sender);
+            return;
+        }
+
         Console.Write("^");
         Console.ReadKey();
         DialogueWriter.MoveNextLine(sender);

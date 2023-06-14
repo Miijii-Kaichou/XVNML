@@ -147,17 +147,40 @@ namespace XVNML.Core.Lexer
 
             if (char.IsDigit(_Current))
             {
-                var start = _position;
+                var start = _position - (SourceText?[_position - 1] == '-' ? 1 : 0);
 
-                while (char.IsDigit(_Current))
+                while (char.IsDigit(_Current) || _Current == '.')
                     Next();
 
                 var length = _position - start;
                 var text = SourceText?.Substring(start, length);
 
-                int.TryParse(text, out var value);
+                if (_position + 1 == ('F' | 'f'))
+                {
+                    float.TryParse(text, out float floatValue);
+                    return new SyntaxToken(TokenType.Number, _Line, start, text, floatValue);
+                }
 
-                return new SyntaxToken(TokenType.Number, _Line, start, text, value);
+                if (_position + 1 == ('D' | 'd'))
+                {
+                    double.TryParse(text, out double doubleValue);
+                    return new SyntaxToken(TokenType.Number, _Line, start, text, doubleValue);
+                }
+
+                if (_position + 1 == ('L' | 'l'))
+                {
+                    long.TryParse(text, out long doubleValue);
+                    return new SyntaxToken(TokenType.Number, _Line, start, text, doubleValue);
+                }
+
+                if (text[0] == '-')
+                {
+                    int.TryParse(text, out int intValue);
+                    return new SyntaxToken(TokenType.Number, _Line, start, text, intValue);
+                }
+
+                uint.TryParse(text, out uint uIntValue);
+                return new SyntaxToken(TokenType.Number, _Line, start, text, uIntValue);
             }
 
             if (char.IsWhiteSpace(_Current))

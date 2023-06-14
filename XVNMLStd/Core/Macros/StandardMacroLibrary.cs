@@ -1,10 +1,6 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-
-using XVNML.Utility.Macros;
+﻿using XVNML.Utility.Macros;
 using System.Text;
-using System;
-using System.Runtime.CompilerServices;
+using System.Linq;
 
 [MacroLibrary(typeof(StandardMacroLibrary))]
 internal static class StandardMacroLibrary
@@ -44,6 +40,7 @@ internal static class StandardMacroLibrary
         // Speed macro logic here.
         SetTextSpeed(info, level);
     }
+
     [Macro("set_text_speed")]
     internal static void SetTextSpeed(MacroCallInfo info, uint level)
     {
@@ -72,6 +69,32 @@ internal static class StandardMacroLibrary
     internal static void PassMacro(MacroCallInfo info)
     {
         info.process.AllowPass();
+    }
+
+    [Macro("op")]
+    internal static void OperationsVariableMacro(MacroCallInfo info, string expression)
+    {
+
+    }
+
+    [Macro("jump_to")]
+    internal static void JumpToLineMacro(MacroCallInfo info, object value)
+    {
+        if (value.GetType() == typeof(uint))
+        {
+            info.process.JumpTo((int)value);
+            return;
+        }
+
+        if (info.process.lineProcesses.Where(sl => sl.TaggedAs == value.ToString()).Any() == false) return;
+        
+        info.process.JumpTo(value.ToString());
+    }
+
+    [Macro("lead_to")]
+    internal static void LeadToLineMacro(MacroCallInfo info, int value)
+    {
+        info.process.LeadTo(value);
     }
     #endregion
 
@@ -333,12 +356,6 @@ internal static class StandardMacroLibrary
             info.process.ChangeCastExpression(info, value.ToString());
             return;
         }
-
-        //if (value.GetType() == typeof(int))
-        //{
-        //    info.process.ChangeCastExpression(info, Convert.ToInt32(value));
-        //    return;
-        //}
     }
 
     [Macro("vo")]
@@ -355,12 +372,46 @@ internal static class StandardMacroLibrary
             info.process.ChangeCastVoice(info, value.ToString());
             return;
         }
+    }
+    #endregion
 
-        //if (value.GetType() == typeof(int))
-        //{
-        //    info.process.ChangeCastVoice(info, Convert.ToInt32(value));
-        //    return;
-        //}
+    #region Scene/Curtain Macros
+    [Macro("set_scene")]
+    internal static void SetSceneMacro(MacroCallInfo info, object value)
+    {
+
+    }
+
+    [Macro("transition")]
+    internal static void SceneTransitionMacro(MacroCallInfo info, object value)
+    {
+
+    }
+
+    [Macro("cue_scene")]
+    internal static void CueSceneMacro(MacroCallInfo info)
+    {
+
+    }
+    #endregion
+
+    #region Variable Control Macros
+    [Macro("var")]
+    internal static void InitializeVariableMacro(MacroCallInfo info, string identifier, object initialValue)
+    {
+
+    }
+
+    [Macro("set")]
+    internal static void SetVariableMacro(MacroCallInfo info, string identifier, object newValue)
+    {
+
+    }
+
+    [Macro("get")]
+    internal static void GetVariableMacro(MacroCallInfo info, string identifier)
+    {
+
     }
     #endregion
 }

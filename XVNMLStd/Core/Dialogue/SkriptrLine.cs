@@ -14,8 +14,13 @@ namespace XVNML.Core.Dialogue
     internal struct LineDataInfo
     {
         internal int lineIndex;
+        internal int returnPoint;
         internal bool isPartOfResponse;
+        internal string? fromResponse;
+        internal SkripterLine? parentLine; 
         internal bool isClosingLine;
+        internal string? responseString;
+
         public DialogueLineMode Mode { get; set; }
     }
 
@@ -32,6 +37,9 @@ namespace XVNML.Core.Dialogue
         public Dictionary<string, (int sp, int rp)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
         public DialogueLineMode Mode => data.Mode;
 
+        // Unique Tag
+        internal string? TaggedAs = string.Empty;
+
         // Scene Data
         internal SceneInfo? SceneLoadInfo { get; set; }
 
@@ -41,6 +49,7 @@ namespace XVNML.Core.Dialogue
 
         // Macro Data
         internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
+        internal Action? onReturnPointCorrection;
 
         internal void ReadPosAndExecute(DialogueWriterProcessor process)
         {
@@ -325,7 +334,7 @@ namespace XVNML.Core.Dialogue
             TokenType? expectingType = TokenType.Identifier;
 
             string? macroName = null;
-            List<object> macroArgs = new List<object>();
+            List<(object, Type)> macroArgs = new List<(object, Type)>();
             bool multiArgs = false;
             while (finished == false)
             {
@@ -357,7 +366,7 @@ namespace XVNML.Core.Dialogue
                         }
 
                         //Otherwise, it could be interpreted as an Enum or Flag
-                        macroArgs.Add(currentToken?.Text!);
+                        macroArgs.Add((currentToken?.Text!, typeof(object)));
 
                         // Expect a comma or ) if it's multi
                         if (multiArgs)
@@ -437,7 +446,8 @@ namespace XVNML.Core.Dialogue
                         continue;
 
                     case TokenType.Number:
-                        macroArgs.Add(currentToken?.Text!);
+                        EvaluateNumericType(currentToken, out Type type);
+                        macroArgs.Add((currentToken?.Text!, type));
                         if (multiArgs)
                         {
                             expectingType = TokenType.CloseParentheses |
@@ -450,7 +460,7 @@ namespace XVNML.Core.Dialogue
                         continue;
 
                     case TokenType.String:
-                        macroArgs.Add(currentToken?.Text!);
+                        macroArgs.Add((currentToken?.Text!, typeof(string)));
                         if (multiArgs)
                         {
                             expectingType = TokenType.CloseParentheses |
@@ -464,7 +474,7 @@ namespace XVNML.Core.Dialogue
 
                     case TokenType.EmptyString:
                         //Otherwise, it could be interpreted as an Enum or Flag
-                        macroArgs.Add(currentToken?.Text!);
+                        macroArgs.Add((currentToken?.Text!, typeof(string)));
                         if (multiArgs)
                         {
                             expectingType = TokenType.CloseParentheses |
@@ -482,7 +492,7 @@ namespace XVNML.Core.Dialogue
             void Next() => pos++;
         }
 
-        private static void PopulateBlock(MacroBlockInfo newBlock, int macroCount, string? macroSymbol, List<object> macroArgs)
+        private static void PopulateBlock(MacroBlockInfo newBlock, int macroCount, string? macroSymbol, List<(object, Type)> macroArgs)
         {
             if (macroSymbol == null)
             {
@@ -526,9 +536,44 @@ namespace XVNML.Core.Dialogue
                               Replace("\t", string.Empty);
         }
 
-        internal void SetSceneLoadData(SceneInfo? cachedSceneInfo)
+        private void EvaluateNumericType(SyntaxToken? token, out Type? resultType)
         {
-            SceneLoadInfo = cachedSceneInfo;
+            int length = token!.Text!.Length;
+            var character = token!.Text![length-1];
+            
+            if (character == ('F' | 'f') || token!.Text.Contains('.'))
+            {
+                resultType = typeof(float);
+                return;
+            }
+
+            if (character == ('D' | 'd') || token!.Text.Contains('.'))
+            {
+                resultType = typeof(double);
+                return;
+            }
+
+            if (character == ('L' | 'l'))
+            {
+                resultType = typeof(long);
+                return;
+            }
+
+
+            character = token!.Text![0];
+
+            if (character == '-')
+            {
+                resultType = typeof(int);
+                return;
+            }
+
+            resultType = typeof(uint);
+        }
+
+        internal void SetLineTag(string? identifier)
+        {
+            TaggedAs = identifier;
         }
     }
 }

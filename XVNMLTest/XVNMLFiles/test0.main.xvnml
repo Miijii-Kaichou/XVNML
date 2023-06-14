@@ -11,8 +11,20 @@
 	</sceneDefinitions>
 
 	<dialogue name::"PromptsExample">
-		[OutsideOfSchool]
-		@ {test::"Hello There!"|pass}<
+		@ {
+			sts::45|
+			pass
+		}<
+		? What's 2 {plus} 2?>>
+		(
+			("4")>
+				@ That is correct!<<
+			("2")>
+				@ {jump_to::1|pass}<<
+			("0")>
+				@ Wrong<<
+		)
+		@ {jump_to::"Unknown"|jump_to::2|pass}<
 		@Hana>Smile {sts::60}I've just received some great news!<
 		@*>Happy>Wow You definitely want to hear this.> 
 		Because this will change the way how we use XVNML2U from here on.<
@@ -21,11 +33,24 @@
 		?* Can you guess?{pause}>>
 		(
 			("Based on what I'm seeing, it looks like we've implemented prompts...")>
-			@Hana You seen pretty confident...<
-			?* Are you sure about your answer?>>
+			@Hana You seem pretty confident...<
+			?* Are you sure about your answer?{pause}>>
 			(
+				$> It's best practice that at every start of a prompt response
+				$> you start with a Normal Cast Definition (@[cast_name]) as opposed to a 
+				$> Persistent Cast Definition (@*).
+				$> Although both work, starting with a Normal Cast will 
+				$> keep track of who's still talking.
 				("I'm positive!")>
-				@Hana>Happy>Wow That's correct!<<
+				?Hana Are you absolutely sure?>>
+				(
+					("Seal in my answer!")>
+					@Hana>Happy>Wow That's correct!<<
+
+					("Now you're really scaring me...")>
+					@Hana No need to be scared!<
+					@*>Happy>Wow You're actually correct!<<
+				)
 					
 				("You're making me have second thoughts...")>
 				@Hana Well...<
@@ -36,8 +61,8 @@
 			@Hana No, silly!<<
 
 			("Does it have something to do with Unity?")>
-			@Hana Actually, it does have something to do with Unity.<
-			@* More specifically, it has something to do with the updated XVNML API
+			@Hana Actually,{del::500} it does have something to do with Unity.<
+			@* More specifically,{del::500} it has something to do with the updated XVNML API
 			that can be implemented to Unity.<<
 		)
 		@*>Happy IT'S PROMPTS!!!<

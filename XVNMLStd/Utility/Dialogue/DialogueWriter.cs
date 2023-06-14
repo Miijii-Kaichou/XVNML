@@ -335,6 +335,7 @@ namespace XVNML.Utility.Dialogue
         {
             lock (process.processLock)
             {
+                //process.previousLine = process.currentLine;
                 process.currentLine = null;
                 process.CurrentLetter = null;
                 process.linePosition = -1;

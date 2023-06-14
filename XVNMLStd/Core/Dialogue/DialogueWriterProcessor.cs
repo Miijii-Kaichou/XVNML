@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Timers;
 using XVNML.Core.Dialogue.Structs;
@@ -39,6 +40,7 @@ namespace XVNML.Core.Dialogue
 
         internal ConcurrentBag<SkripterLine> lineProcesses = new ConcurrentBag<SkripterLine>();
         internal SkripterLine? currentLine;
+        internal SkripterLine? previousLine;
         internal int lineProcessIndex = -1;
         internal int linePosition;
 
@@ -58,6 +60,7 @@ namespace XVNML.Core.Dialogue
         private bool _lastProcessWasClosing;
 
         private SceneInfo? _currentSceneInfo = null;
+        private int _jumpIndexValue = -1;
 
         //Cast Data
         public CastInfo? CurrentCastInfo
@@ -238,16 +241,50 @@ namespace XVNML.Core.Dialogue
                 IsPaused = false,
             };
 
-            foreach (SkripterLine line in input.Lines.Reverse())
+            var reversedList = input.Lines.Reverse();
+
+            for (int i = 0; i < reversedList.Count(); i++)
             {
+                SkripterLine line = reversedList.ElementAt(i);
+                if (line.data.parentLine != null && line.data.isClosingLine)
+                {
+                    line.data.returnPoint = line.data.parentLine.PromptContent[line.data.responseString].rp;
+                }
                 Instance.lineProcesses.Add(line);
             }
+
             return Instance;
         }
 
         public Dictionary<string, (int, int)>? FetchPrompts()
         {
             return currentLine?.PromptContent;
+        }
+
+        public void JumpTo(string lineTagName)
+        {
+            _jumpIndexValue = Instance!.lineProcesses.Where(sl => sl.TaggedAs == lineTagName).Single().data.lineIndex;
+        }
+
+        public void JumpTo(int index)
+        {
+            _jumpIndexValue = Instance!.lineProcesses.Where(sl => sl.data.lineIndex == index).Single().data.lineIndex;
+        }
+
+        public void LeadTo(string lineTagName)
+        {
+            // Increment through line processes from current index
+            // until you find the next tagged Tag Name
+            if (Instance!.lineProcesses.ElementAt(_jumpIndexValue++).TaggedAs!.Equals(lineTagName)) return;
+            LeadTo(lineTagName);
+        }
+
+        public void LeadTo(int index)
+        {
+            // Increment [index] amount of times
+            _jumpIndexValue++;
+            if (index > 0) index--;
+            LeadTo(index);
         }
 
         public void JumpToStartingLineFromResponse(string response)
@@ -265,6 +302,8 @@ namespace XVNML.Core.Dialogue
         {
             if (_returnPointStack.Count == 0) return;
             var index = _returnPointStack.Pop();
+            if (previousLine != null && previousLine.data.isClosingLine) index = previousLine.data.returnPoint;
+            previousLine = null;
             if (lineProcessIndex == index + 1)
             {
                 JumpToReturningLineFromResponse();
@@ -277,6 +316,11 @@ namespace XVNML.Core.Dialogue
 
         internal void UpdateProcess()
         {
+            if (_jumpIndexValue != -1)
+            {
+
+            }
+
             if (_returnPointStack.Count != 0 && _lastProcessWasClosing)
             {
                 JumpToReturningLineFromResponse();
