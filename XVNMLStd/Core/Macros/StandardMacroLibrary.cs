@@ -1,6 +1,7 @@
-﻿using XVNML.Utility.Macros;
-using System.Text;
+﻿using System.Text;
 using System.Linq;
+using XVNML.Utility.Macros;
+using XVNML.Core.Dialogue.Structs;
 
 [MacroLibrary(typeof(StandardMacroLibrary))]
 internal static class StandardMacroLibrary
@@ -390,23 +391,12 @@ internal static class StandardMacroLibrary
     #endregion
 
     #region Scene/Curtain Macros
-    [Macro("set_scene")]
-    internal static void SetSceneMacro(MacroCallInfo info, object value)
-    {
-
-    }
-
-    [Macro("transition")]
-    internal static void SceneTransitionMacro(MacroCallInfo info, object value)
-    {
-
-    }
-
     [Macro("cue_scene")]
-    internal static void CueSceneMacro(MacroCallInfo info)
+    internal static void SetSceneMacro(MacroCallInfo info, string value)
     {
-
+        info.process.CurrentSceneInfo = new SceneInfo() { name = value };
     }
+
     #endregion
 
     #region Variable Control Macros

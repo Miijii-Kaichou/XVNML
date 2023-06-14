@@ -12,10 +12,11 @@
 
 	<dialogue name::"PromptsExample">
 		@ {
+			set_scene::"OutsideOfSchool"|
 			sts::45|
+			cue_scene|
 			pass
-		}<
-		
+		}<		
 		["Question 1"]
 		? What's 2 {plus} 2?>>
 		(
