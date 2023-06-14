@@ -15,16 +15,19 @@
 			sts::45|
 			pass
 		}<
+		
+		["Question 1"]
 		? What's 2 {plus} 2?>>
 		(
 			("4")>
 				@ That is correct!<<
 			("2")>
-				@ {jump_to::1|pass}<<
+				@ {jtbt::"Incorrect"|pass}<<
 			("0")>
-				@ Wrong<<
+				["Incorrect"]
+				@ Wrong<
+				@ {jtbt::"Question 1"|pass}<<
 		)
-		@ {jump_to::"Unknown"|jump_to::2|pass}<
 		@Hana>Smile {sts::60}I've just received some great news!<
 		@*>Happy>Wow You definitely want to hear this.> 
 		Because this will change the way how we use XVNML2U from here on.<

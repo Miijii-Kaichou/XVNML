@@ -77,19 +77,33 @@ internal static class StandardMacroLibrary
 
     }
 
-    [Macro("jump_to")]
-    internal static void JumpToLineMacro(MacroCallInfo info, object value)
+    [Macro("jtbi")]
+    internal static void JumpToLineMacroShortHand(MacroCallInfo info, uint index)
     {
-        if (value.GetType() == typeof(uint))
-        {
-            info.process.JumpTo((int)value);
-            return;
-        }
-
-        if (info.process.lineProcesses.Where(sl => sl.TaggedAs == value.ToString()).Any() == false) return;
-        
-        info.process.JumpTo(value.ToString());
+        JumpToLineMacro(info, index);
     }
+
+    [Macro("jump_to_by_index")]
+    internal static void JumpToLineMacro(MacroCallInfo info, uint index)
+    {
+        info.process.JumpTo((int)index);
+        return;
+    }
+
+    [Macro("jtbt")]
+    internal static void JumpToLineMacroShortHand(MacroCallInfo info, string tagName)
+    {
+        JumpToLineMacro(info, tagName);
+    }
+
+    [Macro("jump_to_by_tag")]
+    internal static void JumpToLineMacro(MacroCallInfo info, string tagName)
+    {
+        if (info.process.lineProcesses.Where(sl => sl.TaggedAs == tagName.ToString()).Any() == false) return;
+
+        info.process.JumpTo(tagName.ToString());
+    }
+
 
     [Macro("lead_to")]
     internal static void LeadToLineMacro(MacroCallInfo info, int value)

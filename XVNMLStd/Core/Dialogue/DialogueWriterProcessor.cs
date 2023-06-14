@@ -246,10 +246,12 @@ namespace XVNML.Core.Dialogue
             for (int i = 0; i < reversedList.Count(); i++)
             {
                 SkripterLine line = reversedList.ElementAt(i);
+
                 if (line.data.parentLine != null && line.data.isClosingLine)
                 {
-                    line.data.returnPoint = line.data.parentLine.PromptContent[line.data.responseString].rp;
+                    line.data.returnPoint = line.data.parentLine.PromptContent[line.data.responseString!].rp;
                 }
+
                 Instance.lineProcesses.Add(line);
             }
 
@@ -318,19 +320,30 @@ namespace XVNML.Core.Dialogue
         {
             if (_jumpIndexValue != -1)
             {
+                lineProcessIndex = _jumpIndexValue;
+                _jumpIndexValue = -1;
+                if (AtEnd) return;
 
+                UpdateLine();
+                return;
             }
 
             if (_returnPointStack.Count != 0 && _lastProcessWasClosing)
             {
                 JumpToReturningLineFromResponse();
                 if (AtEnd) return;
-                currentLine = lineProcesses.ElementAt(lineProcessIndex);
-                _lastProcessWasClosing = currentLine.data.isClosingLine;
+
+                UpdateLine();
                 return;
             }
             NextProcess();
             if (AtEnd) return;
+
+            UpdateLine();
+        }
+
+        private void UpdateLine()
+        {
             currentLine = lineProcesses.ElementAt(lineProcessIndex);
             _lastProcessWasClosing = currentLine.data.isClosingLine;
         }

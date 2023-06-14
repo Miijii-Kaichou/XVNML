@@ -48,6 +48,8 @@ static class Program
         }
 
         var response = Console.ReadLine();
+        var responseIndex = Convert.ToInt32(response);
+        if (responseIndex > responses.Count - 1) return;
         sender.JumpToStartingLineFromResponse(responses[Convert.ToInt32(response)]);
     }
 

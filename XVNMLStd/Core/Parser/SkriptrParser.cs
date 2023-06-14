@@ -41,8 +41,6 @@ namespace XVNML.Core.Parser
 
         private bool _evaluatingCast = false;
         private static Stack<SkripterLine> ResolveStack = new Stack<SkripterLine>();
-        private string? _cachedLineTag = null;
-        private bool isAttachingTagToLine;
 
         public SkriptrParser(string dialogueSource, out DialogueScript output)
         {
@@ -78,6 +76,9 @@ namespace XVNML.Core.Parser
             var castSignatureCollection = new List<SyntaxToken>();
             var castSignatureString = new StringBuilder();
             var isClosingLine = false;
+
+            string? _cachedLineTag = null;
+            bool isAttachingTagToLine = false;
 
             for (int i = 0; i < Tokenizer.Length; i++)
             {
@@ -143,14 +144,14 @@ namespace XVNML.Core.Parser
 
                     //Only validate at the start or in between {} delimiters
                     case TokenType.Identifier:
+                        if (isAttachingTagToLine)
+                        {
+                            _cachedLineTag ??= token?.Text;
+                            continue;
+                        }
+
                         if (!_evaluatingCast)
                         {
-                            if (isAttachingTagToLine)
-                            {
-                                _cachedLineTag ??= token?.Text;
-                                continue;      
-                            }
-
                             if (promptCacheStack?.Count() != 0 &&
                                 promptCacheStack?.Peek()!.Item1.Item1.SignatureInfo?.CurrentRole == Role.Interrogative &&
                                 IsCreatingPromptChoices == true)
@@ -237,14 +238,12 @@ namespace XVNML.Core.Parser
                     //You will mainly find a string within curly brackets, or being
                     //used as a choice for a prompt.
                     case TokenType.String:
-                        if (_evaluatingCast) throw new InvalidDataException($"{token.Text} not expected");
-                        
                         if (isAttachingTagToLine)
                         {
                             _cachedLineTag ??= token?.Text;
                             continue;
                         }
-
+                        if (_evaluatingCast) throw new InvalidDataException($"{token.Text} not expected");
                         if (promptCacheStack?.Count != 0 &&
                             promptCacheStack?.Peek().Item1.Item1.SignatureInfo?.CurrentRole == Role.Interrogative &&
                             IsCreatingPromptChoices == true)
@@ -286,7 +285,7 @@ namespace XVNML.Core.Parser
                                 FindFirstLine = true;
                                 continue;
                             }
-                            
+
                             var expectedToken = Peek(1)?.Type;
 
                             if (expectedToken != TokenType.At &&
@@ -320,7 +319,7 @@ namespace XVNML.Core.Parser
                             isAttachingTagToLine = false;
                             continue;
                         }
-                        throw new InvalidDataException($"Invalid Token at Line {token?.Line}, Position {token?.Position}");
+                        continue;
 
                     case TokenType.WhiteSpace:
                         if (_evaluatingCast)
@@ -359,25 +358,23 @@ namespace XVNML.Core.Parser
 
                         line.data.lineIndex = linesCollected + 1;
                         line.data.isPartOfResponse = promptCacheStack?.Count == 0 ? false : promptCacheStack?.Peek().Item1.Item2 != 0;
+
                         if (line.data.isPartOfResponse)
                         {
                             line.data.parentLine = promptCacheStack?.Peek().Item1.Item1;
                             line.data.responseString = line.data.parentLine.PromptContent.Last().Key;
                         }
+
                         if (isClosingLine) line.MarkAsClosing();
-
+                        if (_cachedLineTag != null) line.SetLineTag(_cachedLineTag);
+                        
                         isClosingLine = false;
-
-                        if (_cachedLineTag != null)
-                        {
-                            line?.SetLineTag(_cachedLineTag);
-                            _cachedLineTag = null;
-                        }
+                        _cachedLineTag = null;
 
                         line?.FinalizeAndCleanBuilder();
 
                         output.ComposeNewLine(line);
-
+                        ReadyToBuild = false;
                         linesCollected++;
                         if (line?.SignatureInfo?.CurrentRole != Role.Interrogative) continue;
                         promptCacheStack?.Push(((line, linesCollected), new Stack<string>()));
@@ -385,7 +382,7 @@ namespace XVNML.Core.Parser
                 }
             }
 
-            if (ResolveStack?.Count != 0) PurgeResolveStack(linesCollected+1, ref ResolveStack!);
+            if (ResolveStack?.Count != 0) PurgeResolveStack(linesCollected + 1, ref ResolveStack!);
             return output;
         }
 
