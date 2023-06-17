@@ -92,9 +92,18 @@ namespace XVNML.Core.Macros
                 object? currentArg = args[i].Item1;
                 Type? requiredArg = targetMacro?.argumentTypes?[i];
 
+                if (args[i].Item2 == typeof(uint) && requiredArg == typeof(int))
+                {
+                    // TODO: Convert to whatever type the attribute has
+                    args[i].Item1 = Convert.ChangeType(currentArg, requiredArg);
+                    continue;
+                }
+                
                 if (ReferenceEquals(requiredArg, args[i].Item2) == false && requiredArg != typeof(object))
                 {
-                    throw new Exception($"Type of {currentArg}");
+                    throw new Exception($"Argument {i} for the macro \"{targetMacro?.macroName}\"" +
+                        $" requires a value of type {requiredArg?.Name}.\n" +
+                        $"The Value passed into Argument {i} is a(n) {args[i].Item2.Name}");
                 }
 
                 // TODO: Convert to whatever type the attribute has
