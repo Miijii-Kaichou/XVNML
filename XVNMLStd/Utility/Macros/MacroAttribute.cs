@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
-using XVNML.Core.Dialogue;
 using XVNML.Core.Macros;
 
 namespace XVNML.Utility.Macros

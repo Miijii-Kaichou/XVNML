@@ -11,23 +11,24 @@
 	</sceneDefinitions>
 
 	<dialogue name::"PromptsExample">
-		@ {
+		@Hana {
 			cue_scene::"OutsideOfSchool"|
 			sts::45|
-			test::1000i|
+			test::1000|
+			exp::1|
 			pass
 		}<		
 		["Question 1"]
-		? What's 2 {plus} 2?>>
+		?* What's 2 {plus} 2?>>
 		(
 			("4")>
 				@ That is correct!<<
 			("2")>
-				@ {jtbt::"Incorrect"|pass}<<
+				@ {jump_to::"Incorrect"|pass}<<
 			("0")>
 				["Incorrect"]
 				@ Wrong<
-				@ {jtbt::"Question 1"|pass}<<
+				@ {jump_to::1|pass}<<
 		)
 		@Hana>Smile {sts::60|exp::"Happy"}I've just received some great news!<
 		@*>Happy>Wow You definitely want to hear this.> 

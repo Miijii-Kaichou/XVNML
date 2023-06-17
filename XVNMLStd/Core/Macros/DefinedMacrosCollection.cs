@@ -8,7 +8,7 @@ namespace XVNML.Core.Macros
 {
     public static class DefinedMacrosCollection
     {
-        public static SortedDictionary<string, MacroAttribute>? ValidMacros { get; private set; }
+        public static SortedDictionary<string, List<MacroAttribute>>? ValidMacros { get; private set; }
 
         public static bool IsInitialized { get; private set; }
 
@@ -16,9 +16,11 @@ namespace XVNML.Core.Macros
         {
             if (IsInitialized) return;
 
-            ValidMacros = new SortedDictionary<string, MacroAttribute>();
+            ValidMacros = new SortedDictionary<string, List<MacroAttribute>>();
+
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             Type[] libraryTypes;
+
             for (int i = 0; i < assemblies.Length; i++)
             {
                 Assembly assembly = assemblies[i];
@@ -45,20 +47,28 @@ namespace XVNML.Core.Macros
             foreach (MethodInfo method in methods)
             {
                 var attribute = (MacroAttribute)method.GetCustomAttribute(typeof(MacroAttribute));
+
                 if (attribute != null)
                 {
-                    if (ValidMacros!.ContainsKey(attribute.macroName)) continue;
                     attribute.macroLibraryType = lib;
                     attribute.method = method;
                     attribute.ValidateMethodParameters(out bool result);
+
+                    if (ValidMacros!.ContainsKey(attribute.macroName))
+                    {
+                        ValidMacros[attribute.macroName].Add(attribute);
+                        continue;
+                    }
+
                     if (result)
                     {
-                        ValidMacros.Add(attribute.macroName, attribute);
+                        ValidMacros.Add(attribute.macroName, new List<MacroAttribute>(){ attribute });
                         continue;
                     }
 
                     Console.WriteLine($"Invalid Parameter Types for Macro {attribute.macroName}; " +
                         $"Attached method: {method.Name}");
+
                     continue;
                 }
             }

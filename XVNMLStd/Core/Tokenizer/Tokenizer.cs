@@ -169,7 +169,7 @@ namespace XVNML.Core.Lexer
 
                 var finalValueString = valueString != string.Empty ? valueString : text;
 
-                if (char.ToUpper(suffix) == 'F')
+                if (char.ToUpper(suffix) == 'F' || text!.Contains('.'))
                 {
                     float.TryParse(finalValueString, out float floatValue);
                     return new SyntaxToken(TokenType.Number, _Line, start, text, floatValue);

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Utility.Dialogue;
@@ -34,13 +35,13 @@ namespace XVNML.Core.Macros
                     return;
                 }
 
-                var targetMacro = DefinedMacrosCollection.ValidMacros?[macroSymbol];
+                var targetMacros = DefinedMacrosCollection.ValidMacros?[macroSymbol];
 
-                args = ResolveMacroArgumentTypes(targetMacro, args);
+                args = ResolveMacroArgumentTypes(targetMacros!, args, out MacroAttribute? correctMacro);
 
                 object[] finalArgs = FinalizeArgumentData(args, info);
 
-                targetMacro?.method?.Invoke(info, finalArgs);
+                correctMacro?.method?.Invoke(info, finalArgs);
             }
         }
 
@@ -49,8 +50,10 @@ namespace XVNML.Core.Macros
             lock (value.info.process.processLock)
             {
                 if (RetryQueues == null) return;
+
                 RetryQueues[value.info.process.ID] ??= new ConcurrentQueue<(string, (object, Type)[], MacroCallInfo)>();
                 RetryQueues[value.info.process.ID].Enqueue(value);
+                
                 UpdateRetryQueuedFlags(value.info.process);
             }
         }
@@ -83,9 +86,26 @@ namespace XVNML.Core.Macros
             return finalArgs;
         }
 
-        private static (object, Type)[] ResolveMacroArgumentTypes(MacroAttribute? targetMacro, (object, Type)[] args)
+        private static (object, Type)[] ResolveMacroArgumentTypes(List<MacroAttribute?> targetMacros, (object, Type)[] args, out MacroAttribute? correctMacro)
         {
+            correctMacro = targetMacros[0];
+
             if (args == null || args.Length == 0) return Array.Empty<(object, Type)>();
+
+            var argTypes = args.Select(a => a.Item2).ToArray();
+            var targetMacro = targetMacros.Count < 2 ? targetMacros[0] : targetMacros.Where(m =>
+            {
+                for (int i = 0; i < m!.argumentTypes?.Length; i++)
+                {
+                    var type = m.argumentTypes[i];
+                    if (type == typeof(int) && argTypes[i] == typeof(uint)) continue;
+                    if (ReferenceEquals(type, argTypes[i]) == false) return false;
+                }
+
+                return true;
+            }).FirstOrDefault();
+
+            correctMacro = targetMacro;
 
             for (int i = 0; i < args.Length; i++)
             {

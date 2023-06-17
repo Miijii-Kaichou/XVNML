@@ -7,6 +7,5 @@ namespace XVNML.Utility.Macros
     {
         public int callIndex;
         public DialogueWriterProcessor process;
-        public int overrideIndex;
     }
 }

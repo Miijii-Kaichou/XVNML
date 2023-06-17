@@ -79,27 +79,14 @@ internal static class StandardMacroLibrary
 
     }
 
-    [Macro("jtbi")]
-    internal static void JumpToLineMacroShortHand(MacroCallInfo info, uint index)
-    {
-        JumpToLineMacro(info, index);
-    }
-
-    [Macro("jump_to_by_index")]
-    internal static void JumpToLineMacro(MacroCallInfo info, uint index)
+    [Macro("jump_to")]
+    internal static void JumpToMacro(MacroCallInfo info, uint index)
     {
         info.process.JumpTo((int)index);
-        return;
     }
 
-    [Macro("jtbt")]
-    internal static void JumpToLineMacroShortHand(MacroCallInfo info, string tagName)
-    {
-        JumpToLineMacro(info, tagName);
-    }
-
-    [Macro("jump_to_by_tag")]
-    internal static void JumpToLineMacro(MacroCallInfo info, string tagName)
+    [Macro("jump_to")]
+    internal static void JumpToMacro(MacroCallInfo info, string tagName)
     {
         if (info.process.lineProcesses.Where(sl => sl.TaggedAs == tagName.ToString()).Any() == false) return;
 
@@ -370,14 +357,22 @@ internal static class StandardMacroLibrary
         SetCastExpressionMacro(info, value);
     }
 
+    [Macro("exp")]
+    internal static void SetCastExpressionMacroShortHand(MacroCallInfo info, int value)
+    {
+        SetCastExpressionMacro(info, value);
+    }
+
     [Macro("expression")]
     internal static void SetCastExpressionMacro(MacroCallInfo info, string value)
     {
-        if (value.GetType() == typeof(string))
-        {
-            info.process.ChangeCastExpression(info, value);
-            return;
-        }
+        info.process.ChangeCastExpression(info, value);
+    }
+
+    [Macro("expression")]
+    internal static void SetCastExpressionMacro(MacroCallInfo info, int value)
+    {
+        SetCastExpressionMacro(info, value.ToString());
     }
 
     [Macro("vo")]
@@ -386,14 +381,22 @@ internal static class StandardMacroLibrary
         SetCastVoice(info, value);
     }
 
+    [Macro("vo")]
+    internal static void SetCastVoiceShortHand(MacroCallInfo info, int value)
+    {
+        SetCastVoice(info, value);
+    }
+
     [Macro("voice")]
     internal static void SetCastVoice(MacroCallInfo info, string value)
     {
-        if (value.GetType() == typeof(string))
-        {
-            info.process.ChangeCastVoice(info, value);
-            return;
-        }
+        info.process.ChangeCastVoice(info, value);
+    }
+
+    [Macro("voice")]
+    internal static void SetCastVoice(MacroCallInfo info, int value)
+    {
+        SetCastVoice(info, value.ToString());
     }
     #endregion
 
