@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-
+using System.Xml;
 
 namespace XVNML.Core.Lexer
 {
@@ -145,35 +145,45 @@ namespace XVNML.Core.Lexer
                 return new SyntaxToken(TokenType.EOF, _Line, _position, "\0", null);
             }
 
-            if (char.IsDigit(_Current))
+            if ((_Current == '-' && char.IsDigit(SourceText![_position+1])) || char.IsDigit(_Current))
             {
-                var start = _position - (SourceText?[_position - 1] == '-' ? 1 : 0);
+                var start = _position;
 
-                while (char.IsDigit(_Current) || _Current == '.')
+                while (char.IsDigit(_Current) || 
+                    _Current == '.' ||
+                    _Current == '-' ||
+                    char.ToUpper(_Current) == 'F' ||
+                    char.ToUpper(_Current) == 'D' ||
+                    char.ToUpper(_Current) == 'L' ||
+                    char.ToUpper(_Current) == 'I' ||
+                    char.ToUpper(_Current) == 'U')
                     Next();
 
                 var length = _position - start;
                 var text = SourceText?.Substring(start, length);
+                var suffix = text!.Last();
 
-                if (_position + 1 == ('F' | 'f'))
+                if (char.IsLetter(suffix)) text = SourceText?.Substring(start, length - 1);
+
+                if (char.ToUpper(suffix) == 'F')
                 {
                     float.TryParse(text, out float floatValue);
                     return new SyntaxToken(TokenType.Number, _Line, start, text, floatValue);
                 }
 
-                if (_position + 1 == ('D' | 'd'))
+                if (char.ToUpper(suffix) == 'D')
                 {
                     double.TryParse(text, out double doubleValue);
                     return new SyntaxToken(TokenType.Number, _Line, start, text, doubleValue);
                 }
 
-                if (_position + 1 == ('L' | 'l'))
+                if (char.ToUpper(suffix) == 'L')
                 {
                     long.TryParse(text, out long doubleValue);
                     return new SyntaxToken(TokenType.Number, _Line, start, text, doubleValue);
                 }
 
-                if (text[0] == '-')
+                if (text?[0] == '-' || char.ToUpper(suffix) == 'I')
                 {
                     int.TryParse(text, out int intValue);
                     return new SyntaxToken(TokenType.Number, _Line, start, text, intValue);

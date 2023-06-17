@@ -48,11 +48,12 @@ namespace XVNML.Core.Parser
         private StringBuilder _tagValueStringBuilder = new StringBuilder();
         private readonly Queue<Action> _solvingQueue = new Queue<Action>();
 
-        internal Action _onParserCompleted;
+        internal Action? _onParserCompleted;
         #endregion
 
-        public void Parse()
+        public void Parse(Action? onComplete)
         {
+            _onParserCompleted = onComplete;
             _position = -1;
             _conflict = false;
             _evaluationResourceState = ParseResourceState.Internal;

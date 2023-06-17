@@ -33,14 +33,17 @@ namespace XVNML.XVNMLUtility.Tags
             // Check if a source has been specified.
             if (source != null)
             {
-                var xvnml = XVNMLObj.Create(fileOrigin + _CastDir + source!.ToString());
+                XVNMLObj.Create(fileOrigin + _CastDir + source!.ToString(), dom =>
+                {
+                    if (dom == null) return;
+                    var target = dom?.source?.GetElement<CastDefinitions>().GetCast(TagName ?? string.Empty) ??
+                               dom?.source?.GetElement<CastDefinitions>().GetElement<Cast>();
+                    if (target == null) return;
+                    _portraitDefinitions = target!._portraitDefinitions;
+                    _voiceDefinitions = target!._voiceDefinitions;
 
-                if (xvnml == null) return;
-                var target = xvnml?.source?.GetElement<CastDefinitions>().GetCast(TagName ?? string.Empty) ??
-                           xvnml?.source?.GetElement<CastDefinitions>().GetElement<Cast>();
-                if (target == null) return;
-                _portraitDefinitions = target!._portraitDefinitions;
-                _voiceDefinitions = target!._voiceDefinitions;
+                });
+
                 return;
             }
 

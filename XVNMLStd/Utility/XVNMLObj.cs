@@ -9,6 +9,9 @@ namespace XVNML.XVNMLUtility
     public class XVNMLObj
     {
         public static XVNMLObj? Instance { get; private set; }
+
+        public Action<XVNMLObj>? onDOMCreated;
+
         internal Proxy? proxy;
         internal Source? source;
 
@@ -46,19 +49,19 @@ namespace XVNML.XVNMLUtility
             }
         }
 
-        public static XVNMLObj Create(string fileTarget)
+        public static void Create(string fileTarget, Action<XVNMLObj>? onCreation)
         {
             DefinedTagsCollection.ManifestTagTypes();
             DefinedMacrosCollection.ManifestMacros();
 
             var xvnmlParser = new TagParser();
             xvnmlParser.SetTarget(fileTarget);
-            xvnmlParser.Parse();
-
-            Instance = new XVNMLObj(xvnmlParser);
-
-            return Instance;
-
+            xvnmlParser.Parse(() =>
+            {
+                Instance = new XVNMLObj(xvnmlParser);
+                Instance!.onDOMCreated = onCreation;
+                Instance.onDOMCreated?.Invoke(Instance);
+            });
         }
     }
 }

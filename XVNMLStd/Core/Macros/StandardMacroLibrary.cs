@@ -2,6 +2,7 @@
 using System.Linq;
 using XVNML.Utility.Macros;
 using XVNML.Core.Dialogue.Structs;
+using System;
 
 [MacroLibrary(typeof(StandardMacroLibrary))]
 internal static class StandardMacroLibrary
@@ -105,12 +106,18 @@ internal static class StandardMacroLibrary
         info.process.JumpTo(tagName.ToString());
     }
 
-
     [Macro("lead_to")]
     internal static void LeadToLineMacro(MacroCallInfo info, int value)
     {
         info.process.LeadTo(value);
     }
+
+    [Macro("end")]
+    internal static void EndDialogueMacro(MacroCallInfo info)
+    {
+        info.process.lineProcessIndex = info.process.lineProcesses.Count;
+    }
+
     #endregion
 
     #region Character Insert Macros
@@ -358,33 +365,33 @@ internal static class StandardMacroLibrary
 
     #region Cast Macros
     [Macro("exp")]
-    internal static void SetCastExpressionMacroShortHand(MacroCallInfo info, object value)
+    internal static void SetCastExpressionMacroShortHand(MacroCallInfo info, string value)
     {
         SetCastExpressionMacro(info, value);
     }
 
     [Macro("expression")]
-    internal static void SetCastExpressionMacro(MacroCallInfo info, object value)
+    internal static void SetCastExpressionMacro(MacroCallInfo info, string value)
     {
         if (value.GetType() == typeof(string))
         {
-            info.process.ChangeCastExpression(info, value.ToString());
+            info.process.ChangeCastExpression(info, value);
             return;
         }
     }
 
     [Macro("vo")]
-    internal static void SetCastVoiceShortHand(MacroCallInfo info, object value)
+    internal static void SetCastVoiceShortHand(MacroCallInfo info, string value)
     {
         SetCastVoice(info, value);
     }
 
     [Macro("voice")]
-    internal static void SetCastVoice(MacroCallInfo info, object value)
+    internal static void SetCastVoice(MacroCallInfo info, string value)
     {
         if (value.GetType() == typeof(string))
         {
-            info.process.ChangeCastVoice(info, value.ToString());
+            info.process.ChangeCastVoice(info, value);
             return;
         }
     }
@@ -416,6 +423,12 @@ internal static class StandardMacroLibrary
     internal static void GetVariableMacro(MacroCallInfo info, string identifier)
     {
 
+    }
+
+    [Macro("test")]
+    internal static void TestMacro(MacroCallInfo info, int value)
+    {
+        Console.WriteLine($"Test Macro Successful: {value}");
     }
     #endregion
 }

@@ -12,9 +12,9 @@
 
 	<dialogue name::"PromptsExample">
 		@ {
-			set_scene::"OutsideOfSchool"|
+			cue_scene::"OutsideOfSchool"|
 			sts::45|
-			cue_scene|
+			test::-1|
 			pass
 		}<		
 		["Question 1"]
@@ -29,7 +29,7 @@
 				@ Wrong<
 				@ {jtbt::"Question 1"|pass}<<
 		)
-		@Hana>Smile {sts::60}I've just received some great news!<
+		@Hana>Smile {sts::60|exp::"Happy"}I've just received some great news!<
 		@*>Happy>Wow You definitely want to hear this.> 
 		Because this will change the way how we use XVNML2U from here on.<
 		@*>Smile It's a feature that XVNML2U definitely needed.<

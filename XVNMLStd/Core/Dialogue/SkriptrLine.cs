@@ -365,8 +365,16 @@ namespace XVNML.Core.Dialogue
                             continue;
                         }
 
+                        var identifierType = typeof(object);
+
                         //Otherwise, it could be interpreted as an Enum or Flag
-                        macroArgs.Add((currentToken?.Text!, typeof(object)));
+                        if (currentToken.Text?.ToLower() == "true" ||
+                            currentToken.Text?.ToLower() == "false")
+                        {
+                            identifierType = typeof(bool);
+                        }
+
+                        macroArgs.Add((currentToken?.Text!, identifierType));
 
                         // Expect a comma or ) if it's multi
                         if (multiArgs)
@@ -446,8 +454,8 @@ namespace XVNML.Core.Dialogue
                         continue;
 
                     case TokenType.Number:
-                        EvaluateNumericType(currentToken, out Type type);
-                        macroArgs.Add((currentToken?.Text!, type));
+                        EvaluateNumericType(currentToken, out Type? type);
+                        macroArgs.Add((currentToken?.Text!, type!));
                         if (multiArgs)
                         {
                             expectingType = TokenType.CloseParentheses |
@@ -541,19 +549,19 @@ namespace XVNML.Core.Dialogue
             int length = token!.Text!.Length;
             var character = token!.Text![length-1];
             
-            if (character == ('F' | 'f') || token!.Text.Contains('.'))
+            if (character == char.ToLower('F') || token!.Text.Contains('.'))
             {
                 resultType = typeof(float);
                 return;
             }
 
-            if (character == ('D' | 'd') || token!.Text.Contains('.'))
+            if (character == char.ToLower('D') || token!.Text.Contains('.'))
             {
                 resultType = typeof(double);
                 return;
             }
 
-            if (character == ('L' | 'l'))
+            if (character == char.ToLower('L'))
             {
                 resultType = typeof(long);
                 return;

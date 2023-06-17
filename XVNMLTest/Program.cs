@@ -11,24 +11,25 @@ static class Program
     private static bool finished = false;
     static void Main(string[] args)
     {
-        var obj = XVNMLObj.Create(@"E:\Documents\Repositories\C#\XVNML\XVNMLTest\XVNMLFiles\test0.main.xvnml");
+        XVNMLObj.Create(@"E:\Documents\Repositories\C#\XVNML\XVNMLTest\XVNMLFiles\test0.main.xvnml", dom =>
+        {
+            if (dom == null) return;
+            if (dom.Root == null) return;
 
-        if (obj == null) return;
-        if (obj.Root == null) return;
+            Console.OutputEncoding = Encoding.UTF8;
 
-        Console.OutputEncoding = Encoding.UTF8;
+            DialogueScript script = dom.Root.GetElement<Dialogue>("PromptsExample")?.dialogueOutput!;
 
-        DialogueScript script = obj.Root.GetElement<Dialogue>("PromptsExample")?.dialogueOutput!;
-
-        DialogueWriter.AllocateChannels(1);
-        DialogueWriter.OnPrompt![0] += DisplayPrompts;
-        DialogueWriter.OnPromptResonse![0] += RespondToPrompt;
-        DialogueWriter.OnLineSubstringChange![0] += UpdateConsole;
-        DialogueWriter.OnNextLine![0] += ClearConsole;
-        DialogueWriter.OnLinePause![0] += MoveNext;
-        DialogueWriter.OnDialogueFinish![0] += Finish;
-        DialogueWriter.Write(script);
-        Console.Clear();
+            DialogueWriter.AllocateChannels(1);
+            DialogueWriter.OnPrompt![0] += DisplayPrompts;
+            DialogueWriter.OnPromptResonse![0] += RespondToPrompt;
+            DialogueWriter.OnLineSubstringChange![0] += UpdateConsole;
+            DialogueWriter.OnNextLine![0] += ClearConsole;
+            DialogueWriter.OnLinePause![0] += MoveNext;
+            DialogueWriter.OnDialogueFinish![0] += Finish;
+            DialogueWriter.Write(script);
+            Console.Clear();
+        });
 
         while (finished == false)
             continue;

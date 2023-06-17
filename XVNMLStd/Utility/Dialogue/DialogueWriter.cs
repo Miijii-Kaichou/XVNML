@@ -136,7 +136,7 @@ namespace XVNML.Utility.Dialogue
             while (IsInitialized && !cancelationToken.IsCancellationRequested)
             {
                 DoConcurrentDialogueProcesses();
-                Thread.Sleep(10);
+                Thread.Sleep(5);
             }
         }
 

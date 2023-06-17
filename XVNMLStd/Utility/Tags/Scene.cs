@@ -34,15 +34,17 @@ namespace XVNML.XVNMLUtility.Tags
                     return;
                 }
 
-                var xvnml = XVNMLObj.Create(fileOrigin + _SceneDir + source!.ToString());
-                if (xvnml == null) return;
+                XVNMLObj.Create(fileOrigin + _SceneDir + source!.ToString(), dom =>
+                {
+                    if (dom == null) return;
 
-                var target = xvnml?.source?.GetElement<SceneDefinitions>()?.GetScene(TagName ?? string.Empty) ??
-                           xvnml?.source?.GetElement<SceneDefinitions>()?.GetElement<Scene>();
-                if (target == null) return;
+                    var target = dom?.source?.GetElement<SceneDefinitions>()?.GetScene(TagName ?? string.Empty) ??
+                               dom?.source?.GetElement<SceneDefinitions>()?.GetElement<Scene>();
+                    if (target == null) return;
 
-                imgRef = target.GetParameter("img");
-                imageTarget = target.imageTarget;
+                    imgRef = target.GetParameter("img");
+                    imageTarget = target.imageTarget;
+                });
                 return;
             }
 
