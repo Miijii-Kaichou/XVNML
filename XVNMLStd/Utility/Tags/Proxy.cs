@@ -1,5 +1,5 @@
 ﻿using System;
-using XVNML.Core;
+using XVNML.Core.Enum;
 using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
@@ -16,13 +16,23 @@ namespace XVNML.XVNMLUtility.Tags
 
         public override void OnResolve(string? fileOrigin)
         {
+            AllowedParameters = new[]
+            {
+                "engine",
+                "target",
+                "lang",
+                "screenWidth",
+                "screenHeight",
+                "aspectRatio"
+            };
+
             base.OnResolve(fileOrigin);
-            engine = parameterInfo?["engine"]?.ToString()!;
-            target = parameterInfo?["target"]?.ToString()!;
-            lang = Enum.Parse<TargetLanguage>(parameterInfo?.paramters["lang"].value?.ToString()!);
-            screenWidth = Convert.ToUInt32(parameterInfo?["screenWidth"]);
-            screenHeight = Convert.ToUInt32(parameterInfo?["screenHeight"]);
-            aspectRatio = parameterInfo?["aspectRatio"]?.ToString();
+            engine = GetParameterValue("engine")?.ToString()!;
+            target = GetParameterValue("target")?.ToString()!;
+            lang = Enum.Parse<TargetLanguage>(GetParameterValue("lang")?.ToString()!);
+            screenWidth = Convert.ToUInt32(GetParameterValue("screenWidth"));
+            screenHeight = Convert.ToUInt32(GetParameterValue("screenHeight"));
+            aspectRatio = GetParameterValue("aspectRatio")?.ToString();
         }
     }
 }

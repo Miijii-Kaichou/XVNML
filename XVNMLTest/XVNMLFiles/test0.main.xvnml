@@ -1,0 +1,118 @@
+﻿<proxy name::"test0.main" lang::"CSharp" engine::"Native">
+	<castDefinitions>
+		<cast name::"Hana" src::"Hana/Hana.cast.xvnml"/>
+	</castDefinitions>
+
+	<sceneDefinitions>
+		<scene name::"Home" 			src::$nil/>
+		<scene name::"OutsideOfSchool" 	src::"School/OutsideOfSchool.scene.xvnml"/>
+		<scene name::"Class1A" 			src::$nil/>
+		<scene name::"Cafeteria" 		src::$nil/>
+	</sceneDefinitions>
+
+	<dialogue name::"PromptsExample">
+		@Hana {
+			cue_scene::"OutsideOfSchool"|
+			sts::45|
+			test::1000|
+			exp::1|
+			pass
+		}<		
+		["Question 1"]
+		?* What's 2 {plus} 2?>>
+		(
+			("4")>
+				@ That is correct!<<
+			("2")>
+				@ {jump_to::"Incorrect"|pass}<<
+			("0")>
+				["Incorrect"]
+				@ Wrong<
+				@ {jump_to::1|pass}<<
+		)
+		@Hana>Smile {sts::60|exp::"Happy"}I've just received some great news!<
+		@*>Happy>Wow You definitely want to hear this.> 
+		Because this will change the way how we use XVNML2U from here on.<
+		@*>Smile It's a feature that XVNML2U definitely needed.<
+		@* And the feature in question...<
+		?* Can you guess?{pause}>>
+		(
+			("Based on what I'm seeing, it looks like we've implemented prompts...")>
+			@Hana You seem pretty confident...<
+			?* Are you sure about your answer?{pause}>>
+			(
+				$> It's best practice that at every start of a prompt response
+				$> you start with a Normal Cast Definition (@[cast_name]) as opposed to a 
+				$> Persistent Cast Definition (@*).
+				$> Although both work, starting with a Normal Cast will 
+				$> keep track of who's still talking.
+				("I'm positive!")>
+				?Hana Are you absolutely sure?>>
+				(
+					("Seal in my answer!")>
+					@Hana>Happy>Wow That's correct!<<
+
+					("Now you're really scaring me...")>
+					@Hana No need to be scared!<
+					@*>Happy>Wow You're actually correct!<<
+				)
+					
+				("You're making me have second thoughts...")>
+				@Hana Well...<
+				@*>Happy>Wow You're correct!<<
+			)
+
+			("Best cast representation?")>
+			@Hana No, silly!<<
+
+			("Does it have something to do with Unity?")>
+			@Hana Actually,{del::500} it does have something to do with Unity.<
+			@* More specifically,{del::500} it has something to do with the updated XVNML API
+			that can be implemented to Unity.<<
+		)
+		@*>Happy IT'S PROMPTS!!!<
+		@*>Smile We're in the process of taking the updated XVNML API and implementing prompts for you.<
+		@* The user should be able to type in a prompt{pause}, and inside the game, you can click on the different responses.<
+		@* From then, you can then have branching dialogues that does different things!<
+		@*>Happy A feature that's essential for creating Visual Novels!<
+		?*>Smile So tell me, how do you think about XVNML2U so far?>>
+		(
+			("It's pretty awesome!")>
+			@Hana>Happy>Wow That's great to hear!<<
+
+			("I'm not too sure yet...")>
+			@Hana Well, this isn't all that XVNML2U can offer.<
+			@* Give it a couple of months{pause}, it'll come out super special.<
+			@*>Happy I promise you that!<<
+
+			("It could do better")>
+			@Hana Well of course it can.<
+			@* We're only beginning to scratch the service.<
+			@* Eventually, it'll be a tool that will change how people does 
+			story-centric content inside Unity.<
+			@*>Happy You can bet your lucky stars on that one.<<
+		)
+		@*>Smile In the future, we'll be about to do 
+		a lot more with XVNML2U.<
+		@* Like Cast Reactions, playing audio {paren}not including Cast Voices{paren_end},
+		moving cast to a position of the screen...<
+		@* Scene loading and transitions, Text Motions...<
+		@*>Happy>Wow And so much more!!!<
+		@*>Smile If you made it this far...<
+		@*>Happy Then we've officially implmented prompts!<
+		?Hana>Smile What do you want to do today?>>
+		(
+			("Create more visual novels...")>
+				@Hana>Happy Good choice!<
+				@* I actually have a really great story idea!<
+				@* Want to hear it?<<
+			("Hang out with you...")>
+				@Hana>Happy Hehe!<
+				@* That's very sweet!<
+				@* Let's hang out then!<<
+			("Sleep...")>
+				@* You must be tired then.<
+				@* I'll always be here if you want to do anything!<<
+		)
+	</dialogue>
+</proxy>

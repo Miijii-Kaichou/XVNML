@@ -1,4 +1,5 @@
-﻿using XVNML.Core.Dialogue;
+﻿using System;
+using XVNML.Core.Dialogue;
 
 namespace XVNML.Utility.Macros
 {

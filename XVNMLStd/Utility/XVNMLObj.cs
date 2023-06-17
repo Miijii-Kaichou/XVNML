@@ -1,13 +1,17 @@
-﻿using XVNML.Core.TagParser;
+﻿using XVNML.Core.Parser;
 using XVNML.Core.Tags;
 using XVNML.XVNMLUtility.Tags;
 using XVNML.Core.Macros;
+using System;
 
 namespace XVNML.XVNMLUtility
 {
     public class XVNMLObj
     {
         public static XVNMLObj? Instance { get; private set; }
+
+        public Action<XVNMLObj>? onDOMCreated;
+
         internal Proxy? proxy;
         internal Source? source;
 
@@ -23,8 +27,8 @@ namespace XVNML.XVNMLUtility
 
         public bool IsBeingUsedAsSource => source != null;
 
-        private readonly Parser xvnmlParser = new Parser();
-        private XVNMLObj(Parser origin)
+        private readonly TagParser xvnmlParser = new TagParser();
+        private XVNMLObj(TagParser origin)
         {
             xvnmlParser = origin;
             if (xvnmlParser._rootTag == null) return;
@@ -45,15 +49,19 @@ namespace XVNML.XVNMLUtility
             }
         }
 
-        public static XVNMLObj? Create(string fileTarget)
+        public static void Create(string fileTarget, Action<XVNMLObj>? onCreation)
         {
             DefinedTagsCollection.ManifestTagTypes();
             DefinedMacrosCollection.ManifestMacros();
-            var xvnmlParser = new Parser();
+
+            var xvnmlParser = new TagParser();
             xvnmlParser.SetTarget(fileTarget);
-            xvnmlParser.Parse();
-            Instance = new XVNMLObj(xvnmlParser);
-            return Instance;
+            xvnmlParser.Parse(() =>
+            {
+                Instance = new XVNMLObj(xvnmlParser);
+                Instance!.onDOMCreated = onCreation;
+                Instance.onDOMCreated?.Invoke(Instance);
+            });
         }
     }
 }

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-
+using System.Threading.Tasks.Sources;
+using System.Xml;
 
 namespace XVNML.Core.Lexer
 {
@@ -137,6 +139,7 @@ namespace XVNML.Core.Lexer
         {
             JumpPosition(1);
         }
+
         public SyntaxToken NextToken()
         {
             if (_position >= SourceText?.Length)
@@ -144,19 +147,54 @@ namespace XVNML.Core.Lexer
                 return new SyntaxToken(TokenType.EOF, _Line, _position, "\0", null);
             }
 
-            if (char.IsDigit(_Current))
+            if ((_Current == '-' && char.IsDigit(SourceText![_position+1])) || char.IsDigit(_Current))
             {
                 var start = _position;
 
-                while (char.IsDigit(_Current))
+                while (char.IsDigit(_Current) || 
+                    _Current == '.' ||
+                    _Current == '-' ||
+                    char.ToUpper(_Current) == 'F' ||
+                    char.ToUpper(_Current) == 'D' ||
+                    char.ToUpper(_Current) == 'L' ||
+                    char.ToUpper(_Current) == 'I')
                     Next();
 
                 var length = _position - start;
                 var text = SourceText?.Substring(start, length);
+                var suffix = text!.Last();
+                var valueString = string.Empty;
 
-                int.TryParse(text, out var value);
+                if (char.IsLetter(suffix)) valueString = SourceText?.Substring(start, length - 1);
 
-                return new SyntaxToken(TokenType.Number, _Line, start, text, value);
+                var finalValueString = valueString != string.Empty ? valueString : text;
+
+                if (char.ToUpper(suffix) == 'F' || text!.Contains('.'))
+                {
+                    float.TryParse(finalValueString, out float floatValue);
+                    return new SyntaxToken(TokenType.Number, _Line, start, text, floatValue);
+                }
+
+                if (char.ToUpper(suffix) == 'D')
+                {
+                    double.TryParse(finalValueString, out double doubleValue);
+                    return new SyntaxToken(TokenType.Number, _Line, start, text, doubleValue);
+                }
+
+                if (char.ToUpper(suffix) == 'L')
+                {
+                    long.TryParse(finalValueString, out long longValue);
+                    return new SyntaxToken(TokenType.Number, _Line, start, text, longValue);
+                }
+
+                if (text?[0] == '-' || char.ToUpper(suffix) == 'I')
+                {
+                    int.TryParse(finalValueString, out int intValue);
+                    return new SyntaxToken(TokenType.Number, _Line, start, text, intValue);
+                }
+
+                uint.TryParse(finalValueString, out uint uIntValue);
+                return new SyntaxToken(TokenType.Number, _Line, start, text, uIntValue);
             }
 
             if (char.IsWhiteSpace(_Current))

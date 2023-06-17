@@ -9,7 +9,7 @@ namespace XVNML.XVNMLUtility.Tags
         public Audio[]? AudioCollection => Collect<Audio>();
         public Audio? this[string name]
         {
-            get { return GetCast(name.ToString()); }
+            get { return GetAudio(name.ToString()); }
         }
 
         public override void OnResolve(string? fileOrigin)
@@ -17,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        Audio? GetCast(string name) => AudioCollection.First(audio => audio.tagName?.Equals(name) == true);
+        Audio? GetAudio(string name) => AudioCollection.First(audio => audio.TagName?.Equals(name) == true);
     }
 }

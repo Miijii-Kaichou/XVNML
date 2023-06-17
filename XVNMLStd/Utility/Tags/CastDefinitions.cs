@@ -17,6 +17,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        public Cast? GetCast(string name) => CastMembers.First(cast => cast.tagName?.Equals(name) == true);
+        public Cast? GetCast(string name) => CastMembers.First(cast => cast.TagName?.Equals(name) == true);
     }
 }

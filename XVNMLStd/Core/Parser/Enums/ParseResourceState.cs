@@ -1,4 +1,4 @@
-﻿namespace XVNML.Core.TagParser.Enums
+﻿namespace XVNML.Core.Parser.Enums
 {
     //Parse Resource State
     public enum ParseResourceState

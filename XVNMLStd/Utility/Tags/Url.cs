@@ -9,6 +9,5 @@ namespace XVNML.XVNMLUtility.Tags
         {
             base.OnResolve(fileOrigin);
         }
-
     }
 }

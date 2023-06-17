@@ -8,11 +8,11 @@ namespace XVNML.Core.Dialogue
     /// </summary>
     public sealed class DialogueScript
     {
-        public DialogueLine[] Lines => _lineList.ToArray();
-        private readonly List<DialogueLine> _lineList = new List<DialogueLine>();
+        public SkripterLine[] Lines => _lineList.ToArray();
+        private readonly List<SkripterLine> _lineList = new List<SkripterLine>();
 
-        public DialogueLine GetLine(int index) => Lines?[index]!;
-        public void ComposeNewLine(DialogueLine? line)
+        public SkripterLine GetLine(int index) => Lines?[index]!;
+        public void ComposeNewLine(SkripterLine? line)
         {
             if (line == null) return;
             _lineList.Add(line);

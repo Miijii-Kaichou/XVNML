@@ -17,5 +17,10 @@ namespace XVNML.Core.Extensions
 
             return names;
         }
+
+        public static void Up(this ref int value)
+        {
+            value++;
+        }
     }
 }

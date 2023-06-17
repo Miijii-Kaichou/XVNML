@@ -10,8 +10,13 @@ namespace XVNML.XVNMLUtility.Tags
         public VirtualKey key;
         public override void OnResolve(string? fileOrigin)
         {
+            AllowedParameters = new[]
+            {
+                "key"
+            };
+
             base.OnResolve(fileOrigin);
-            key = (VirtualKey)Enum.Parse(typeof(VirtualKey), (string?)parameterInfo?["key"] ?? "Null");
+            key = (VirtualKey)Enum.Parse(typeof(VirtualKey), (string?)GetParameterValue("key") ?? "Null");
         }
     }
 }

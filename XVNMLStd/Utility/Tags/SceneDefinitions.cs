@@ -18,6 +18,6 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
         }
 
-        public Scene? GetScene(string name) => Scenes.First(scene => scene.tagName?.Equals(name) == true);
+        public Scene? GetScene(string name) => Scenes.First(scene => scene.TagName?.Equals(name) == true);
     }
 }

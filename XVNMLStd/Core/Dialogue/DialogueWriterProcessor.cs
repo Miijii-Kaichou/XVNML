@@ -1,14 +1,21 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Timers;
+using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Macros;
+using XVNML.Utility.Diagnostics;
 using XVNML.Utility.Dialogue;
+using XVNML.Utility.Macros;
 
 namespace XVNML.Core.Dialogue
 {
     public sealed class DialogueWriterProcessor
     {
-        internal static DialogueWriterProcessor Instance { get; private set; }
+        internal static DialogueWriterProcessor? Instance { get; private set; }
 
         public int ID { get; internal set; }
         public string? DisplayingContent
@@ -22,17 +29,22 @@ namespace XVNML.Core.Dialogue
             }
         }
 
+        public string? Response { get; internal set; }
+        public bool AtEnd => lineProcessIndex > lineProcesses.Count - 1;
         public bool WasControlledPause { get; private set; }
         public uint ProcessRate { get; internal set; } = 60;
         public bool IsPaused { get; internal set; }
+        public bool IsPass { get; internal set; } = false;
 
-        public static bool IsStagnant => Instance.lineProcesses.Count == 0;
+        public static bool IsStagnant => Instance?.lineProcesses.Count == 0;
 
-        internal ConcurrentQueue<DialogueLine> lineProcesses = new ConcurrentQueue<DialogueLine>();
-        internal DialogueLine? currentLine;
-        internal bool doDetain;
+        internal ConcurrentBag<SkripterLine> lineProcesses = new ConcurrentBag<SkripterLine>();
+        internal SkripterLine? currentLine;
+        internal SkripterLine? previousLine;
+        internal int lineProcessIndex = -1;
         internal int linePosition;
 
+        private int previousLinePosition;
         internal bool IsOnDelay => delayTimer != null;
 
         private StringBuilder _processBuilder = new StringBuilder();
@@ -40,6 +52,71 @@ namespace XVNML.Core.Dialogue
         private Timer? delayTimer;
 
         internal object processLock = new object();
+        internal bool HasChanged => previousLinePosition != linePosition;
+        internal bool inPrompt;
+
+        private CastInfo? _currentCastInfo;
+        private Stack<int> _returnPointStack = new Stack<int>();
+        private bool _lastProcessWasClosing;
+
+        private SceneInfo? _currentSceneInfo = null;
+        private int _jumpIndexValue = -1;
+
+        //Cast Data
+        public CastInfo? CurrentCastInfo
+        {
+            get
+            {
+                return _currentCastInfo;
+            }
+            set
+            {
+                var previous = _currentCastInfo;
+
+                _currentCastInfo = value;
+
+                if (previous == null) return;
+                if (_currentCastInfo == null) return;
+
+                if (_currentCastInfo!.Value.name?.Equals(previous?.name) == false)
+                {
+                    DialogueWriter.OnCastChange?[ID]?.Invoke(this);
+                }
+
+                if (_currentCastInfo!.Value.expression?.Equals(previous?.expression) == false)
+                {
+                    DialogueWriter.OnCastExpressionChange?[ID]?.Invoke(this);
+                }
+
+                if (_currentCastInfo!.Value.voice?.Equals(previous?.voice) == false)
+                {
+                    DialogueWriter.OnCastVoiceChange?[ID]?.Invoke(this);
+                }
+            }
+        }
+
+        // Scene Data
+        public SceneInfo? CurrentSceneInfo
+        {
+            get
+            {
+                return _currentSceneInfo;
+            }
+            set
+            {
+                var previous = _currentSceneInfo;
+
+                _currentSceneInfo = value;
+
+                if (_currentSceneInfo == null) return;
+                if (previous?.name == _currentSceneInfo?.name) return;
+
+                if (_currentSceneInfo!.Value.name?.Equals(previous?.name) == false)
+                {
+                    DialogueWriter.OnSceneChange?[ID]?.Invoke(this);
+                }
+            }
+        }
 
         internal char? CurrentLetter
         {
@@ -54,6 +131,7 @@ namespace XVNML.Core.Dialogue
             }
         }
 
+
         internal void SetProcessRate(uint rate)
         {
             ProcessRate = rate;
@@ -64,7 +142,7 @@ namespace XVNML.Core.Dialogue
             lock (processLock)
             {
                 _processBuilder.Append(text);
-                DialogueWriter.OnLineSubstringChange?[ID].Invoke(this);
+                DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
             }
         }
 
@@ -73,13 +151,14 @@ namespace XVNML.Core.Dialogue
             lock (processLock)
             {
                 _processBuilder.Append(letter);
-                DialogueWriter.OnLineSubstringChange?[ID].Invoke(this);
+                DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
             }
         }
 
         internal void Clear()
         {
             _processBuilder.Clear();
+            DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
         }
 
         internal void Pause()
@@ -97,12 +176,6 @@ namespace XVNML.Core.Dialogue
             DialogueWriter.WaitingForUnpauseCue![ID] = WasControlledPause;
         }
 
-        private void StashLineState()
-        {
-            if (linePosition > currentLine?.Content?.Length - 1) return;
-            CurrentLetter = currentLine?.Content?[linePosition];
-        }
-
         internal void Feed()
         {
             lock (processLock)
@@ -114,6 +187,7 @@ namespace XVNML.Core.Dialogue
         internal void Wait(uint milliseconds)
         {
             MacroInvoker.Block(this);
+            WasControlledPause = true;
             delayTimer = new Timer(milliseconds);
             delayTimer.Elapsed += OnTimedEvent;
             delayTimer.AutoReset = false;
@@ -123,7 +197,33 @@ namespace XVNML.Core.Dialogue
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
             MacroInvoker.UnBlock(this);
+            WasControlledPause = false;
             delayTimer = null;
+        }
+
+        internal void ChangeCastVoice(MacroCallInfo info, string voiceName)
+        {
+            CurrentCastInfo = new CastInfo()
+            {
+                name = _currentCastInfo!.Value.name,
+                expression = _currentCastInfo!.Value.expression,
+                voice = voiceName
+            };
+        }
+
+        internal void ChangeCastExpression(MacroCallInfo info, string expressionName)
+        {
+            CurrentCastInfo = new CastInfo()
+            {
+                name = _currentCastInfo!.Value.name,
+                expression = expressionName,
+                voice = _currentCastInfo!.Value.voice,
+            };
+        }
+
+        internal void UpdatePrevious()
+        {
+            previousLinePosition = linePosition;
         }
 
         internal static DialogueWriterProcessor? Initialize(DialogueScript input, int id)
@@ -133,21 +233,130 @@ namespace XVNML.Core.Dialogue
             Instance = new DialogueWriterProcessor()
             {
                 ID = id,
-                lineProcesses = new ConcurrentQueue<DialogueLine>(),
+                lineProcesses = new ConcurrentBag<SkripterLine>(),
                 _processBuilder = new StringBuilder(),
                 currentLine = null,
                 CurrentLetter = null,
                 linePosition = -1,
                 IsPaused = false,
-                doDetain = false
             };
 
-            foreach (DialogueLine line in input.Lines)
+            var reversedList = input.Lines.Reverse();
+
+            for (int i = 0; i < reversedList.Count(); i++)
             {
-                Instance.lineProcesses.Enqueue(line);
+                SkripterLine line = reversedList.ElementAt(i);
+
+                if (line.data.parentLine != null && line.data.isClosingLine)
+                {
+                    line.data.returnPoint = line.data.parentLine.PromptContent[line.data.responseString!].rp;
+                }
+
+                Instance.lineProcesses.Add(line);
             }
 
             return Instance;
+        }
+
+        public Dictionary<string, (int, int)>? FetchPrompts()
+        {
+            return currentLine?.PromptContent;
+        }
+
+        public void JumpTo(string lineTagName)
+        {
+            _jumpIndexValue = Instance!.lineProcesses.Where(sl => sl.TaggedAs == lineTagName).Single().data.lineIndex;
+        }
+
+        public void JumpTo(int index)
+        {
+            _jumpIndexValue = Instance!.lineProcesses.Where(sl => sl.data.lineIndex == index).Single().data.lineIndex;
+        }
+
+        public void LeadTo(string lineTagName)
+        {
+            // Increment through line processes from current index
+            // until you find the next tagged Tag Name
+            if (Instance!.lineProcesses.ElementAt(_jumpIndexValue++).TaggedAs!.Equals(lineTagName)) return;
+            LeadTo(lineTagName);
+        }
+
+        public void LeadTo(int index)
+        {
+            // Increment [index] amount of times
+            _jumpIndexValue++;
+            if (index > 0) index--;
+            LeadTo(index);
+        }
+
+        public void JumpToStartingLineFromResponse(string response)
+        {
+            if (currentLine == null) return;
+            inPrompt = false;
+            var prompt = currentLine.PromptContent[response];
+            lineProcessIndex = prompt.sp - 1;
+            Response = response;
+            if (_returnPointStack.Count != 0 && _returnPointStack.Peek() == prompt.rp) return;
+            _returnPointStack.Push(prompt.rp);
+        }
+
+        public void JumpToReturningLineFromResponse()
+        {
+            if (_returnPointStack.Count == 0) return;
+            var index = _returnPointStack.Pop();
+            if (previousLine != null && previousLine.data.isClosingLine) index = previousLine.data.returnPoint;
+            previousLine = null;
+            if (lineProcessIndex == index + 1)
+            {
+                JumpToReturningLineFromResponse();
+                return;
+            }
+            lineProcessIndex = index;
+        }
+
+        internal void NextProcess() => lineProcessIndex++;
+
+        internal void UpdateProcess()
+        {
+            if (_jumpIndexValue != -1)
+            {
+                lineProcessIndex = _jumpIndexValue;
+                _jumpIndexValue = -1;
+                if (AtEnd) return;
+
+                UpdateLine();
+                return;
+            }
+
+            if (_returnPointStack.Count != 0 && _lastProcessWasClosing)
+            {
+                JumpToReturningLineFromResponse();
+                if (AtEnd) return;
+
+                UpdateLine();
+                return;
+            }
+            NextProcess();
+            if (AtEnd) return;
+
+            UpdateLine();
+        }
+
+        private void UpdateLine()
+        {
+            currentLine = lineProcesses.ElementAt(lineProcessIndex);
+            _lastProcessWasClosing = currentLine.data.isClosingLine;
+        }
+        
+        internal void ResetPass()
+        {
+            IsPass = false;
+        }
+
+        internal void AllowPass()
+        {
+            if (currentLine?.data.Mode == Enums.DialogueLineMode.Prompt) return;
+            IsPass = true;
         }
     }
 }

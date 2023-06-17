@@ -1,0 +1,8 @@
+<source name::"OutsideOfSchool.Scene">
+    <imageDefinitions>
+        <image name::"OutsideOfSchoolImg" src::"/OutsideOfSchool.png" rel::Relative/>
+    </imageDefinitions>
+    <sceneDefinitions>
+        <scene name::"OutsideOfSchool" img::$OutsideOfSchoolImg/>
+    </sceneDefinitions>
+</source>

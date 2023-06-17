@@ -1,5 +1,9 @@
 ﻿using XVNML.Core.Dialogue;
 using XVNML.Core.Tags;
+using XVNML.Core.Parser;
+using XVNML.Utility.Diagnostics;
+using System;
+using System.Linq;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -7,20 +11,34 @@ namespace XVNML.XVNMLUtility.Tags
     public sealed class Dialogue : TagBase
     {
         public string? Script { get; private set; }
-        public string? ID { get; private set; }
         public string? Name { get; private set; }
         public bool DoNotDetain { get; private set; } = false;
-        public Cast[]? includedCasts;
 
+        public Cast[]? includedCasts;
         public DialogueScript? dialogueOutput;
+
+        internal SkriptrParser? parserOrigin;
 
         public override void OnResolve(string? fileOrigin)
         {
+            AllowedParameters = new[] {
+                "enterWith",
+                "exitWith"
+            };
+
+            AllowedFlags = new[]
+            {
+                "dontDetain",
+                "allowOverride"
+            };
+
             base.OnResolve(fileOrigin);
+
             Script = value?.ToString();
-            ID = parameterInfo?["id"]?.ToString();
-            Name = tagName;
-            DoNotDetain = parameterInfo?["DoNotDetain"] != null;
+            Name = TagName;
+
+            // Flags
+            DoNotDetain = HasFlag("dontDetain");
 
             AnalyzeDialogue();
         }
@@ -28,7 +46,7 @@ namespace XVNML.XVNMLUtility.Tags
         private void AnalyzeDialogue()
         {
             if (Script == null) return;
-            _ = new DialogueParser(Script, out dialogueOutput);
+            parserOrigin = new SkriptrParser(Script, out dialogueOutput);
         }
     }
 }

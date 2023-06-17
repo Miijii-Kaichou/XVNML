@@ -10,8 +10,11 @@ namespace XVNML.XVNMLUtility.Tags
         public string[]? list;
         public override void OnResolve(string? fileOrigin)
         {
+            AllowedParameters = new[] { "list" };
             base.OnResolve(fileOrigin);
-            list = parameterInfo?["list"]?.ToString()?.Split(new[] { ',', ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            list = GetParameterValue("list")?
+                .ToString()?
+                .Split(new[] { ',', ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         }
         public bool IncludesTag(string tagName) => list!.Contains(tagName);
     }

@@ -1,4 +1,4 @@
-﻿namespace XVNML.Core.TagParser.Enums
+﻿namespace XVNML.Core.Parser.Enums
 {
     //Parser State
     public enum ParserEvaluationState

@@ -1,21 +1,29 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-
-using XVNML.Core.Dialogue;
+﻿using System.Text;
+using System.Linq;
 using XVNML.Utility.Macros;
-using XVNML.Utility.Dialogue;
-using System.Threading;
-using System.Text;
+using XVNML.Core.Dialogue.Structs;
+using System;
 
 [MacroLibrary(typeof(StandardMacroLibrary))]
 internal static class StandardMacroLibrary
 {
     #region Control Macros
+    [Macro("del")]
+    internal static void DelayMacroShortHand(MacroCallInfo info, uint milliseconds)
+    {
+        DelayMacro(info, milliseconds);
+    }
     [Macro("delay")]
     internal static void DelayMacro(MacroCallInfo info, uint milliseconds)
     {
         // Delay macro logic here.
         info.process.Wait(milliseconds);
+    }
+
+    [Macro("ins")]
+    internal static void InsertMacroShortHand(MacroCallInfo info, string text)
+    {
+        InsertMacro(info, text);
     }
 
     [Macro("insert")]
@@ -28,6 +36,13 @@ internal static class StandardMacroLibrary
         info.process.Append(finalText.ToString());
     }
 
+    [Macro("sts")]
+    internal static void SetTextSpeedShortHand(MacroCallInfo info, uint level)
+    {
+        // Speed macro logic here.
+        SetTextSpeed(info, level);
+    }
+
     [Macro("set_text_speed")]
     internal static void SetTextSpeed(MacroCallInfo info, uint level)
     {
@@ -35,6 +50,11 @@ internal static class StandardMacroLibrary
         info.process.SetProcessRate(level == 0 ? level : 1000 / level);
     }
 
+    [Macro("clr")]
+    internal static void ClearTextShortHand(MacroCallInfo info)
+    {
+        ClearText(info);
+    }
     [Macro("clear")]
     internal static void ClearText(MacroCallInfo info)
     {
@@ -46,13 +66,94 @@ internal static class StandardMacroLibrary
     {
         info.process.Pause();
     }
+
+    [Macro("pass")]
+    internal static void PassMacro(MacroCallInfo info)
+    {
+        info.process.AllowPass();
+    }
+
+    [Macro("op")]
+    internal static void OperationsVariableMacro(MacroCallInfo info, string expression)
+    {
+
+    }
+
+    [Macro("jump_to")]
+    internal static void JumpToMacro(MacroCallInfo info, uint index)
+    {
+        info.process.JumpTo((int)index);
+    }
+
+    [Macro("jump_to")]
+    internal static void JumpToMacro(MacroCallInfo info, string tagName)
+    {
+        if (info.process.lineProcesses.Where(sl => sl.TaggedAs == tagName.ToString()).Any() == false) return;
+
+        info.process.JumpTo(tagName.ToString());
+    }
+
+    [Macro("lead_to")]
+    internal static void LeadToLineMacro(MacroCallInfo info, int value)
+    {
+        info.process.LeadTo(value);
+    }
+
+    [Macro("end")]
+    internal static void EndDialogueMacro(MacroCallInfo info)
+    {
+        info.process.lineProcessIndex = info.process.lineProcesses.Count;
+    }
+
     #endregion
 
     #region Character Insert Macros
+    [Macro("n")]
+    internal static void NewLineMacroShortHand1(MacroCallInfo info)
+    {
+        NewLineMacro(info);
+    }
+    [Macro("nl")]
+    internal static void NewLineMacroShortHand2(MacroCallInfo info)
+    {
+        NewLineMacro(info);
+    }
     [Macro("new_line")]
     internal static void NewLineMacro(MacroCallInfo info)
     {
         info.process.Append('\n');
+    }
+
+    [Macro("t")]
+    internal static void TabMacroShortHand1(MacroCallInfo info)
+    {
+        TabMacro(info);
+    }
+    [Macro("tb")]
+    internal static void TabMacroShortHand2(MacroCallInfo info)
+    {
+        TabMacro(info);
+    }
+    [Macro("tab")]
+    internal static void TabMacro(MacroCallInfo info)
+    {
+        info.process.Append("\t");
+    }
+
+    [Macro("w")]
+    internal static void WhiteSpaceMacroShortHand1(MacroCallInfo info)
+    {
+        WhiteSpaceMacro(info);
+    }
+    [Macro("ws")]
+    internal static void WhiteSpaceMacroShortHand2(MacroCallInfo info)
+    {
+        WhiteSpaceMacro(info);
+    }
+    [Macro("space")]
+    internal static void WhiteSpaceMacro(MacroCallInfo info)
+    {
+        info.process.Append(" ");
     }
 
     [Macro("paren")]
@@ -65,6 +166,12 @@ internal static class StandardMacroLibrary
     internal static void EndParenthesisMacro(MacroCallInfo info)
     {
         info.process.Append(')');
+    }
+
+    [Macro("quot")]
+    internal static void QuoteMacro(MacroCallInfo info)
+    {
+        info.process.Append('"');
     }
 
     [Macro("curly")]
@@ -157,6 +264,18 @@ internal static class StandardMacroLibrary
         info.process.Append('%');
     }
 
+    [Macro("plus")]
+    internal static void PlusMacro(MacroCallInfo info)
+    {
+        info.process.Append('+');
+    }
+
+    [Macro("equals")]
+    internal static void EqualsMacro(MacroCallInfo info)
+    {
+        info.process.Append('=');
+    }
+
     [Macro("trade")]
     internal static void TrademarkMacro(MacroCallInfo info)
     {
@@ -219,10 +338,100 @@ internal static class StandardMacroLibrary
     #endregion
 
     #region Debug Macros
+    [Macro("pid")]
+    internal static void GetProcessIDMacroShortHand(MacroCallInfo info)
+    {
+        GetProcessIDMacro(info);
+    }
     [Macro("process_id")]
     internal static void GetProcessIDMacro(MacroCallInfo info)
     {
         info.process.Append(info.process.ID.ToString());
+    }
+    #endregion
+
+    #region Cast Macros
+    [Macro("exp")]
+    internal static void SetCastExpressionMacroShortHand(MacroCallInfo info, string value)
+    {
+        SetCastExpressionMacro(info, value);
+    }
+
+    [Macro("exp")]
+    internal static void SetCastExpressionMacroShortHand(MacroCallInfo info, int value)
+    {
+        SetCastExpressionMacro(info, value);
+    }
+
+    [Macro("expression")]
+    internal static void SetCastExpressionMacro(MacroCallInfo info, string value)
+    {
+        info.process.ChangeCastExpression(info, value);
+    }
+
+    [Macro("expression")]
+    internal static void SetCastExpressionMacro(MacroCallInfo info, int value)
+    {
+        SetCastExpressionMacro(info, value.ToString());
+    }
+
+    [Macro("vo")]
+    internal static void SetCastVoiceShortHand(MacroCallInfo info, string value)
+    {
+        SetCastVoice(info, value);
+    }
+
+    [Macro("vo")]
+    internal static void SetCastVoiceShortHand(MacroCallInfo info, int value)
+    {
+        SetCastVoice(info, value);
+    }
+
+    [Macro("voice")]
+    internal static void SetCastVoice(MacroCallInfo info, string value)
+    {
+        info.process.ChangeCastVoice(info, value);
+    }
+
+    [Macro("voice")]
+    internal static void SetCastVoice(MacroCallInfo info, int value)
+    {
+        SetCastVoice(info, value.ToString());
+    }
+    #endregion
+
+    #region Scene/Curtain Macros
+    [Macro("cue_scene")]
+    internal static void SetSceneMacro(MacroCallInfo info, string value)
+    {
+        info.process.CurrentSceneInfo = new SceneInfo() { name = value };
+    }
+
+    #endregion
+
+    #region Variable Control Macros
+    [Macro("var")]
+    internal static void InitializeVariableMacro(MacroCallInfo info, string identifier, object initialValue)
+    {
+
+    }
+
+    [Macro("set")]
+    internal static void SetVariableMacro(MacroCallInfo info, string identifier, object newValue)
+    {
+
+    }
+
+    [Macro("get")]
+    internal static void GetVariableMacro(MacroCallInfo info, string identifier)
+    {
+
+    }
+
+    [Macro("test")]
+    internal static void TestMacro(MacroCallInfo info, int value)
+    {
+        Console.WriteLine($"Test Macro Successful: {value}");
     }
     #endregion
 }
