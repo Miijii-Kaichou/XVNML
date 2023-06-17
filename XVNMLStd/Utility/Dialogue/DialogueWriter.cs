@@ -286,7 +286,7 @@ namespace XVNML.Utility.Dialogue
             {
                 ProcessStalling![process.ID] = true;
                 ProcessTimers![process.ID] ??= new Timer(process.ProcessRate);
-                ProcessTimers![process.ID].Interval = process.ProcessRate;
+                ProcessTimers![process.ID].Interval = (double)process.ProcessRate;
                 if (ProcessTimers![process.ID] != null)
                 {
                     ProcessTimers![process.ID].Enabled = true;

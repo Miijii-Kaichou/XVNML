@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
 using XVNML.Core.Macros;
 using XVNML.Utility.Macros;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace XVNML.Core.Dialogue
 {
@@ -455,7 +457,7 @@ namespace XVNML.Core.Dialogue
 
                     case TokenType.Number:
                         EvaluateNumericType(currentToken, out Type? type);
-                        macroArgs.Add((currentToken?.Text!, type!));
+                        macroArgs.Add((currentToken?.Value, type!)!);
                         if (multiArgs)
                         {
                             expectingType = TokenType.CloseParentheses |
@@ -547,28 +549,36 @@ namespace XVNML.Core.Dialogue
         private void EvaluateNumericType(SyntaxToken? token, out Type? resultType)
         {
             int length = token!.Text!.Length;
-            var character = token!.Text![length-1];
-            
-            if (character == char.ToLower('F') || token!.Text.Contains('.'))
+            var text = token!.Text;
+            var character = text.Last();
+            if (char.IsLetter(character)) text = text.Remove(length - 1, 1);
+
+            if (char.ToUpper(character) == 'F' || text.Contains('.'))
             {
                 resultType = typeof(float);
                 return;
             }
 
-            if (character == char.ToLower('D') || token!.Text.Contains('.'))
+            if (char.ToUpper(character) == 'D' || text.Contains('.'))
             {
                 resultType = typeof(double);
                 return;
             }
 
-            if (character == char.ToLower('L'))
+            if (char.ToUpper(character) == 'L')
             {
                 resultType = typeof(long);
                 return;
             }
 
+            if (char.ToUpper(character) == 'I')
+            {
+                resultType = typeof(int);
+                return;
+            }
 
-            character = token!.Text![0];
+
+            character = text[0];
 
             if (character == '-')
             {

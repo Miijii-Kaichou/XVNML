@@ -14,7 +14,7 @@
 		@ {
 			cue_scene::"OutsideOfSchool"|
 			sts::45|
-			test::-1|
+			test::1000i|
 			pass
 		}<		
 		["Question 1"]
