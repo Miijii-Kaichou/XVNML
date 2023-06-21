@@ -7,7 +7,7 @@
   "targets": {
     ".NETStandard,Version=v2.1": {},
     ".NETStandard,Version=v2.1/": {
-      "XVNML/1.0.0": {
+      "XVNML/1.0.0-pre-release": {
         "runtime": {
           "XVNML.dll": {}
         }
@@ -15,7 +15,7 @@
     }
   },
   "libraries": {
-    "XVNML/1.0.0": {
+    "XVNML/1.0.0-pre-release": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

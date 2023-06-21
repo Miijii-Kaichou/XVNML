@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -7,9 +7,20 @@
 	 <StartupObject></StartupObject>
 	 <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	 <Title>XVNML</Title>
-	 <Authors>$(AssemblyName)</Authors>
+	 <Authors>Enjyoii</Authors>
 	 <RootNamespace>XVNML</RootNamespace>
 	 <AssemblyName>XVNML</AssemblyName>
+	 <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+	 <SignAssembly>False</SignAssembly>
+	 <RepositoryUrl>https://github.com/Miijii-Kaichou/XVNML</RepositoryUrl>
+	 <Copyright>2019 Enjyoii</Copyright>
+	 <Description>A utility tool to interact with XVNML files.</Description>
+	 <IncludeSymbols>False</IncludeSymbols>
+	 <AssemblyVersion>1.0.0.0</AssemblyVersion>
+	 <PackageReadmeFile>README.md</PackageReadmeFile>
+	 <FileVersion>1.0.0.0</FileVersion>
+	 <PackAsTool>False</PackAsTool>
+	 <Version>1.0.0-pre-release</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -19,4 +30,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>$(DefineConstants)TRACE;ENABLE_LOGGING</DefineConstants>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\tclte\Desktop\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 </Project>

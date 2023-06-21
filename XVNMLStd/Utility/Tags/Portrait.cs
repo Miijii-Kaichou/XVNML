@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
 
@@ -23,7 +22,7 @@ namespace XVNML.XVNMLUtility.Tags
             var imgRef = GetParameter(ImageParameterString);
             if (imgRef != null && imgRef.isReferencing)
             {
-                
+
                 // We'll request a ReferenceSolve by stating who
                 // we are, the value we want to resolve, the type of that
                 // value we want to resolve, and where you may be able to resolve it.
@@ -48,7 +47,7 @@ namespace XVNML.XVNMLUtility.Tags
                 }
                 //Iterate through until you find the right source target;
                 imageDefinitions = ParserRef!.root?.GetElement<ImageDefinitions>();
-               
+
                 target = imageDefinitions?.GetElement<Image>(img?.ToString()!);
                 imageTarget = (Image)Convert.ChangeType(target, typeof(Image))!;
             }

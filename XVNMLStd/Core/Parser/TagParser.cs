@@ -268,7 +268,7 @@ namespace XVNML.Core.Parser
                                     _cachedTagParameterInfo = new TagParameterInfo();
 
                                 //Check if flag
-                                if (_topOfStack!.isSettingFlag == true && Peek(1,true)?.Type != TokenType.DoubleColon)
+                                if (_topOfStack!.isSettingFlag == true && Peek(1, true)?.Type != TokenType.DoubleColon)
                                 {
                                     //This means this is a Flag for the tag
                                     _cachedTagParameterInfo.flagParameters.Add(_Current?.Text!);
@@ -276,7 +276,7 @@ namespace XVNML.Core.Parser
                                     continue;
                                 }
 
-                                if(_topOfStack!.isSettingFlag)
+                                if (_topOfStack!.isSettingFlag)
                                 {
                                     Abort($"A flag should not expect the token {Peek(1)?.Text}");
                                     return;
@@ -371,7 +371,7 @@ namespace XVNML.Core.Parser
                 nextSolvee();
             }
 
-           _onParserCompleted?.Invoke();
+            _onParserCompleted?.Invoke();
         }
 
         internal void QueueForReferenceSolve(Action method)

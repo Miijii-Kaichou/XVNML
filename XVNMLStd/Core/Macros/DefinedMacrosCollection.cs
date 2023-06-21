@@ -33,7 +33,7 @@ namespace XVNML.Core.Macros
 
         private static void EstablishLibraries(Type[] libraryTypes)
         {
-            for(int i = 0; i < libraryTypes.Length; i++)
+            for (int i = 0; i < libraryTypes.Length; i++)
             {
                 Type lib = libraryTypes[i];
                 var methods = lib.GetRuntimeMethods();
@@ -62,7 +62,7 @@ namespace XVNML.Core.Macros
 
                     if (result)
                     {
-                        ValidMacros.Add(attribute.macroName, new List<MacroAttribute>(){ attribute });
+                        ValidMacros.Add(attribute.macroName, new List<MacroAttribute>() { attribute });
                         continue;
                     }
 

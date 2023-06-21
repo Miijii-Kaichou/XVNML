@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Runtime;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Dialogue.Structs;
-using XVNML.Core.Extensions;
 using XVNML.Core.Lexer;
 using XVNML.Core.Tags;
 
@@ -367,7 +365,7 @@ namespace XVNML.Core.Parser
 
                         if (isClosingLine) line.MarkAsClosing();
                         if (_cachedLineTag != null) line.SetLineTag(_cachedLineTag);
-                        
+
                         isClosingLine = false;
                         _cachedLineTag = null;
 
@@ -593,8 +591,8 @@ namespace XVNML.Core.Parser
             output.Character = signature.IsAnonymous == true ||
                                 signature.IsNarrative == true ? string.Empty :
                                 signature.IsPersistent == true ? (_PreviousCast ?? _DefaultCast).Character : characterSymbol.Text;
-            signature.IsPartial = output.Expression != null && output.Voice == null ||
-                                    output.Expression == null && output.Voice != null;
+            signature.IsPartial = (output.Expression != null && output.Voice == null) ||
+                                    (output.Expression == null && output.Voice != null);
             signature.IsFull = !signature.IsPartial;
             signatureDataOutput = signature;
             return;
@@ -614,7 +612,7 @@ namespace XVNML.Core.Parser
                 {
                     token = Tokenizer[_position + offset];
 
-                    if (token?.Type == TokenType.WhiteSpace && includeSpaces == false ||
+                    if ((token?.Type == TokenType.WhiteSpace && includeSpaces == false) ||
                         token?.Type == TokenType.SingleLineComment ||
                         token?.Type == TokenType.MultilineComment)
                     {

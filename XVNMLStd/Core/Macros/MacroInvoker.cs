@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Utility.Dialogue;
@@ -30,7 +29,7 @@ namespace XVNML.Core.Macros
             lock (info.process.processLock)
             {
                 if (IsBlocked[info.process.ID])
-                {    
+                {
                     SendForRetry((macroSymbol, args, info));
                     return;
                 }
@@ -53,7 +52,7 @@ namespace XVNML.Core.Macros
 
                 RetryQueues[value.info.process.ID] ??= new ConcurrentQueue<(string, (object, Type)[], MacroCallInfo)>();
                 RetryQueues[value.info.process.ID].Enqueue(value);
-                
+
                 UpdateRetryQueuedFlags(value.info.process);
             }
         }
@@ -118,7 +117,7 @@ namespace XVNML.Core.Macros
                     args[i].Item1 = Convert.ChangeType(currentArg, requiredArg);
                     continue;
                 }
-                
+
                 if (ReferenceEquals(requiredArg, args[i].Item2) == false && requiredArg != typeof(object))
                 {
                     throw new Exception($"Argument {i} for the macro \"{targetMacro?.macroName}\"" +
@@ -151,7 +150,7 @@ namespace XVNML.Core.Macros
             lock (process.processLock)
             {
                 if (RetryQueues == null) return;
-                if (RetryQueues[process.ID] == null) return; 
+                if (RetryQueues[process.ID] == null) return;
                 if (RetryQueues[process.ID].IsEmpty) return;
                 RetryQueues[process.ID].TryDequeue(out var call);
                 Call(call.Item1, call.Item2, call.Item3);

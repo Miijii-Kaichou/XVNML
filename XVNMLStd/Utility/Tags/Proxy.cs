@@ -1,5 +1,4 @@
-﻿using System;
-using XVNML.Core.Enum;
+﻿using XVNML.Core.Enum;
 using XVNML.Core.Tags;
 
 using static XVNML.Constants;

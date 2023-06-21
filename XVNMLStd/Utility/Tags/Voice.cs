@@ -20,7 +20,7 @@ namespace XVNML.XVNMLUtility.Tags
             base.OnResolve(fileOrigin);
 
             TagParameter? audioRef = GetParameter(AudioParameterString);
-            
+
             if (audioRef != null && audioRef.isReferencing)
             {
                 // We'll request a ReferenceSolve by stating who

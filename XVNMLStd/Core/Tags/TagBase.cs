@@ -91,7 +91,7 @@ namespace XVNML.Core.Tags
 
         private bool _allowParametersValidated = false;
         private bool _allowFlagsValidated = false;
-        
+
 
 
         private readonly string[] DefaultAllowedParameters = new string[3]
@@ -169,7 +169,7 @@ namespace XVNML.Core.Tags
 
             if (value == null) return default!;
 
-            if (typeof(T).IsEnum) 
+            if (typeof(T).IsEnum)
                 return (T)System.Enum.Parse(typeof(T), value?.ToString());
 
             return (T)Convert.ChangeType(value, typeof(T));

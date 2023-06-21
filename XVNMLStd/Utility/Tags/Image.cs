@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using XVNML.Core.IO.Enums;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
@@ -38,7 +37,7 @@ namespace XVNML.XVNMLUtility.Tags
 
             var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + "Images\\" + src : src;
             if (pathFlow == string.Empty) return;
-            
+
             dirInfo = new DirectoryInfo(pathFlow);
             ProcessData();
         }

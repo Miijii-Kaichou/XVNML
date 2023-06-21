@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks.Sources;
-using System.Xml;
 
 namespace XVNML.Core.Lexer
 {
@@ -147,11 +144,11 @@ namespace XVNML.Core.Lexer
                 return new SyntaxToken(TokenType.EOF, _Line, _position, "\0", null);
             }
 
-            if ((_Current == '-' && char.IsDigit(SourceText![_position+1])) || char.IsDigit(_Current))
+            if ((_Current == '-' && char.IsDigit(SourceText![_position + 1])) || char.IsDigit(_Current))
             {
                 var start = _position;
 
-                while (char.IsDigit(_Current) || 
+                while (char.IsDigit(_Current) ||
                     _Current == '.' ||
                     _Current == '-' ||
                     char.ToUpper(_Current) == 'F' ||

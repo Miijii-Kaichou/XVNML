@@ -1,8 +1,8 @@
-﻿using XVNML.Core.Parser;
+﻿using System;
+using XVNML.Core.Macros;
+using XVNML.Core.Parser;
 using XVNML.Core.Tags;
 using XVNML.XVNMLUtility.Tags;
-using XVNML.Core.Macros;
-using System;
 
 namespace XVNML.XVNMLUtility
 {

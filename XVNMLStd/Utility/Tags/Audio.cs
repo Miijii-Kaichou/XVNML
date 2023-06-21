@@ -28,7 +28,7 @@ namespace XVNML.XVNMLUtility.Tags
             };
 
             base.OnResolve(fileOrigin);
-            
+
             var rel = GetParameterValue<DirectoryRelativity>(PathRelativityParameterString);
             string src = GetParameterValue<string>(SourceParameterString);
             relativity = rel == null ? default : rel;
