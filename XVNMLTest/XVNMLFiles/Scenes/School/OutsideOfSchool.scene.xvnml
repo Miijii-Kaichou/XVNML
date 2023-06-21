@@ -1,6 +1,6 @@
 <source name::"OutsideOfSchool.Scene">
     <imageDefinitions>
-        <image name::"OutsideOfSchoolImg" src::"/OutsideOfSchool.png" rel::Relative/>
+        <image name::"OutsideOfSchoolImg" src::"/OutsideOfSchool.png" pathMode::Relative/>
     </imageDefinitions>
     <sceneDefinitions>
         <scene name::"OutsideOfSchool" img::$OutsideOfSchoolImg/>

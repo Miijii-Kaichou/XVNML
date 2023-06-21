@@ -31,9 +31,9 @@ namespace XVNML.XVNMLUtility
         private XVNMLObj(TagParser origin)
         {
             xvnmlParser = origin;
-            if (xvnmlParser._rootTag == null) return;
+            if (xvnmlParser.root == null) return;
 
-            var root = xvnmlParser._rootTag;
+            var root = xvnmlParser.root;
 
             //Valid root names are "proxy" and "source"
             if (root.GetType() == typeof(Proxy))

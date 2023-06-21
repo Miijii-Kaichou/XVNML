@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using XVNML.Core.Dialogue;
 using XVNML.Core.Extensions;
 using XVNML.Core.Parser;
+
 
 namespace XVNML.Core.Tags
 {
@@ -15,7 +14,7 @@ namespace XVNML.Core.Tags
         {
             get
             {
-                var name = GetParameterValue("name")?.ToString();
+                var name = GetParameterValue<string>("name");
                 if (name != null)
                 {
                     return name;
@@ -30,7 +29,7 @@ namespace XVNML.Core.Tags
         {
             get
             {
-                var id = GetParameterValue("id")?.ToString();
+                var id = GetParameterValue<string>("id");
                 if (id != null)
                 {
                     return Convert.ToInt32(id);
@@ -47,7 +46,9 @@ namespace XVNML.Core.Tags
         {
             get
             {
-                return GetParameterValue("altName")?.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
+                var value = GetParameterValue<string>("altName");
+                if (value == null) return null;
+                return value.Split(',', StringSplitOptions.RemoveEmptyEntries);
             }
         }
 
@@ -158,12 +159,20 @@ namespace XVNML.Core.Tags
                 i++;
                 return condition;
             });
+
             return element;
         }
 
-        public object? GetParameterValue(string parameterName)
+        public T GetParameterValue<T>(string parameterName)
         {
-            return GetParameter(parameterName)?.value;
+            var value = GetParameter(parameterName)?.value;
+
+            if (value == null) return default!;
+
+            if (typeof(T).IsEnum) 
+                return (T)System.Enum.Parse(typeof(T), value?.ToString());
+
+            return (T)Convert.ChangeType(value, typeof(T));
         }
 
         public TagParameter? GetParameter(string parameterName)

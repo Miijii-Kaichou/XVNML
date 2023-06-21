@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Linq;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
+
+using static XVNML.Constants;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -13,12 +14,13 @@ namespace XVNML.XVNMLUtility.Tags
         {
             AllowedParameters = new[]
             {
-                "audio"
+                AudioParameterString
             };
 
             base.OnResolve(fileOrigin);
 
-            var audioRef = GetParameter("audio");
+            TagParameter? audioRef = GetParameter(AudioParameterString);
+            
             if (audioRef != null && audioRef.isReferencing)
             {
                 // We'll request a ReferenceSolve by stating who
@@ -35,20 +37,16 @@ namespace XVNML.XVNMLUtility.Tags
         {
             TagBase? audioDefinitions = null;
             TagBase? target = null;
-            var audio = GetParameterValue("audio");
+            string audio = GetParameterValue<string>(AudioParameterString);
             try
             {
-                if (audio?.ToString().ToLower() == "nil")
+                if (audio.ToLower() == NullParameterString)
                 {
                     XVNMLLogger.LogWarning($"Audio Source was set to null for: {TagName}", this);
                     return;
                 }
 
-                //Iterate through until you find the right source target;
-                audioDefinitions = ParserRef!._rootTag?.elements?
-                    .Where(tag => tag.GetType() == typeof(AudioDefinitions))
-                    .First();
-
+                audioDefinitions = ParserRef!.root?.GetElement<AudioDefinitions>();
                 target = audioDefinitions?.GetElement<Audio>(audio?.ToString()!);
                 audioTarget = (Audio)Convert.ChangeType(target, typeof(Audio))!;
             }

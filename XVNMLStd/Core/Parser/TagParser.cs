@@ -34,7 +34,7 @@ namespace XVNML.Core.Parser
             }
         }
 
-        internal TagBase? _rootTag;
+        internal TagBase? root;
 
         //Temporary Cache
         TagParameterInfo? _cachedTagParameterInfo;
@@ -58,7 +58,7 @@ namespace XVNML.Core.Parser
             _conflict = false;
             _evaluationResourceState = ParseResourceState.Internal;
             _evaluationState = ParserEvaluationState.Tag;
-            _rootTag = null;
+            root = null;
             _cachedTagName = null;
             _cachedTagParameterInfo = null;
             _tagValueStringBuilder = new StringBuilder();
@@ -404,7 +404,7 @@ namespace XVNML.Core.Parser
             _topOfStack.ParserRef = this;
             _topOfStack.OnResolve(fileOrigin);
 
-            _rootTag = _tagStackFrame.Pop();
+            root = _tagStackFrame.Pop();
         }
 
         private void ChangeEvaluationState(ParserEvaluationState state)

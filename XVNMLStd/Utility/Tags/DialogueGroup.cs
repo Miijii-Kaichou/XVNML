@@ -1,5 +1,8 @@
 ﻿using System;
 using XVNML.Core.Tags;
+
+using static XVNML.Constants;
+
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("dialogueGroup", typeof(Proxy), TagOccurance.Multiple)]
@@ -7,22 +10,22 @@ namespace XVNML.XVNMLUtility.Tags
     {
         public bool IsActingAsSceneController { get; private set; }
 
-        public object? this[int index]
+        public Dialogue? this[int index]
         {
-            get { return GetDialogue(index)?.Script; }
+            get { return GetDialogue(index); }
         }
 
-        public new object? this[ReadOnlySpan<char> name]
+        public new Dialogue? this[ReadOnlySpan<char> name]
         {
-            get { return GetDialogue(name.ToString())?.Script; }
+            get { return GetDialogue(name.ToString()); }
         }
 
         public override void OnResolve(string? fileOrigin)
         {
             AllowedFlags = new[]
             {
-                "actAsSceneController",
-                "allowOverride"
+                ActAsSceneControllerFlagString,
+                AllowOverrideFlagString
             };
 
             base.OnResolve(fileOrigin);
@@ -31,8 +34,9 @@ namespace XVNML.XVNMLUtility.Tags
             IsActingAsSceneController = HasFlag(AllowedFlags[0]);
         }
 
-        public Dialogue? GetDialogue(string name) => GetElement<Dialogue>(name);
+        private Dialogue? GetDialogue(string name) => GetElement<Dialogue>(name);
 
-        public Dialogue? GetDialogue(int id) => GetElement<Dialogue>(id);
+
+        private Dialogue? GetDialogue(int id) => GetElement<Dialogue>(id);
     }
 }
