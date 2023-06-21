@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
 using XVNML.Core.Macros;
 using XVNML.Utility.Macros;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace XVNML.Core.Dialogue
 {
@@ -19,7 +16,7 @@ namespace XVNML.Core.Dialogue
         internal int returnPoint;
         internal bool isPartOfResponse;
         internal string? fromResponse;
-        internal SkripterLine? parentLine; 
+        internal SkripterLine? parentLine;
         internal bool isClosingLine;
         internal string? responseString;
 
@@ -258,7 +255,7 @@ namespace XVNML.Core.Dialogue
                     {
                         token = tokenizer[_position + offset];
 
-                        if (token?.Type == TokenType.WhiteSpace && includeSpaces == false ||
+                        if ((token?.Type == TokenType.WhiteSpace && includeSpaces == false) ||
                             token?.Type == TokenType.SingleLineComment ||
                             token?.Type == TokenType.MultilineComment)
                         {

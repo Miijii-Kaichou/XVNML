@@ -3,6 +3,8 @@ using System.IO;
 using XVNML.Core.IO.Enums;
 using XVNML.Core.Tags;
 
+using static XVNML.Constants;
+
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("audio", typeof(AudioDefinitions), TagOccurance.Multiple)]
@@ -21,15 +23,15 @@ namespace XVNML.XVNMLUtility.Tags
         {
             AllowedParameters = new[]
             {
-                "rel",
-                "src"
+                PathRelativityParameterString,
+                SourceParameterString
             };
 
             base.OnResolve(fileOrigin);
-            
-            var rel = GetParameterValue("rel");
-            string src = (string?)GetParameterValue("src") ?? string.Empty;
-            relativity = rel == null ? default : (DirectoryRelativity)Enum.Parse(typeof(DirectoryRelativity), rel.ToString()!);
+
+            var rel = GetParameterValue<DirectoryRelativity>(PathRelativityParameterString);
+            string src = GetParameterValue<string>(SourceParameterString);
+            relativity = rel == null ? default : rel;
             var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + "Audio\\" + src : src;
             //var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + XVNMLConfig.RelativePath["Audio"] + src : src;
             if (pathFlow == string.Empty) return;

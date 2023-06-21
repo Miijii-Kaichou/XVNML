@@ -1,0 +1,3 @@
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\bin\Debug\netstandard2.1\publish\XVNML.dll
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\bin\Debug\netstandard2.1\publish\XVNML.deps.json
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\bin\Debug\netstandard2.1\publish\XVNML.pdb

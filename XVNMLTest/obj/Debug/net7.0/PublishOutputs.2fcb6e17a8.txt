@@ -1,0 +1,7 @@
+E:\Documents\Repositories\C#\XVNML\XVNMLTest\bin\Debug\net7.0\publish\XVNMLTest.exe
+E:\Documents\Repositories\C#\XVNML\XVNMLTest\bin\Debug\net7.0\publish\XVNMLTest.dll
+E:\Documents\Repositories\C#\XVNML\XVNMLTest\bin\Debug\net7.0\publish\XVNMLTest.deps.json
+E:\Documents\Repositories\C#\XVNML\XVNMLTest\bin\Debug\net7.0\publish\XVNMLTest.runtimeconfig.json
+E:\Documents\Repositories\C#\XVNML\XVNMLTest\bin\Debug\net7.0\publish\XVNMLTest.pdb
+E:\Documents\Repositories\C#\XVNML\XVNMLTest\bin\Debug\net7.0\publish\XVNML.dll
+E:\Documents\Repositories\C#\XVNML\XVNMLTest\bin\Debug\net7.0\publish\XVNML.pdb

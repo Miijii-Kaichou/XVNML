@@ -2,12 +2,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Timers;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Macros;
-using XVNML.Utility.Diagnostics;
 using XVNML.Utility.Dialogue;
 using XVNML.Utility.Macros;
 
@@ -347,7 +345,7 @@ namespace XVNML.Core.Dialogue
             currentLine = lineProcesses.ElementAt(lineProcessIndex);
             _lastProcessWasClosing = currentLine.data.isClosingLine;
         }
-        
+
         internal void ResetPass()
         {
             IsPass = false;

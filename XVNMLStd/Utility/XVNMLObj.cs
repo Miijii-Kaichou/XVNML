@@ -1,8 +1,8 @@
-﻿using XVNML.Core.Parser;
+﻿using System;
+using XVNML.Core.Macros;
+using XVNML.Core.Parser;
 using XVNML.Core.Tags;
 using XVNML.XVNMLUtility.Tags;
-using XVNML.Core.Macros;
-using System;
 
 namespace XVNML.XVNMLUtility
 {
@@ -31,9 +31,9 @@ namespace XVNML.XVNMLUtility
         private XVNMLObj(TagParser origin)
         {
             xvnmlParser = origin;
-            if (xvnmlParser._rootTag == null) return;
+            if (xvnmlParser.root == null) return;
 
-            var root = xvnmlParser._rootTag;
+            var root = xvnmlParser.root;
 
             //Valid root names are "proxy" and "source"
             if (root.GetType() == typeof(Proxy))

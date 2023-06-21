@@ -1,6 +1,7 @@
-﻿using System;
-using XVNML.Core.IO.Enums;
+﻿using XVNML.Core.IO.Enums;
 using XVNML.Core.Tags;
+
+using static XVNML.Constants;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -12,11 +13,11 @@ namespace XVNML.XVNMLUtility.Tags
         {
             AllowedParameters = new[]
             {
-                "key"
+                KeyParameterString
             };
 
             base.OnResolve(fileOrigin);
-            key = (VirtualKey)Enum.Parse(typeof(VirtualKey), (string?)GetParameterValue("key") ?? "Null");
+            key = GetParameterValue<VirtualKey>(KeyParameterString);
         }
     }
 }

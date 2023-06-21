@@ -1,13 +1,13 @@
 <source name::"Hana.Cast">
 	<imageDefinitions>
-		<image name::"HanaSmile"		src::"HanaSmile.png"	rel::Relative/>
-		<image name::"HanaHappy"		src::"HanaHappy.png"	rel::Relative/>
-		<image name::"HanaSad"			src::"HanaSad.png"	    rel::Relative/>
-		<image name::"HanaAngry"		src::"HanaAngry.png"	rel::Relative/>
-		<image name::"HanaNeutral"		src::"HanaNeutral.png" 	rel::Relative/>
+		<image name::"HanaSmile"		src::"HanaSmile.png"	pathMode::Relative/>
+		<image name::"HanaHappy"		src::"HanaHappy.png"	pathMode::Relative/>
+		<image name::"HanaSad"			src::"HanaSad.png"	    pathMode::Relative/>
+		<image name::"HanaAngry"		src::"HanaAngry.png"	pathMode::Relative/>
+		<image name::"HanaNeutral"		src::"HanaNeutral.png" 	pathMode::Relative/>
 	</imageDefinitions>
 	<audioDefinitions>
-		<audio name::"HanaWow"			src::"HanaWow.mp3"		rel::Relative/>
+		<audio name::"HanaWow"			src::"HanaWow.mp3"		pathMode::Relative/>
 	</audioDefinitions>
 	<castDefinitions>
 		<cast name::"Hana">

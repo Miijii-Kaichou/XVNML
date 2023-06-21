@@ -1,8 +1,8 @@
-﻿using System.Text;
+﻿using System;
 using System.Linq;
-using XVNML.Utility.Macros;
+using System.Text;
 using XVNML.Core.Dialogue.Structs;
-using System;
+using XVNML.Utility.Macros;
 
 [MacroLibrary(typeof(StandardMacroLibrary))]
 internal static class StandardMacroLibrary

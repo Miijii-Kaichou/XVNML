@@ -34,7 +34,7 @@ namespace XVNML.Core.Parser
             }
         }
 
-        internal TagBase? _rootTag;
+        internal TagBase? root;
 
         //Temporary Cache
         TagParameterInfo? _cachedTagParameterInfo;
@@ -58,7 +58,7 @@ namespace XVNML.Core.Parser
             _conflict = false;
             _evaluationResourceState = ParseResourceState.Internal;
             _evaluationState = ParserEvaluationState.Tag;
-            _rootTag = null;
+            root = null;
             _cachedTagName = null;
             _cachedTagParameterInfo = null;
             _tagValueStringBuilder = new StringBuilder();
@@ -268,7 +268,7 @@ namespace XVNML.Core.Parser
                                     _cachedTagParameterInfo = new TagParameterInfo();
 
                                 //Check if flag
-                                if (_topOfStack!.isSettingFlag == true && Peek(1,true)?.Type != TokenType.DoubleColon)
+                                if (_topOfStack!.isSettingFlag == true && Peek(1, true)?.Type != TokenType.DoubleColon)
                                 {
                                     //This means this is a Flag for the tag
                                     _cachedTagParameterInfo.flagParameters.Add(_Current?.Text!);
@@ -276,7 +276,7 @@ namespace XVNML.Core.Parser
                                     continue;
                                 }
 
-                                if(_topOfStack!.isSettingFlag)
+                                if (_topOfStack!.isSettingFlag)
                                 {
                                     Abort($"A flag should not expect the token {Peek(1)?.Text}");
                                     return;
@@ -371,7 +371,7 @@ namespace XVNML.Core.Parser
                 nextSolvee();
             }
 
-           _onParserCompleted?.Invoke();
+            _onParserCompleted?.Invoke();
         }
 
         internal void QueueForReferenceSolve(Action method)
@@ -404,7 +404,7 @@ namespace XVNML.Core.Parser
             _topOfStack.ParserRef = this;
             _topOfStack.OnResolve(fileOrigin);
 
-            _rootTag = _tagStackFrame.Pop();
+            root = _tagStackFrame.Pop();
         }
 
         private void ChangeEvaluationState(ParserEvaluationState state)

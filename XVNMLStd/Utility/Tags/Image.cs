@@ -1,8 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using XVNML.Core.IO.Enums;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
+
+using static XVNML.Constants;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -11,30 +12,32 @@ namespace XVNML.XVNMLUtility.Tags
     {
         internal DirectoryRelativity relativity;
         internal DirectoryInfo? dirInfo;
-        internal byte[] data;
+        internal byte[]? data;
 
         public override void OnResolve(string? fileOrigin)
         {
             AllowedParameters = new[]
             {
-                "rel",
-                "src"
+                PathRelativityParameterString,
+                SourceParameterString
             };
 
             base.OnResolve(fileOrigin);
-            var rel = GetParameterValue("rel");
-            string src = (string?)GetParameterValue("src") ?? string.Empty;
 
-            if (src?.ToString().ToLower() == "nil")
+            DirectoryRelativity rel = GetParameterValue<DirectoryRelativity>(PathRelativityParameterString);
+            string src = GetParameterValue<string>(SourceParameterString);
+
+            if (src?.ToString().ToLower() == NullParameterString)
             {
                 XVNMLLogger.LogWarning($"Image Source was set to null for: {TagName}", this);
                 return;
             }
 
-            relativity = rel == null ? default : (DirectoryRelativity)Enum.Parse(typeof(DirectoryRelativity), rel.ToString()!);
+            relativity = rel;
+
             var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + "Images\\" + src : src;
-            //var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + XVNMLConfig.RelativePath["Image"] + src : src;
             if (pathFlow == string.Empty) return;
+
             dirInfo = new DirectoryInfo(pathFlow);
             ProcessData();
         }
@@ -55,7 +58,7 @@ namespace XVNML.XVNMLUtility.Tags
             data = File.ReadAllBytes(GetImageTargetPath());
         }
 
-        public byte[] GetImageData() { return data; }
+        public byte[]? GetImageData() { return data; }
 
         public string? GetImageTargetPath() { return dirInfo?.FullName; }
     }

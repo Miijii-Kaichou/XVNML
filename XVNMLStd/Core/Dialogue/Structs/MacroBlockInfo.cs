@@ -8,7 +8,7 @@ namespace XVNML.Core.Dialogue.Structs
         internal (string macroSymbol, (object, Type)[] args)[] macroCalls;
         internal void Initialize(int size)
         {
-            macroCalls = new (string macroSymbol, (object,Type)[] args)[size];
+            macroCalls = new (string macroSymbol, (object, Type)[] args)[size];
         }
         internal void SetPosition(int position)
         {

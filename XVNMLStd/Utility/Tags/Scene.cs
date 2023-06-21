@@ -3,38 +3,39 @@ using System.Linq;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
 
+using static XVNML.Constants;
+
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("scene", typeof(SceneDefinitions), TagOccurance.Multiple)]
     public sealed class Scene : TagBase
     {
-        public string _SceneDir = @"\Scenes\";
         public Image? imageTarget;
 
         public override void OnResolve(string? fileOrigin)
         {
             AllowedParameters = new[]
             {
-                "src",
-                "img"
+                SourceParameterString,
+                ImageParameterString
             };
 
             base.OnResolve(fileOrigin);
 
             // Will evaluation a source first if one exists
-            var source = GetParameterValue(AllowedParameters[0]);
+            var source = GetParameterValue<string>(AllowedParameters[0]);
 
             TagParameter? imgRef = null;
 
             if (source != null)
             {
-                if (source?.ToString().ToLower() == "nil")
+                if (source.ToLower() == NullParameterString)
                 {
                     XVNMLLogger.LogWarning($"Scene Source was set to null for: {TagName}", this);
                     return;
                 }
 
-                XVNMLObj.Create(fileOrigin + _SceneDir + source!.ToString(), dom =>
+                XVNMLObj.Create(fileOrigin + DefaultSceneDirectory + source.ToString(), dom =>
                 {
                     if (dom == null) return;
 
@@ -42,14 +43,14 @@ namespace XVNML.XVNMLUtility.Tags
                                dom?.source?.GetElement<SceneDefinitions>()?.GetElement<Scene>();
                     if (target == null) return;
 
-                    imgRef = target.GetParameter("img");
+                    imgRef = target.GetParameter(ImageParameterString);
                     imageTarget = target.imageTarget;
                 });
                 return;
             }
 
             //Otherwise, check for an image reference
-            imgRef ??= GetParameter("img");
+            imgRef ??= GetParameter(ImageParameterString);
 
             if (imgRef != null && imgRef.isReferencing!)
             {
@@ -65,26 +66,26 @@ namespace XVNML.XVNMLUtility.Tags
         {
             TagBase? source = null;
             TagBase? target = null;
-            var image = GetParameterValue("img")?.ToString()!;
+            var image = GetParameterValue<string>(ImageParameterString);
             try
             {
-                if (image == null || image?.ToString().ToLower() == "nil")
+                if (image == null || image?.ToLower() == NullParameterString)
                 {
                     XVNMLLogger.LogWarning($"Image Source was set to null for: {TagName}", this);
                     return;
                 }
 
                 //Iterate through until you find the right source target;
-                source = ParserRef!._rootTag?.elements?
+                source = ParserRef!.root?.elements?
                     .Where(tag => tag.GetType() == typeof(ImageDefinitions))
                     .First();
 
-                target = source?.GetElement<Image>(image);
+                target = source?.GetElement<Image>(image!);
                 imageTarget = (Image)Convert.ChangeType(target, typeof(Image))!;
             }
             catch
             {
-                throw new Exception($"Could not find reference called {GetParameter("img")}" +
+                throw new Exception($"Could not find reference called {GetParameter(ImageParameterString)}" +
                     $"img {source!.tagTypeName}");
             }
         }

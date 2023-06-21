@@ -1,6 +1,7 @@
-﻿using System;
-using XVNML.Core.Enum;
+﻿using XVNML.Core.Enum;
 using XVNML.Core.Tags;
+
+using static XVNML.Constants;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -18,21 +19,21 @@ namespace XVNML.XVNMLUtility.Tags
         {
             AllowedParameters = new[]
             {
-                "engine",
-                "target",
-                "lang",
-                "screenWidth",
-                "screenHeight",
-                "aspectRatio"
+                EngineParameterString,
+                TargetParameterString,
+                InteroperableLanguageParameterString,
+                ScreenWidthParameterString,
+                ScreenHeightParameterString,
+                AspectRatioParameterString
             };
 
             base.OnResolve(fileOrigin);
-            engine = GetParameterValue("engine")?.ToString()!;
-            target = GetParameterValue("target")?.ToString()!;
-            lang = Enum.Parse<TargetLanguage>(GetParameterValue("lang")?.ToString()!);
-            screenWidth = Convert.ToUInt32(GetParameterValue("screenWidth"));
-            screenHeight = Convert.ToUInt32(GetParameterValue("screenHeight"));
-            aspectRatio = GetParameterValue("aspectRatio")?.ToString();
+            engine = GetParameterValue<string>(EngineParameterString);
+            target = GetParameterValue<string>(TargetParameterString);
+            lang = GetParameterValue<TargetLanguage>(InteroperableLanguageParameterString);
+            screenWidth = GetParameterValue<uint>(ScreenWidthParameterString);
+            screenHeight = GetParameterValue<uint>(ScreenHeightParameterString);
+            aspectRatio = GetParameterValue<string>(AspectRatioParameterString);
         }
     }
 }

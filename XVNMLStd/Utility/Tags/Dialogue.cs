@@ -1,9 +1,7 @@
 ﻿using XVNML.Core.Dialogue;
-using XVNML.Core.Tags;
 using XVNML.Core.Parser;
-using XVNML.Utility.Diagnostics;
-using System;
-using System.Linq;
+using XVNML.Core.Tags;
+using static XVNML.Constants;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -21,24 +19,21 @@ namespace XVNML.XVNMLUtility.Tags
 
         public override void OnResolve(string? fileOrigin)
         {
-            AllowedParameters = new[] {
-                "enterWith",
-                "exitWith"
-            };
-
             AllowedFlags = new[]
             {
-                "dontDetain",
-                "allowOverride"
+                DontDetainFlagString,
+                AllowOverrideFlagString
             };
 
             base.OnResolve(fileOrigin);
+
+            var source = GetParameterValue<string>(SourceParameterString);
 
             Script = value?.ToString();
             Name = TagName;
 
             // Flags
-            DoNotDetain = HasFlag("dontDetain");
+            DoNotDetain = HasFlag(DontDetainFlagString);
 
             AnalyzeDialogue();
         }

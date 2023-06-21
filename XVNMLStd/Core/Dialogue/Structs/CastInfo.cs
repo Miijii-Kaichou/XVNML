@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace XVNML.Core.Dialogue.Structs
+﻿namespace XVNML.Core.Dialogue.Structs
 {
     public struct CastInfo
     {

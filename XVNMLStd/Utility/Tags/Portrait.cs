@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Linq;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
+
+using static XVNML.Constants;
 
 namespace XVNML.XVNMLUtility.Tags
 {
@@ -13,15 +14,15 @@ namespace XVNML.XVNMLUtility.Tags
         {
             AllowedParameters = new[]
             {
-                "img"
+                ImageParameterString
             };
 
             base.OnResolve(fileOrigin);
 
-            var imgRef = GetParameter("img");
+            var imgRef = GetParameter(ImageParameterString);
             if (imgRef != null && imgRef.isReferencing)
             {
-                
+
                 // We'll request a ReferenceSolve by stating who
                 // we are, the value we want to resolve, the type of that
                 // value we want to resolve, and where you may be able to resolve it.
@@ -36,19 +37,17 @@ namespace XVNML.XVNMLUtility.Tags
         {
             TagBase? imageDefinitions = null;
             TagBase? target = null;
-            var img = GetParameterValue("img");
+            var img = GetParameterValue<string>(ImageParameterString);
             try
             {
-                if (img.ToString().ToLower() == "nil")
+                if (img?.ToLower() == NullParameterString)
                 {
                     XVNMLLogger.LogWarning($"Image Source was set to null for: {TagName}", this);
                     return;
                 }
                 //Iterate through until you find the right source target;
-                imageDefinitions = ParserRef!._rootTag?.elements?
-                    .Where(tag => tag.GetType() == typeof(ImageDefinitions))
-                    .First();
-               
+                imageDefinitions = ParserRef!.root?.GetElement<ImageDefinitions>();
+
                 target = imageDefinitions?.GetElement<Image>(img?.ToString()!);
                 imageTarget = (Image)Convert.ChangeType(target, typeof(Image))!;
             }

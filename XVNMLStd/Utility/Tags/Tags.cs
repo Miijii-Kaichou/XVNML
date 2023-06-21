@@ -2,6 +2,8 @@
 using System.Linq;
 using XVNML.Core.Tags;
 
+using static XVNML.Constants;
+
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("tags", typeof(Metadata), TagOccurance.PragmaOnce)]
@@ -10,11 +12,10 @@ namespace XVNML.XVNMLUtility.Tags
         public string[]? list;
         public override void OnResolve(string? fileOrigin)
         {
-            AllowedParameters = new[] { "list" };
+            AllowedParameters = new[] { ListParameterString };
             base.OnResolve(fileOrigin);
-            list = GetParameterValue("list")?
-                .ToString()?
-                .Split(new[] { ',', ' ', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            list = GetParameterValue<string>(ListParameterString)?
+                .Split(ListDelimiters, StringSplitOptions.RemoveEmptyEntries);
         }
         public bool IncludesTag(string tagName) => list!.Contains(tagName);
     }

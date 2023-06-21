@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using XVNML.Core.Dialogue;
 
 namespace XVNML.Core.Macros

@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -69,7 +68,7 @@ namespace XVNML.Utility.Dialogue
             OnCastChange = new DialogueWriterCallback[totalChannels];
             OnCastExpressionChange = new DialogueWriterCallback[totalChannels];
             OnCastVoiceChange = new DialogueWriterCallback[totalChannels];
-            
+
             OnSceneChange = new DialogueWriterCallback[totalChannels];
 
             OnPrompt = new DialogueWriterCallback[totalChannels];
