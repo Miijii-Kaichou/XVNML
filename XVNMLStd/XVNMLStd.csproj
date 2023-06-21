@@ -21,6 +21,7 @@
 	 <FileVersion>1.0.0.0</FileVersion>
 	 <PackAsTool>False</PackAsTool>
 	 <Version>1.0.0-pre-release</Version>
+	 <PackageLicenseFile>LICENSE.MD</PackageLicenseFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -32,6 +33,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="C:\Users\tclte\Desktop\LICENSE.MD">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="C:\Users\tclte\Desktop\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
