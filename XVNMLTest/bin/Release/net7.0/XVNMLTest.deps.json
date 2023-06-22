@@ -8,17 +8,23 @@
     ".NETCoreApp,Version=v7.0": {
       "XVNMLTest/1.0.0": {
         "dependencies": {
-          "XVNML": "1.0.0-pre-release"
+          "XVNML": "1.0.1-pre-release",
+          "XVNML.Reference": "1.0.0.1"
         },
         "runtime": {
           "XVNMLTest.dll": {}
         }
       },
-      "XVNML/1.0.0-pre-release": {
+      "XVNML/1.0.1-pre-release": {
         "runtime": {
-          "lib/netstandard2.1/XVNML.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
+          "XVNML.dll": {}
+        }
+      },
+      "XVNML.Reference/1.0.0.1": {
+        "runtime": {
+          "XVNML.dll": {
+            "assemblyVersion": "1.0.0.1",
+            "fileVersion": "1.0.0.1"
           }
         }
       }
@@ -30,12 +36,15 @@
       "serviceable": false,
       "sha512": ""
     },
-    "XVNML/1.0.0-pre-release": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-W30aTjk1c+OC4qZ1jyiXv5Q7QtHfD2FM75G1O5ucGRd9DaElWt2ioquZcX3kJGX/652O38jIkBvx05l+D2qKHg==",
-      "path": "xvnml/1.0.0-pre-release",
-      "hashPath": "xvnml.1.0.0-pre-release.nupkg.sha512"
+    "XVNML/1.0.1-pre-release": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "XVNML.Reference/1.0.0.1": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
     }
   }
 }

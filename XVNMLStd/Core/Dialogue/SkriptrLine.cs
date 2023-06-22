@@ -6,6 +6,7 @@ using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
 using XVNML.Core.Macros;
+using XVNML.Utility.Diagnostics;
 using XVNML.Utility.Macros;
 
 namespace XVNML.Core.Dialogue
@@ -503,12 +504,12 @@ namespace XVNML.Core.Dialogue
         {
             if (macroSymbol == null)
             {
-                throw new ArgumentNullException(macroSymbol, "There was no macro symbol present");
+                throw new ArgumentNullException(macroSymbol, "There was no macro symbol present.");
             }
 
             if (DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == false)
-            {
-                throw new InvalidMacroException(macroSymbol, Instance!);
+            {  
+                throw new InvalidMacroException($"The macro \"{macroSymbol}\" is undefined.", macroSymbol, Instance!);
             }
 
             newBlock!.macroCalls![macroCount].macroSymbol = macroSymbol;

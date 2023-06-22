@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using XVNML.Core.Dialogue.Structs;
+using XVNML.Utility.Diagnostics;
 using XVNML.Utility.Macros;
 
 [MacroLibrary(typeof(StandardMacroLibrary))]
@@ -276,6 +277,18 @@ internal static class StandardMacroLibrary
         info.process.Append('=');
     }
 
+    [Macro("at")]
+    internal static void AtMacro(MacroCallInfo info)
+    {
+        info.process.Append('@');
+    }
+
+    [Macro("qm")]
+    internal static void QuestionMarkMacro(MacroCallInfo info)
+    {
+        info.process.Append('?');
+    }
+
     [Macro("trade")]
     internal static void TrademarkMacro(MacroCallInfo info)
     {
@@ -434,4 +447,37 @@ internal static class StandardMacroLibrary
         Console.WriteLine($"Test Macro Successful: {value}");
     }
     #endregion
+
+    //Test
+    [Macro("cue_cast")]
+    private static void CueCastMacro(MacroCallInfo info, string anchoring)
+    {
+        var name = info.process.CurrentCastInfo!.Value.name;
+        CueCastMacro(info, name, anchoring, 0);
+    }
+
+    [Macro("cue_cast")]
+    private static void CueCastMacro(MacroCallInfo info, string anchoring, uint offset)
+    {
+        var name = info.process.CurrentCastInfo!.Value.name;
+        CueCastMacro(info, name, anchoring, offset);
+    }
+
+    [Macro("cue_cast")]
+    private static void CueCastMacro(MacroCallInfo info, string name, string anchoring)
+    {
+        CueCastMacro(info, name, anchoring, 0);
+    }
+
+    [Macro("cue_cast")]
+    private static void CueCastMacro(MacroCallInfo info, string name, string anchoring, uint offset)
+    {
+        XVNMLLogger.Log($"Cue Cast Macro Called with paremeters: {name},{anchoring},{offset}", info);
+    }
+
+    [Macro("react")]
+    private static void ReactMacro(MacroCallInfo info, string reactionName)
+    {
+        XVNMLLogger.Log($"React Macro Called with parameters: {reactionName}", info);
+    }
 }

@@ -43,8 +43,7 @@ namespace XVNML.Utility.Dialogue
         private static bool IsInitialized = false;
         private static Timer[]? ProcessTimers;
         private static bool[]? ProcessStalling;
-
-
+        private static List<DialogueWriterProcessor?>? WriterProcessesCache;
         private const int DefaultTotalChannelsAllocated = 12;
 
         /// <summary>
@@ -135,14 +134,14 @@ namespace XVNML.Utility.Dialogue
             while (IsInitialized && !cancelationToken.IsCancellationRequested)
             {
                 DoConcurrentDialogueProcesses();
-                Thread.Sleep(5);
+                Thread.Sleep(10);
             }
         }
 
         private static void DoConcurrentDialogueProcesses()
         {
-            var processes = WriterProcesses!.Where(process => process != null).ToList();
-            foreach (var process in processes)
+            WriterProcessesCache ??= WriterProcesses!.Where(process => process != null).ToList();
+            foreach (var process in WriterProcessesCache)
             {
                 if (process == null) return;
                 lock (process.processLock)

@@ -2,36 +2,28 @@
   "version": 3,
   "targets": {
     "net7.0": {
-      "XVNML/1.0.0-pre-release": {
-        "type": "package",
+      "XVNML/1.0.1-pre-release": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.1",
         "compile": {
-          "lib/netstandard2.1/XVNML.dll": {}
+          "bin/placeholder/XVNML.dll": {}
         },
         "runtime": {
-          "lib/netstandard2.1/XVNML.dll": {}
+          "bin/placeholder/XVNML.dll": {}
         }
       }
     }
   },
   "libraries": {
-    "XVNML/1.0.0-pre-release": {
-      "sha512": "W30aTjk1c+OC4qZ1jyiXv5Q7QtHfD2FM75G1O5ucGRd9DaElWt2ioquZcX3kJGX/652O38jIkBvx05l+D2qKHg==",
-      "type": "package",
-      "path": "xvnml/1.0.0-pre-release",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE.MD",
-        "README.md",
-        "lib/netstandard2.1/XVNML.dll",
-        "xvnml.1.0.0-pre-release.nupkg.sha512",
-        "xvnml.nuspec"
-      ]
+    "XVNML/1.0.1-pre-release": {
+      "type": "project",
+      "path": "../XVNMLStd/XVNMLStd.csproj",
+      "msbuildProject": "../XVNMLStd/XVNMLStd.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net7.0": [
-      "XVNML >= 1.0.0-pre-release"
+      "XVNML >= 1.0.1-pre-release"
     ]
   },
   "packageFolders": {
@@ -66,7 +58,11 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\XVNMLStd.csproj": {
+              "projectPath": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\XVNMLStd.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -78,12 +74,6 @@
     "frameworks": {
       "net7.0": {
         "targetAlias": "net7.0",
-        "dependencies": {
-          "XVNML": {
-            "target": "Package",
-            "version": "[1.0.0-pre-release, )"
-          }
-        },
         "imports": [
           "net461",
           "net462",

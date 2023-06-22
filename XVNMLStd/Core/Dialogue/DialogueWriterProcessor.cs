@@ -38,7 +38,6 @@ namespace XVNML.Core.Dialogue
 
         internal ConcurrentBag<SkripterLine> lineProcesses = new ConcurrentBag<SkripterLine>();
         internal SkripterLine? currentLine;
-        internal SkripterLine? previousLine;
         internal int lineProcessIndex = -1;
         internal int linePosition;
 
@@ -54,7 +53,6 @@ namespace XVNML.Core.Dialogue
         internal bool inPrompt;
 
         private CastInfo? _currentCastInfo;
-        private Stack<int> _returnPointStack = new Stack<int>();
         private bool _lastProcessWasClosing;
 
         private SceneInfo? _currentSceneInfo = null;
@@ -294,16 +292,15 @@ namespace XVNML.Core.Dialogue
             var prompt = currentLine.PromptContent[response];
             lineProcessIndex = prompt.sp - 1;
             Response = response;
-            if (_returnPointStack.Count != 0 && _returnPointStack.Peek() == prompt.rp) return;
-            _returnPointStack.Push(prompt.rp);
         }
 
         public void JumpToReturningLineFromResponse()
         {
-            if (_returnPointStack.Count == 0) return;
-            var index = _returnPointStack.Pop();
-            if (previousLine != null && previousLine.data.isClosingLine) index = previousLine.data.returnPoint;
-            previousLine = null;
+            var recentLine = lineProcesses.ElementAt(lineProcessIndex);
+            var index = -1;
+
+            if (recentLine != null && recentLine.data.isClosingLine) index = recentLine.data.returnPoint;
+
             if (lineProcessIndex == index + 1)
             {
                 JumpToReturningLineFromResponse();
@@ -326,7 +323,7 @@ namespace XVNML.Core.Dialogue
                 return;
             }
 
-            if (_returnPointStack.Count != 0 && _lastProcessWasClosing)
+            if (_lastProcessWasClosing)
             {
                 JumpToReturningLineFromResponse();
                 if (AtEnd) return;

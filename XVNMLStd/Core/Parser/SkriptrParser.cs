@@ -39,6 +39,7 @@ namespace XVNML.Core.Parser
 
         private bool _evaluatingCast = false;
         private static Stack<SkripterLine> ResolveStack = new Stack<SkripterLine>();
+        private static bool ResolvePending;
 
         public SkriptrParser(string dialogueSource, out DialogueScript output)
         {
@@ -77,6 +78,7 @@ namespace XVNML.Core.Parser
 
             string? _cachedLineTag = null;
             bool isAttachingTagToLine = false;
+            ResolvePending = false;
 
             for (int i = 0; i < Tokenizer.Length; i++)
             {
@@ -114,6 +116,7 @@ namespace XVNML.Core.Parser
                     //Denote the start of a dialoge
                     case TokenType.At:
                         if (FindFirstLine) FindFirstLine = !FindFirstLine;
+                        if (ResolvePending) PurgeResolveStack(linesCollected + 1, ref ResolveStack);
                         castSignatureCollection = new List<SyntaxToken>();
                         castSignatureString = new StringBuilder();
                         ChangeDialogueParserMode(DialogueParserMode.Dialogue);
@@ -124,7 +127,7 @@ namespace XVNML.Core.Parser
                     //Denote the start of a prompt
                     case TokenType.Prompt:
                         if (FindFirstLine) FindFirstLine = !FindFirstLine;
-
+                        if (ResolvePending) PurgeResolveStack(linesCollected + 1, ref ResolveStack);
                         castSignatureCollection = new List<SyntaxToken>();
                         castSignatureString = new StringBuilder();
                         ChangeDialogueParserMode(DialogueParserMode.Prompt);
@@ -286,16 +289,17 @@ namespace XVNML.Core.Parser
 
                             var expectedToken = Peek(1)?.Type;
 
-                            if (expectedToken != TokenType.At &&
-                                expectedToken != TokenType.Prompt)
-                            {
-                                ResolveStack.Push(promptCacheStack?.Peek().Item1.Item1!);
-                            }
-
                             if (expectedToken == TokenType.At ||
                                 expectedToken == TokenType.Prompt)
                             {
                                 PurgeResolveStack(linesCollected + 1, ref ResolveStack);
+                            }
+
+                            if (expectedToken != TokenType.At &&
+                                expectedToken != TokenType.Prompt)
+                            {
+                                ResolvePending = expectedToken != TokenType.OpenParentheses;
+                                ResolveStack.Push(promptCacheStack?.Peek().Item1.Item1!);
                             }
 
                             TryPopFromPromptCacheStack(promptCacheStack, linesCollected + 1, ref output);
@@ -391,6 +395,8 @@ namespace XVNML.Core.Parser
                 SkripterLine line = resolveStack.Pop();
                 line.CorrectReturnPointOnAllChoices(index);
             }
+
+            ResolvePending = false;
         }
 
         private static void TryPopFromPromptCacheStack(Stack<((SkripterLine, int), Stack<string>)>? promptCacheStack, int lineIndex, ref DialogueScript output)
