@@ -447,37 +447,4 @@ internal static class StandardMacroLibrary
         Console.WriteLine($"Test Macro Successful: {value}");
     }
     #endregion
-
-    //Test
-    [Macro("cue_cast")]
-    private static void CueCastMacro(MacroCallInfo info, string anchoring)
-    {
-        var name = info.process.CurrentCastInfo!.Value.name;
-        CueCastMacro(info, name, anchoring, 0);
-    }
-
-    [Macro("cue_cast")]
-    private static void CueCastMacro(MacroCallInfo info, string anchoring, uint offset)
-    {
-        var name = info.process.CurrentCastInfo!.Value.name;
-        CueCastMacro(info, name, anchoring, offset);
-    }
-
-    [Macro("cue_cast")]
-    private static void CueCastMacro(MacroCallInfo info, string name, string anchoring)
-    {
-        CueCastMacro(info, name, anchoring, 0);
-    }
-
-    [Macro("cue_cast")]
-    private static void CueCastMacro(MacroCallInfo info, string name, string anchoring, uint offset)
-    {
-        XVNMLLogger.Log($"Cue Cast Macro Called with paremeters: {name},{anchoring},{offset}", info);
-    }
-
-    [Macro("react")]
-    private static void ReactMacro(MacroCallInfo info, string reactionName)
-    {
-        XVNMLLogger.Log($"React Macro Called with parameters: {reactionName}", info);
-    }
 }
