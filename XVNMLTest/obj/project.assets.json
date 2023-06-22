@@ -3,22 +3,30 @@
   "targets": {
     "net7.0": {
       "XVNML/1.0.0-pre-release": {
-        "type": "project",
-        "framework": ".NETStandard,Version=v2.1",
+        "type": "package",
         "compile": {
-          "bin/placeholder/XVNML.dll": {}
+          "lib/netstandard2.1/XVNML.dll": {}
         },
         "runtime": {
-          "bin/placeholder/XVNML.dll": {}
+          "lib/netstandard2.1/XVNML.dll": {}
         }
       }
     }
   },
   "libraries": {
     "XVNML/1.0.0-pre-release": {
-      "type": "project",
-      "path": "../XVNMLStd/XVNMLStd.csproj",
-      "msbuildProject": "../XVNMLStd/XVNMLStd.csproj"
+      "sha512": "W30aTjk1c+OC4qZ1jyiXv5Q7QtHfD2FM75G1O5ucGRd9DaElWt2ioquZcX3kJGX/652O38jIkBvx05l+D2qKHg==",
+      "type": "package",
+      "path": "xvnml/1.0.0-pre-release",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.MD",
+        "README.md",
+        "lib/netstandard2.1/XVNML.dll",
+        "xvnml.1.0.0-pre-release.nupkg.sha512",
+        "xvnml.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
@@ -58,11 +66,7 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
-          "projectReferences": {
-            "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\XVNMLStd.csproj": {
-              "projectPath": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\XVNMLStd.csproj"
-            }
-          }
+          "projectReferences": {}
         }
       },
       "warningProperties": {
@@ -74,6 +78,12 @@
     "frameworks": {
       "net7.0": {
         "targetAlias": "net7.0",
+        "dependencies": {
+          "XVNML": {
+            "target": "Package",
+            "version": "[1.0.0-pre-release, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",

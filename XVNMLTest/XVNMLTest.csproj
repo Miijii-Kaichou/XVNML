@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\XVNMLStd\XVNMLStd.csproj" />
+    <PackageReference Include="XVNML" Version="1.0.0-pre-release" />
   </ItemGroup>
 
 </Project>

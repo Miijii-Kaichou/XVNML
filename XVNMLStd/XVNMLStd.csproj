@@ -11,7 +11,7 @@
 	 <RootNamespace>XVNML</RootNamespace>
 	 <AssemblyName>XVNML</AssemblyName>
 	 <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-	 <SignAssembly>False</SignAssembly>
+	 <SignAssembly>True</SignAssembly>
 	 <RepositoryUrl>https://github.com/Miijii-Kaichou/XVNML</RepositoryUrl>
 	 <Copyright>2019 Enjyoii</Copyright>
 	 <Description>A utility tool to interact with XVNML files.</Description>
@@ -22,6 +22,7 @@
 	 <PackAsTool>False</PackAsTool>
 	 <Version>1.0.0-pre-release</Version>
 	 <PackageLicenseFile>LICENSE.MD</PackageLicenseFile>
+	 <AssemblyOriginatorKeyFile>C:\Users\tclte\Desktop\xvsnk.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
