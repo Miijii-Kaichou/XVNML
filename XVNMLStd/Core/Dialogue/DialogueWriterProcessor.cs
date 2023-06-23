@@ -28,7 +28,7 @@ namespace XVNML.Core.Dialogue
         }
 
         public string? Response { get; internal set; }
-        public bool AtEnd => lineProcessIndex > lineProcesses.Count - 1;
+        public bool AtEnd => lineIndex > lineProcesses.Count - 1;
         public bool WasControlledPause { get; private set; }
         public uint ProcessRate { get; internal set; } = 60;
         public bool IsPaused { get; internal set; }
@@ -38,8 +38,8 @@ namespace XVNML.Core.Dialogue
 
         internal ConcurrentBag<SkripterLine> lineProcesses = new ConcurrentBag<SkripterLine>();
         internal SkripterLine? currentLine;
-        internal int lineProcessIndex = -1;
-        internal int linePosition;
+        internal int lineIndex = -1;
+        internal int cursorIndex;
 
         private int previousLinePosition;
         internal bool IsOnDelay => delayTimer != null;
@@ -49,7 +49,7 @@ namespace XVNML.Core.Dialogue
         private Timer? delayTimer;
 
         internal object processLock = new object();
-        internal bool HasChanged => previousLinePosition != linePosition;
+        internal bool HasChanged => previousLinePosition != cursorIndex;
         internal bool inPrompt;
 
         private CastInfo? _currentCastInfo;
@@ -219,7 +219,7 @@ namespace XVNML.Core.Dialogue
 
         internal void UpdatePrevious()
         {
-            previousLinePosition = linePosition;
+            previousLinePosition = lineIndex;
         }
 
         internal static DialogueWriterProcessor? Initialize(DialogueScript input, int id)
@@ -233,7 +233,7 @@ namespace XVNML.Core.Dialogue
                 _processBuilder = new StringBuilder(),
                 currentLine = null,
                 CurrentLetter = null,
-                linePosition = -1,
+                cursorIndex = -1,
                 IsPaused = false,
             };
 
@@ -290,32 +290,32 @@ namespace XVNML.Core.Dialogue
             if (currentLine == null) return;
             inPrompt = false;
             var prompt = currentLine.PromptContent[response];
-            lineProcessIndex = prompt.sp - 1;
+            lineIndex = prompt.sp - 1;
             Response = response;
         }
 
         public void JumpToReturningLineFromResponse()
         {
-            var recentLine = lineProcesses.ElementAt(lineProcessIndex);
+            var recentLine = lineProcesses.ElementAt(lineIndex);
             var index = -1;
 
             if (recentLine != null && recentLine.data.isClosingLine) index = recentLine.data.returnPoint;
 
-            if (lineProcessIndex == index + 1)
+            if (lineIndex == index + 1)
             {
                 JumpToReturningLineFromResponse();
                 return;
             }
-            lineProcessIndex = index;
+            lineIndex = index;
         }
 
-        internal void NextProcess() => lineProcessIndex++;
+        internal void NextProcess() => lineIndex++;
 
         internal void UpdateProcess()
         {
             if (_jumpIndexValue != -1)
             {
-                lineProcessIndex = _jumpIndexValue;
+                lineIndex = _jumpIndexValue;
                 _jumpIndexValue = -1;
                 if (AtEnd) return;
 
@@ -323,7 +323,7 @@ namespace XVNML.Core.Dialogue
                 return;
             }
 
-            if (_lastProcessWasClosing)
+            if (_lastProcessWasClosing && lineIndex != lineProcesses.Count - 1)
             {
                 JumpToReturningLineFromResponse();
                 if (AtEnd) return;
@@ -339,7 +339,7 @@ namespace XVNML.Core.Dialogue
 
         private void UpdateLine()
         {
-            currentLine = lineProcesses.ElementAt(lineProcessIndex);
+            currentLine = lineProcesses.ElementAt(lineIndex);
             _lastProcessWasClosing = currentLine.data.isClosingLine;
         }
 

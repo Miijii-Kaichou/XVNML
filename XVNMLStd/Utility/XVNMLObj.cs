@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using XVNML.Core.Macros;
 using XVNML.Core.Parser;
 using XVNML.Core.Tags;

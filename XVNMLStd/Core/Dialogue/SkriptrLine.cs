@@ -56,9 +56,9 @@ namespace XVNML.Core.Dialogue
             lock (process.processLock)
             {
                 macroInvocationList
-                .Where(macro => macro.blockPosition.Equals(process.linePosition))
+                .Where(macro => macro.blockPosition.Equals(process.cursorIndex))
                 .ToList()
-                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.linePosition }));
+                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.cursorIndex }));
             }
         }
 

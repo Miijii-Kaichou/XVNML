@@ -8,14 +8,14 @@
     ".NETCoreApp,Version=v7.0": {
       "XVNMLTest/1.0.0": {
         "dependencies": {
-          "XVNML": "1.0.1-pre-release",
+          "XVNML": "1.0.0.1-pre-release",
           "XVNML.Reference": "1.0.0.1"
         },
         "runtime": {
           "XVNMLTest.dll": {}
         }
       },
-      "XVNML/1.0.1-pre-release": {
+      "XVNML/1.0.0.1-pre-release": {
         "runtime": {
           "XVNML.dll": {}
         }
@@ -36,7 +36,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "XVNML/1.0.1-pre-release": {
+    "XVNML/1.0.0.1-pre-release": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

@@ -103,7 +103,7 @@ internal static class StandardMacroLibrary
     [Macro("end")]
     internal static void EndDialogueMacro(MacroCallInfo info)
     {
-        info.process.lineProcessIndex = info.process.lineProcesses.Count;
+        info.process.lineIndex = info.process.lineProcesses.Count;
     }
 
     #endregion
@@ -247,6 +247,12 @@ internal static class StandardMacroLibrary
         info.process.Append(";");
     }
 
+    [Macro("colon")]
+    internal static void ColonMacro(MacroCallInfo info)
+    {
+        info.process.Append(":");
+    }
+
     [Macro("tag")]
     internal static void TagMacro(MacroCallInfo info)
     {
@@ -348,19 +354,47 @@ internal static class StandardMacroLibrary
     {
         info.process.Append('\u00b1');
     }
+
+    [Macro("speaker")]
+    internal static void InsertSpeakerNameMacro(MacroCallInfo info)
+    {
+        info.process.Append(info.process.CurrentCastInfo?.name!);
+    }
+
     #endregion
 
     #region Debug Macros
     [Macro("pid")]
-    internal static void GetProcessIDMacroShortHand(MacroCallInfo info)
+    internal static void GetProcessIDMacroShortHand(MacroCallInfo info, bool print)
     {
-        GetProcessIDMacro(info);
+        GetProcessIDMacro(info, print);
     }
+
     [Macro("process_id")]
-    internal static void GetProcessIDMacro(MacroCallInfo info)
+    internal static void GetProcessIDMacro(MacroCallInfo info, bool print)
     {
+        if (!print) return;
         info.process.Append(info.process.ID.ToString());
     }
+
+    [Macro("curdex")]
+    internal static void CursorIndexMacro(MacroCallInfo info, bool print)
+    {
+        var cursorIndex = info.process.cursorIndex;
+        XVNMLLogger.Log(cursorIndex.ToString(), info);
+        if (!print) return;
+        info.process.Append(cursorIndex.ToString());
+    }
+
+    [Macro("lindex")]
+    internal static void GetLineIndexMacro(MacroCallInfo info, bool print)
+    {
+        var lineIndex = info.process.lineIndex;
+        XVNMLLogger.Log(lineIndex.ToString(), info);
+        if (!print) return;
+        info.process.Append(lineIndex.ToString());
+    }
+
     #endregion
 
     #region Cast Macros

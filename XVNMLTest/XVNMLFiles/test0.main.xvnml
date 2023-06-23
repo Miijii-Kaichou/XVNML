@@ -1,40 +1,10 @@
-﻿<proxy name::"test0.main" lang::"CSharp" engine::"Native">
-	<castDefinitions>
-		<cast name::"Hana" src::"Hana/Hana.cast.xvnml"/>
-	</castDefinitions>
-
-	<sceneDefinitions>
-		<scene name::"Home" 			src::$nil/>
-		<scene name::"OutsideOfSchool" 	src::"School/OutsideOfSchool.scene.xvnml"/>
-		<scene name::"Class1A" 			src::$nil/>
-		<scene name::"Cafeteria" 		src::$nil/>
-	</sceneDefinitions>
-
-	<dialogue name::"PromptsExample">
-		["P1-Skriptr"]
-        @ {sts::100}You notice that it's just the {quot|at|quot} symbol when stating a 
-        Declarative Role on a Skriptr line.<
-        @ However, if you've defined Cast members within your XVNML project...<
-        @ You can set them as a speaker!<
-        @ For example...<
-        @??? {cue_cast::("Hana","Center")}Hello!<
-        @* My name is Hana!<
-        @Hana>Happy {react::"Jump"}It's very nice to meet you!<
-        @ Anything after and before actual dialogue is known as the Cast Signature.<
-        @ If you look at Line 121, this is considered a Normal Cast Signature.<
-        @ It's the most common signature that you'll see inside an XVNML document.<
-        @ Anything without a name is considered a Narrative Cast Signature.<
-        @ As the name suggests, it's meant to denote that the Narrator is speaking.<
-        @ If there's a {quot|qm|qm|qm|quot} in place of the name...<
-        @ This is known as the Anonymous Cast Signature.<
-        @ And anything with an {quot|aster|quot} is consider a Persistent Cast Signature.<
-        @ The general format of a Cast Signature is the following...<
-        @ {tag|brack|at|pipe|qm|brack_end|tag}NULL
-        {tag_end|pipe|brack}Cast
-        {brack_end|pipe|aster|pipe|qm|qm|qm|tag_end|brack}Expression
-        {brack_end|tag_end|brack}Voice
-        {brack_end|tag_end}<
-        @ It's definitely a lot to keep up with, but that's what the XVNMLEssentials guide is for...<
-        @ To help you get in touch with XVNML.<
+﻿<proxy name::"test0.main">
+	<dialogue name::"Hello World">
+		["CL"]
+          @ {sts::100}We hope that you've enjoyed this demo.<
+          @ Please consider loading the other Unity Scenes to 
+          get a more in-depth explanation on the different tools and features
+          that XVNML and XVNML2U can provide.<
+          @ {lindex::false}With that said, logging out!<<
 	</dialogue>
 </proxy>

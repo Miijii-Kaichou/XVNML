@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net7.0": {
-      "XVNML/1.0.1-pre-release": {
+      "XVNML/1.0.0.1-pre-release": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.1",
         "compile": {
@@ -15,7 +15,7 @@
     }
   },
   "libraries": {
-    "XVNML/1.0.1-pre-release": {
+    "XVNML/1.0.0.1-pre-release": {
       "type": "project",
       "path": "../XVNMLStd/XVNMLStd.csproj",
       "msbuildProject": "../XVNMLStd/XVNMLStd.csproj"
@@ -23,7 +23,7 @@
   },
   "projectFileDependencyGroups": {
     "net7.0": [
-      "XVNML >= 1.0.1-pre-release"
+      "XVNML >= 1.0.0.1-pre-release"
     ]
   },
   "packageFolders": {

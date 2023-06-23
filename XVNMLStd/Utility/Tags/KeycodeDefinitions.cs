@@ -3,7 +3,7 @@ using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("keycodes", new[] { typeof(Proxy), typeof(Source) }, TagOccurance.PragmaOnce)]
+    [AssociateWithTag("keycodeDefinitions", new[] { typeof(Proxy), typeof(Source) }, TagOccurance.PragmaOnce)]
     public sealed class KeycodeDefinitions : TagBase
     {
         public Keycode[]? KeyCodes => Collect<Keycode>();

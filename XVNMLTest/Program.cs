@@ -1,7 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Text;
 using XVNML.Core.Dialogue;
-using XVNML.Core.Dialogue.Structs;
 using XVNML.Utility.Dialogue;
 using XVNML.XVNMLUtility;
 using XVNML.XVNMLUtility.Tags;
@@ -18,7 +17,7 @@ static class Program
 
             Console.OutputEncoding = Encoding.UTF8;
 
-            DialogueScript script = dom.Root.GetElement<Dialogue>("PromptsExample")?.dialogueOutput!;
+            DialogueScript script = dom.Root.GetElement<Dialogue>("Hello World")?.dialogueOutput!;
 
             DialogueWriter.AllocateChannels(1);
             DialogueWriter.OnPrompt![0] += DisplayPrompts;

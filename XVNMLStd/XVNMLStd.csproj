@@ -20,7 +20,7 @@
 	 <PackageReadmeFile>README.md</PackageReadmeFile>
 	 <FileVersion>1.0.0.1</FileVersion>
 	 <PackAsTool>False</PackAsTool>
-	 <Version>1.0.1-pre-release</Version>
+	 <Version>1.0.0.1-pre-release</Version>
 	 <PackageLicenseFile>LICENSE.MD</PackageLicenseFile>
 	 <AssemblyOriginatorKeyFile>C:\Users\tclte\Desktop\xvsnk.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
