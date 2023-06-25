@@ -239,6 +239,23 @@ namespace XVNML.Core.Lexer
                 return new SyntaxToken(TokenType.SingleLineComment, _Line, start, text, text);
             }
 
+            //#Region
+            if (Peek(_position, "//#"))
+            {
+                JumpPosition(2);
+
+                var start = _position;
+
+                while (_Current != '\n')
+                    Next();
+
+                var length = _position - start;
+                var text = SourceText?.Substring(start, length);
+                text = text?.Trim(' ', '\n', '\r', '\t');
+
+                return new SyntaxToken(TokenType.SingleLineComment, _Line, start, text, text);
+            }
+
             //Multiline Comments
             if (Peek(_position, "$/"))
             {

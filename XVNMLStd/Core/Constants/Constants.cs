@@ -15,6 +15,10 @@
         internal const string AspectRatioParameterString = "aspectRatio";
         internal const string KeyParameterString = "key";
         internal const string PathRelativityParameterString = "pathMode";
+        internal const string ValueParameterString = "value";
+        internal const string OwnerParameterString = "owner";
+        internal const string YearParameterString = "year";
+
 
         internal const string ActAsSceneControllerFlagString = "actAsSceneController";
         internal const string AllowOverrideFlagString = "allowOverride";

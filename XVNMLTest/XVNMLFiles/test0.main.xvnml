@@ -1,7 +1,7 @@
 ﻿<proxy name::"test0.main">
 	<dialogue name::"Hello World">
 		["CL"]
-          @ {sts::100}We hope that you've enjoyed this demo.<
+          @ {sts::100|del::1000}We hope that you've enjoyed this demo.<
           @ Please consider loading the other Unity Scenes to 
           get a more in-depth explanation on the different tools and features
           that XVNML and XVNML2U can provide.<

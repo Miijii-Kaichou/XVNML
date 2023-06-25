@@ -8,6 +8,7 @@
         Java,
         JavaScript,
         Python,
-        Rust
+        Rust,
+        Ruby
     }
 }

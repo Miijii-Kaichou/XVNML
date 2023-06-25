@@ -1,14 +1,48 @@
-﻿using XVNML.Core.Tags;
+﻿using System;
+using System.Linq;
+using System.Text;
+using XVNML.Core.Tags;
+
+using static XVNML.Constants;
 
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("copyright", typeof(Metadata), TagOccurance.PragmaOnce)]
     public sealed class Copyright : TagBase
     {
+        public string? fullCopyrightString;
+        public int copyrightYear;
+        public string? copyrightOwner;
         public override void OnResolve(string? fileOrigin)
         {
-            base.OnResolve(fileOrigin);
-        }
+            AllowedParameters = new[]
+            {
+                OwnerParameterString,
+                YearParameterString
+            };
 
+            base.OnResolve(fileOrigin);
+
+            char[] parenthesisDelimiters = new char[] { '(', ')' };
+            char[] whitespaceDelimiters = new char[] {' ', '\r', '\n', '\t'};
+            int i = 0;
+            
+            StringBuilder sb = new StringBuilder();
+
+            copyrightOwner = GetParameterValue<string>(OwnerParameterString);
+            copyrightYear = Convert.ToInt32(GetParameterValue<string>(YearParameterString));
+
+            sb.Append("\u2122 ");
+            sb.Append(parenthesisDelimiters[i++]);
+            sb.Append(copyrightYear);
+            sb.Append(parenthesisDelimiters[i++]); 
+            
+            i = 0;
+            
+            sb.Append(whitespaceDelimiters[i]);
+            sb.Append(copyrightOwner);
+
+            fullCopyrightString = sb.ToString();
+        }
     }
 }

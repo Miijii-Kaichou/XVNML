@@ -6,7 +6,7 @@ using XVNML.Utility.Diagnostics;
 using XVNML.Utility.Macros;
 
 [MacroLibrary(typeof(StandardMacroLibrary))]
-internal static class StandardMacroLibrary
+internal sealed class StandardMacroLibrary
 {
     #region Control Macros
     [Macro("del")]
@@ -155,6 +155,12 @@ internal static class StandardMacroLibrary
     internal static void WhiteSpaceMacro(MacroCallInfo info)
     {
         info.process.Append(" ");
+    }
+
+    [Macro("hash")]
+    internal static void HashTagMacro(MacroCallInfo info)
+    {
+        info.process.Append("#");
     }
 
     [Macro("paren")]

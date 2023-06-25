@@ -17,6 +17,7 @@ namespace XVNML.XVNMLUtility.Tags
             list = GetParameterValue<string>(ListParameterString)?
                 .Split(ListDelimiters, StringSplitOptions.RemoveEmptyEntries);
         }
+
         public bool IncludesTag(string tagName) => list!.Contains(tagName);
     }
 }

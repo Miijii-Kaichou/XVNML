@@ -39,6 +39,7 @@ namespace XVNML.Utility.Dialogue
         internal static DialogueWriterProcessor?[]? WriterProcesses { get; private set; }
         internal static bool[]? WaitingForUnpauseCue { get; private set; }
         internal static int ThreadInterval { get; private set; }
+        internal static bool[]? IsChannelBlocked { get; private set; }
 
         private static Thread? _writingThread;
         private static CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -46,7 +47,7 @@ namespace XVNML.Utility.Dialogue
         private static Timer[]? ProcessTimers;
         private static bool[]? ProcessStalling;
         private static List<DialogueWriterProcessor?>? WriterProcessesCache;
-        
+
         private const int DefaultTotalChannelsAllocated = 12;
         private const int DefaultInterval = 1;
         private const int SingleChannel = DefaultInterval;
@@ -85,6 +86,7 @@ namespace XVNML.Utility.Dialogue
 
             ProcessStalling = new bool[totalChannels];
             WaitingForUnpauseCue = new bool[totalChannels];
+            IsChannelBlocked = new bool[totalChannels];
         }
 
         public static void SetThreadInterval(int interval = DefaultInterval)
@@ -159,10 +161,27 @@ namespace XVNML.Utility.Dialogue
             }
         }
 
+        public static void Block(DialogueWriterProcessor process)
+        {
+            lock (process.processLock)
+            {
+                IsChannelBlocked![process.ID] = true;
+            }
+        }
+
+        public static void UnBlock(DialogueWriterProcessor process)
+        {
+            lock (process.processLock)
+            {
+                IsChannelBlocked![process.ID] = false;
+            }
+        }
+
         internal static bool IsRestricting(DialogueWriterProcessor process)
         {
             lock (process.processLock)
             {
+                if (IsChannelBlocked![process.ID]) return true;
                 if (ProcessStalling![process.ID]) return true;
                 if (process.IsPaused) return true;
                 if (process.inPrompt) return true;
@@ -331,19 +350,24 @@ namespace XVNML.Utility.Dialogue
         {
             lock (process.processLock)
             {
+                if (IsChannelBlocked![process.ID]) return;
+
                 ProcessStalling![process.ID] = true;
                 ProcessTimers![process.ID] ??= new Timer(process.ProcessRate);
                 ProcessTimers![process.ID].Interval = (double)process.ProcessRate;
+
                 if (ProcessTimers![process.ID] != null)
                 {
                     ProcessTimers![process.ID].Enabled = true;
                 }
+
                 ProcessTimers[process.ID].AutoReset = false;
                 ProcessTimers[process.ID].Elapsed += (s, e) =>
                 {
                     s = process.ID;
                     DialogueWriter_Elapsed(s, e);
                 };
+
                 ProcessTimers[process.ID].Enabled = true;
             }
         }
