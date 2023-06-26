@@ -14,7 +14,10 @@ At it's current stage, these are the following states that this project is in:
   * For Unity in particular, there will be a free package that demonstrates and utilizes XVNML called XVNML2U.
   * There still needs to be helpers to make integrating to game engines a lot easier.
   * There will be a Native Visual Novel Game Engine that'll be fully dedicated to XVNML and Skriptr called HanaC.
-  * The XVNMLExt for VSCode is yet to be polished as of the time of writting this.
+
+## How to Get Started
+You can get started with using XVNML in a variety of ways. Since XVNML was made using C#, you can apply it to any .NET Application you want, whether that'd be on a C# Console, WPF, or ASP.NET application.
+You can even integrated into Unity, and make it part of your workflow. All it takes is adding the XVNML NuGet package to your project, and you're ready to go! For starters, you can reference off a C# Console Application sample [here](https://github.com/Miijii-Kaichou/XVNML/tree/main/XVNMLTest)! You may also want to check out an article I wrote on Medium that walks you through how to install XVNML and integrated in both a C# Console Application and a Unity project [here](https://medium.com/@miijii/get-started-using-xvnml-cc6dc478fc8e)!
 
 ## How to Use XVNML
 
@@ -54,6 +57,13 @@ By default, you have a total of 28 pre-built tags that can be parsed by the XVNM
   * VoiceDefinition
   
 Out of all of these valid tags, Proxy and Source are Root Tags. This means whenever you type your XVNMLObj instance and access the root, it'll either be Proxy or Source, depending on how the file was structured.
+A Proxy file is always your main file, and is always read first. However, a Source is a file that can be used to introduce modularity into your projects. For example, the screenshot below shows that we’re creating a Cast element called Hana, and the source of that data is in “Hana\Hana.cast.xvnml”
+
+![image](https://miro.medium.com/v2/resize:fit:720/format:webp/1*i58PbZYcGJZ62Nph5_JBkg.png)
+
+![image](https://miro.medium.com/v2/resize:fit:720/format:webp/1*4iQRmnI1JJt4OffM6IGrsg.png)
+
+By utilizing Source files, you can reduce the number of lines in your proxy file. It’s one of the most important best practices of using XVNML in your development process.
 
 ### User Defined Tags
 
@@ -77,18 +87,41 @@ It'll take the information from the "cast" tag inside the Raven.cast.xvnml file,
 
 ### Skriptr
 
-Skriptr is a scripting language entirely unique to XVNML. In order to utlize this handy feature, all of it's contents must be inside a "dialogue" tag. Again, you can have another XVNML file as a source and have the dialogue embed to the dialogue asking for it that way (again, the names of those tags must both match).
-
-![image](https://user-images.githubusercontent.com/46007223/217723301-61a37ee5-6957-4573-91f2-60b4216c9dd9.png)
+Skriptr is the syntaxical language used in tandem with XVNMl to output text data. Each Skriptr line must first be given a role. It can either take in a Declaratice Role (denoted by the "@" symbol), oran Interrogative Role (denoted by the "?" symbol).
+When given a Declarative Role, it'll allow the user to, for example, output text to the screen. However, if given an Interrogative Role, the dialgoue comes a Prompt that requires user input.
 
 You are also able to run macros (commands that performs a single action). Information of the command used, as well as the arguments passed will be stored inside your XVNMLObj instance. A macro is denoted by surrounding curly braces. The macro name is first defined, and then the argument(s) being passed for it (if the macro requires them).
+ 
+Another feature with Skriptr is the ability to name lines using square brackets. Combining macros such as "jump_to" and "lead_to", you're able to use named lines to control the flow of dialogue.
 
-![image](https://user-images.githubusercontent.com/46007223/217723765-c4ed8f8f-4251-4cdf-b2db-5bc341ddbe3c.png)
+```xvnml
+$> XVNML Example
+["P1-Skriptr-Incorrect"]
+@ Unfortunately, that's not the correct answer...{jump_to::"P1-Skriptr-CorrectAnswer"}<
 
-## Documentation/Learning Material
+["P1-Skriptr"]
+@ Skriptr is the syntaxical language used in tandem with XVNML to...<
+@ type out dialogue.<
+@ Each Skriptr line must first be given a role to play.<
+@ It can either take in a Declarative Role {paren}denoted by the {quot|at|quot} symbol{paren_end}...<
+@ Or a Interrogative Role {paren}denoted by the {quot|qm|quot} symbol {paren_end}...<
+@ When given a Declarative Role, it'll type out dialogue to the screen as normal...{delay::500|clr}
+Just like what you are seeing now.<
+@ However, if given a Interrogative Role...<
+@ The dialogue acts as a Prompt in which the user must answer to.<
+? For example, how many states does the United States have?>>
+(
+     ("50")>
+          @ That is correct!<<
+     ("13")>
+          @ {jump_to::"P1-Skriptr-Incorrect"|pass}<<
+     ("3")>
+          @ {jump_to::"P1-Skriptr-Incorrect"|pass}<<
+     ("I honestly don't know...")>
+          @ That's okay if you don't know.<<
+)
 
-To learn more about XVNML, and how you can integrate it inside a game engine (or your own game engine), be sure to check out the wiki. There will be extensive detail as to how everything functions, and the approach to take when implementing it into your project.
-Again, there will be different subprojects that takes XVNML and addes support to already existing game engines; the first one being Unity with XVNML2U. Be sure to keep an eye out for updates.
-
-There will also be a VSCode extension of XVNML coming soon (which is simply just the syntax highlighting). I plan on creating a website dedicated to learning XVNML, Skriptr, adding macros, setting the proxy (target) and mroe. But in the meantime, be sure to support the development of this mark-up language.
-
+["P1-Skriptr-CorrectAnswer"]
+@ There are 50 states that makes up the United States of America.<
+```
+)
