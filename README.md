@@ -126,4 +126,3 @@ Just like what you are seeing now.<
 ["P1-Skriptr-CorrectAnswer"]
 @ There are 50 states that makes up the United States of America.<
 ```
-)
