@@ -59,9 +59,9 @@ By default, you have a total of 28 pre-built tags that can be parsed by the XVNM
 Out of all of these valid tags, Proxy and Source are Root Tags. This means whenever you type your XVNMLObj instance and access the root, it'll either be Proxy or Source, depending on how the file was structured.
 A Proxy file is always your main file, and is always read first. However, a Source is a file that can be used to introduce modularity into your projects. For example, the screenshot below shows that we’re creating a Cast element called Hana, and the source of that data is in “Hana\Hana.cast.xvnml”
 
-![image](https://miro.medium.com/v2/resize:fit:720/format:webp/1*i58PbZYcGJZ62Nph5_JBkg.png)
+![Screenshot 2023-06-25 151133](https://github.com/Miijii-Kaichou/XVNML/assets/46007223/6dafc1c1-4072-4934-9d24-125372b8b734)
 
-![image](https://miro.medium.com/v2/resize:fit:720/format:webp/1*4iQRmnI1JJt4OffM6IGrsg.png)
+![Screenshot 2023-06-25 151258](https://github.com/Miijii-Kaichou/XVNML/assets/46007223/5a2f9c56-0191-4543-a827-64e6e5f50137)
 
 By utilizing Source files, you can reduce the number of lines in your proxy file. It’s one of the most important best practices of using XVNML in your development process.
 
@@ -78,7 +78,9 @@ Once you've created a class that derives from the UserDefined class, you can ass
 
 ### XVNML file as Sources and Resource Referencing
 XVNML files can also be used as sources for other tags. Tag the list of cast members in the CastDefinition tag:
+
 ![image](https://user-images.githubusercontent.com/46007223/217722427-979a6dd9-6e9b-4a67-aab7-1e4565c56f04.png)
+
 Using a configuration file to find out the relative path of your project, you can take the information from one XVNML and embed it into a tag. For example, this is what the information looks like inside "Raven.cast.xvnml":
 
 ![image](https://user-images.githubusercontent.com/46007223/217722755-c759a5d7-cf69-4df4-a4c7-38f3cffeee3b.png)
