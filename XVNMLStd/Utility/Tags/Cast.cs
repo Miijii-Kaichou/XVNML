@@ -8,7 +8,7 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("cast", new[] { typeof(Source), typeof(CastDefinitions) }, TagOccurance.Multiple)]
     public sealed class Cast : TagBase
     {
-        const string _CastDir = @"\Casts\";
+        const string _CastDir = DefaultCastDirectory;
 
         PortraitDefinitions? _portraitDefinitions;
         VoiceDefinitions? _voiceDefinitions;

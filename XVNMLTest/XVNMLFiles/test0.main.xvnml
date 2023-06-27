@@ -1,4 +1,13 @@
 ﻿<proxy name::"test0.main">
+     <keycodeDefinitions name::"_globalInputDef">
+          <keycode name::"_proceed0"     vkey::Mouse0        purpose::PROCEED/>
+          <keycode name::"_proceed1"     vkey::Return       purpose::PROCEED/>
+          <keycode name::"_navUp"       vkey::Up            purpose::NAVIGATE_UP/>
+          <keycode name::"_navDown"     vkey::Down          purpose::NAVIGATE_DOWN/>
+          <keycode name::"_navLeft"     vkey::Left          purpose::NAVIGATE_LEFT/>
+          <keycode name::"_navRight"    vkey::Right         purpose::NAVIGATE_RIGHT/>
+     </keycodeDefinitions>
+
 	<dialogue name::"Hello World">
 		["CL"]
           @ {sts::100|del::1000}We hope that you've enjoyed this demo.<
@@ -7,4 +16,6 @@
           that XVNML and XVNML2U can provide.<
           @ {lindex::false}With that said, logging out!<<
 	</dialogue>
+
+    <dialogue src::"Test/Test.dialogue.xvnml" pathMode::Relative/>
 </proxy>

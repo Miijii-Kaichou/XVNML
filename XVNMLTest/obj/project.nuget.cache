@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "n3VixmXsCObbrjxJOm9PKEsFznSM62VJqofJfHmCqA7S5+d5GhHIPuhtGOK6aAjDeJDkzkOfG++twhVtzWEXqw==",
+  "dgSpecHash": "84ShxKVGQpb1kUkMh7tX0ElIfl56ewblAUn6CpjZfw55VBO+YAQoWpHu5gx0WHoxgihdVgLP/steZksnuO1gdw==",
   "success": true,
-  "projectFilePath": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLTest\\XVNMLTest.csproj",
+  "projectFilePath": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLTest\\XVNMLConsoleAppSample.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

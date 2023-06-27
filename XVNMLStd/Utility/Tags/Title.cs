@@ -7,6 +7,7 @@ namespace XVNML.XVNMLUtility.Tags
         public override void OnResolve(string? fileOrigin)
         {
             base.OnResolve(fileOrigin);
+            value ??= TagName;
         }
     }
 }

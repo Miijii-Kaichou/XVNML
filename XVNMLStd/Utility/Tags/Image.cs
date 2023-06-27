@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using XVNML.Core.IO.Enums;
+using XVNML.Core.Enums;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
 

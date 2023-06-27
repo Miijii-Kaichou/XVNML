@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using XVNML.Core.Enums;
 using XVNML.Core.Extensions;
 using XVNML.Core.Parser;
 
@@ -9,6 +10,8 @@ namespace XVNML.Core.Tags
 {
     public class TagBase : IResolvable
     {
+        protected TagFormRestrictionMode TagFormRestrictionMode { get; } = TagFormRestrictionMode.None;
+
         public string? tagTypeName;
         public string? TagName
         {
@@ -21,6 +24,10 @@ namespace XVNML.Core.Tags
                 }
 
                 return tagTypeName;
+            } protected set
+            {
+                if (value == null) return;
+                tagTypeName = value;
             }
         }
 
@@ -170,7 +177,11 @@ namespace XVNML.Core.Tags
             if (value == null) return default!;
 
             if (typeof(T).IsEnum)
-                return (T)System.Enum.Parse(typeof(T), value?.ToString());
+            {
+                if (Enum.IsDefined(typeof(T), value))
+                    return (T)Enum.Parse(typeof(T), value?.ToString());
+                return default!;
+            }
 
             return (T)Convert.ChangeType(value, typeof(T));
         }

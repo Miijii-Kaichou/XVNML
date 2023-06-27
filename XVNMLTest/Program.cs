@@ -17,7 +17,7 @@ static class Program
 
             Console.OutputEncoding = Encoding.UTF8;
 
-            DialogueScript script = dom.Root.GetElement<Dialogue>("Hello World")?.dialogueOutput!;
+            DialogueScript script = dom.Root.GetElement<Dialogue>("DialogueSourceTest")?.dialogueOutput!;
 
             DialogueWriter.AllocateChannels(1);
             DialogueWriter.OnPrompt![0] += DisplayPrompts;

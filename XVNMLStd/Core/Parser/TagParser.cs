@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using XVNML.Core.Lexer;
 using XVNML.Core.Parser.Enums;
 using XVNML.Core.Tags;
+using XVNML.Utility.Diagnostics;
 
 namespace XVNML.Core.Parser
 {
@@ -148,8 +150,8 @@ namespace XVNML.Core.Parser
                     switch (token?.Type)
                     {
                         case TokenType.Invalid:
-                            Console.WriteLine($"Invalid token: \"{token.Type}\" at Line {token.Line} Position {token.Position}");
-                            break;
+                            Abort($"Invalid token: \"{token.Type}\" at Line {token.Line} Position {token.Position}");
+                            return;
 
                         case TokenType.OpenBracket:
                             //Check for <any_string_of_characters)
@@ -169,14 +171,14 @@ namespace XVNML.Core.Parser
                                     if (_Current.Type != TokenType.Identifier)
                                     {
                                         //TODO: Create ExpectedIdentifierException
-                                        Console.WriteLine($"Expected Identifier at Line {_Current.Line} Position {_Current.Position}");
+                                        Abort($"Expected Identifier at Line {_Current.Line} Position {_Current.Position}");
                                         return;
                                     }
 
                                     //Expect matching name
                                     if (_Current.Text != _topOfStack?.tagTypeName)
                                     {
-                                        Console.WriteLine($"Tag Leveling for {_topOfStack?.tagTypeName} does not match with closing tag " +
+                                        Abort($"Tag Leveling for {_topOfStack?.tagTypeName} does not match with closing tag " +
                                             $"{_Current.Text}");
                                         return;
                                     }
@@ -187,7 +189,7 @@ namespace XVNML.Core.Parser
                                     if (_Current.Type != TokenType.CloseBracket)
                                     {
                                         //TODO: Create ExpectedIdentifierException
-                                        Console.WriteLine($"Expected CloseBracket Line {_Current.Line} Position {_Current.Position}");
+                                        Abort($"Expected CloseBracket Line {_Current.Line} Position {_Current.Position}");
                                         return;
                                     }
 
@@ -295,7 +297,7 @@ namespace XVNML.Core.Parser
                             continue;
 
                         case TokenType.EOF:
-                            Console.WriteLine($"Parsing of XVNML Document now complete.: {fileTarget}");
+                            XVNMLLogger.Log($"Parsing of XVNML Document now complete.: {fileTarget}", this);
                             RunReferenceSolveProcedure();
                             return;
 
@@ -329,7 +331,7 @@ namespace XVNML.Core.Parser
                                     //Expect Identifer
                                     if (Peek(1)?.Type != TokenType.Identifier)
                                     {
-                                        Console.WriteLine($"Reference Error at Line {_Current?.Line} Position {_Current?.Position}: Expected Identifier: {fileTarget}");
+                                        Abort($"Reference Error at Line {_Current?.Line} Position {_Current?.Position}: Expected Identifier: {fileTarget}");
                                         return;
                                     }
                                     Next();
@@ -339,7 +341,7 @@ namespace XVNML.Core.Parser
                                     continue;
                                 }
 
-                                Console.WriteLine($"Invalid assignment to parameter: {parameterName} at Line {_Current?.Line} Position {_Current?.Position}: {fileTarget}");
+                                Abort($"Invalid assignment to parameter: {parameterName} at Line {_Current?.Line} Position {_Current?.Position}: {fileTarget}");
                             }
                             return;
 
@@ -381,6 +383,7 @@ namespace XVNML.Core.Parser
 
         public static void Abort(string? reason)
         {
+            XVNMLLogger.LogError(reason!, null, null);
             throw new Exception($"Parser has aborted. Reason: {reason ?? "Undefined"}");
         }
 

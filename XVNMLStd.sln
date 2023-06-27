@@ -5,7 +5,7 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XVNMLStd", "XVNMLStd\XVNMLStd.csproj", "{863107BF-242E-4D5A-89AB-00BAB6F1110D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XVNMLTest", "XVNMLTest\XVNMLTest.csproj", "{0BED8ABD-29BB-4261-B9AF-937940A6C5CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XVNMLConsoleAppSample", "XVNMLTest\XVNMLConsoleAppSample.csproj", "{0BED8ABD-29BB-4261-B9AF-937940A6C5CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
