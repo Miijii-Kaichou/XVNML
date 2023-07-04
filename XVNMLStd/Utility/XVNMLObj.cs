@@ -68,7 +68,7 @@ namespace XVNML.XVNMLUtility
             }
         }
 
-        public static void Create(string fileTarget, Action<XVNMLObj>? onCreation)
+        public static void Create(string fileTarget, Action<XVNMLObj>? onCreation, bool generateCacheFile = false)
         {
             DefinedTagsCollection.ManifestTagTypes();
             DefinedMacrosCollection.ManifestMacros();
@@ -80,14 +80,13 @@ namespace XVNML.XVNMLUtility
             {
                 Instance = new XVNMLObj(xvnmlParser);
                 Instance!.onDOMCreated = onCreation;
-                GenerateCache(fileTarget);
+                if (generateCacheFile) GenerateCache(fileTarget);
                 Instance.onDOMCreated?.Invoke(Instance);
             });
         }
 
         public static void UseOrCreate(string fileTarget, Action<XVNMLObj?> onCreation)
         {
-
             if (CheckCacheData(fileTarget, out string cachePath))
             {
                 DefinedTagsCollection.ManifestTagTypes();
@@ -119,7 +118,7 @@ namespace XVNML.XVNMLUtility
             {
                 Instance = dom;
                 onCreation?.Invoke(Instance);
-            });
+            }, true);
         }
 
         private static bool CheckCacheData(string fileTarget, out string cachePath)
@@ -133,7 +132,7 @@ namespace XVNML.XVNMLUtility
             return (File.Exists(fullCachePath));
         }
 
-        public static void GenerateCache(string fileTarget)
+        private static void GenerateCache(string fileTarget)
         {
             if (Instance == null) return;
             if (Instance.proxy == null) return;
