@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
 
@@ -9,7 +10,8 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("portrait", typeof(PortraitDefinitions), TagOccurance.Multiple)]
     public sealed class Portrait : TagBase
     {
-        public Image? imageTarget;
+        [JsonProperty] public Image? imageTarget;
+
         public override void OnResolve(string? fileOrigin)
         {
             AllowedParameters = new[]

@@ -1,4 +1,6 @@
-﻿using XVNML.Core.Dialogue;
+﻿using Newtonsoft.Json;
+using System;
+using XVNML.Core.Dialogue;
 using XVNML.Core.Parser;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
@@ -7,31 +9,34 @@ using static XVNML.Constants;
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("dialogue", new[] { typeof(Proxy), typeof(Source), typeof(DialogueGroup) }, TagOccurance.Multiple)]
+    [Serializable()]
     public sealed class Dialogue : TagBase
     {
         const string _DialogueDir = DefaultDialogueDirectory;
 
-        public string? Script { get; private set; }
-        public string? Name { get; private set; }
-        public bool DoNotDetain { get; private set; } = false;
+        [JsonProperty] public string? Script { get; private set; }
+        [JsonProperty] public string? Name { get; private set; }
+        [JsonProperty] public bool DoNotDetain { get; private set; } = false;
 
-        public Cast[]? includedCasts;
-        public DialogueScript? dialogueOutput;
+        [JsonProperty] public Cast[]? includedCasts;
+        [JsonProperty] public DialogueScript? dialogueOutput;
 
         internal SkriptrParser? parserOrigin;
 
         public override void OnResolve(string? fileOrigin)
         {
+
             AllowedParameters = new[]
             {
                 PathRelativityParameterString,
-                SourceParameterString
+                SourceParameterString,
             };
 
             AllowedFlags = new[]
             {
                 DontDetainFlagString,
-                AllowOverrideFlagString
+                AllowOverrideFlagString,
+                TextSpeedControlledExternallyFlagString
             };
 
             base.OnResolve(fileOrigin);

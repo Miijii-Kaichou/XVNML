@@ -1,4 +1,5 @@
-﻿using XVNML.Core.Enums;
+﻿using Newtonsoft.Json;
+using XVNML.Core.Enums;
 using XVNML.Core.Tags;
 
 using static XVNML.Constants;
@@ -8,12 +9,12 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("proxy", TagOccurance.PragmaOnce)]
     public sealed class Proxy : TagBase
     {
-        public string? engine;
-        public string? target;
-        public TargetLanguage lang;
-        public uint? screenWidth;
-        public uint? screenHeight;
-        public string? aspectRatio;
+        [JsonProperty] public string? engine;
+        [JsonProperty] public string? target;
+        [JsonProperty] public TargetLanguage lang;
+        [JsonProperty] public uint? screenWidth;
+        [JsonProperty] public uint? screenHeight;
+        [JsonProperty] public string? aspectRatio;
 
         public override void OnResolve(string? fileOrigin)
         {

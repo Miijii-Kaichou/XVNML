@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Text;
 using XVNML.Core.Tags;
@@ -10,9 +11,10 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("copyright", typeof(Metadata), TagOccurance.PragmaOnce)]
     public sealed class Copyright : TagBase
     {
-        public string? fullCopyrightString;
-        public int copyrightYear;
-        public string? copyrightOwner;
+        [JsonProperty] public string? fullCopyrightString;
+        [JsonProperty] public int copyrightYear;
+        [JsonProperty] public string? copyrightOwner;
+
         public override void OnResolve(string? fileOrigin)
         {
             AllowedParameters = new[]

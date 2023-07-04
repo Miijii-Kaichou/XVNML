@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace XVNML.Core.Dialogue.Structs
 {
     internal struct MacroBlockInfo
     {
-        internal int blockPosition;
-        internal (string macroSymbol, (object, Type)[] args)[] macroCalls;
+        [JsonProperty] internal int blockPosition;
+        [JsonProperty] internal (string macroSymbol, (object, Type)[] args)[] macroCalls;
         internal void Initialize(int size)
         {
             macroCalls = new (string macroSymbol, (object, Type)[] args)[size];

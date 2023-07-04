@@ -33,6 +33,10 @@ namespace XVNML.Utility.Dialogue
         public static DialogueWriterCallback?[]? OnPrompt;
         public static DialogueWriterCallback?[]? OnPromptResonse;
 
+        // Blocking
+        public static DialogueWriterCallback?[]? OnChannelBlock;
+        public static DialogueWriterCallback?[]? OnChannelUnblock;
+
         public static int TotalProcesses => WriterProcesses!.Length;
         public static Stack<string>? ResponseStack { get; private set; } = new Stack<string>();
 
@@ -81,6 +85,9 @@ namespace XVNML.Utility.Dialogue
 
             OnPrompt = new DialogueWriterCallback[totalChannels];
             OnPromptResonse = new DialogueWriterCallback[totalChannels];
+
+            OnChannelBlock = new DialogueWriterCallback[totalChannels];
+            OnChannelUnblock = new DialogueWriterCallback[totalChannels];
 
             ProcessTimers = new Timer[totalChannels];
 
@@ -166,6 +173,7 @@ namespace XVNML.Utility.Dialogue
             lock (process.processLock)
             {
                 IsChannelBlocked![process.ID] = true;
+                OnChannelBlock![process.ID]?.Invoke(process);
             }
         }
 
@@ -174,6 +182,7 @@ namespace XVNML.Utility.Dialogue
             lock (process.processLock)
             {
                 IsChannelBlocked![process.ID] = false;
+                OnChannelUnblock![process.ID]?.Invoke(process);
             }
         }
 

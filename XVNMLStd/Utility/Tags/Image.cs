@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Newtonsoft.Json;
+using System.IO;
 using XVNML.Core.Enums;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
@@ -10,9 +11,9 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("image", typeof(ImageDefinitions), TagOccurance.Multiple)]
     public sealed class Image : TagBase
     {
-        internal DirectoryRelativity relativity;
-        internal DirectoryInfo? dirInfo;
-        internal byte[]? data;
+        [JsonProperty] internal DirectoryRelativity relativity;
+        [JsonProperty] internal string? imagePath;
+        [JsonProperty] internal byte[]? data;
 
         public override void OnResolve(string? fileOrigin)
         {
@@ -38,21 +39,21 @@ namespace XVNML.XVNMLUtility.Tags
             var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + "Images\\" + src : src;
             if (pathFlow == string.Empty) return;
 
-            dirInfo = new DirectoryInfo(pathFlow);
+            imagePath = new DirectoryInfo(pathFlow).FullName;
             ProcessData();
         }
 
         public override string ToString()
         {
-            return dirInfo == null ? string.Empty : dirInfo!.FullName;
+            return imagePath == null ? string.Empty : imagePath!;
         }
 
         private void ProcessData()
         {
-            if (dirInfo == null) return;
+            if (imagePath == null) return;
             if (File.Exists(GetImageTargetPath()) == false)
             {
-                XVNMLLogger.LogError($"The path {dirInfo.FullName} doesn't exist.", this, this);
+                XVNMLLogger.LogError($"The path {imagePath} doesn't exist.", this, this);
                 return;
             }
             data = File.ReadAllBytes(GetImageTargetPath());
@@ -60,6 +61,6 @@ namespace XVNML.XVNMLUtility.Tags
 
         public byte[]? GetImageData() { return data; }
 
-        public string? GetImageTargetPath() { return dirInfo?.FullName; }
+        public string? GetImageTargetPath() { return imagePath; }
     }
 }

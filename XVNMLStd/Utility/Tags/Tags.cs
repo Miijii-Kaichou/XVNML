@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Linq;
 using XVNML.Core.Tags;
 
@@ -9,7 +10,7 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("tags", typeof(Metadata), TagOccurance.PragmaOnce)]
     public sealed class Tags : TagBase
     {
-        public string[]? list;
+        [JsonProperty] public string[]? list;
         public override void OnResolve(string? fileOrigin)
         {
             AllowedParameters = new[] { ListParameterString };

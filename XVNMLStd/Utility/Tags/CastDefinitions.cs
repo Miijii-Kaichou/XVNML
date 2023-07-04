@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Newtonsoft.Json;
+using System.Linq;
 using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
@@ -6,7 +7,9 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("castDefinitions", new[] { typeof(Proxy), typeof(Source) }, TagOccurance.PragmaOnce)]
     public sealed class CastDefinitions : TagBase
     {
-        public Cast[]? CastMembers => Collect<Cast>();
+        [JsonProperty] private Cast[]? _castMembers;
+        public Cast[]? CastMembers => _castMembers;
+
         public Cast? this[string name]
         {
             get { return GetCast(name); }
@@ -15,6 +18,7 @@ namespace XVNML.XVNMLUtility.Tags
         public override void OnResolve(string? fileOrigin)
         {
             base.OnResolve(fileOrigin);
+            _castMembers = Collect<Cast>();
         }
 
         public Cast? GetCast(string name) => CastMembers.First(cast => cast.TagName?.Equals(name) == true);

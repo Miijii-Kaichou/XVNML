@@ -16,3 +16,4 @@ E:\Documents\Repositories\C#\XVNML\XVNMLTest\obj\Release\net7.0\refint\XVNMLCons
 E:\Documents\Repositories\C#\XVNML\XVNMLTest\obj\Release\net7.0\XVNMLConsoleAppSample.pdb
 E:\Documents\Repositories\C#\XVNML\XVNMLTest\obj\Release\net7.0\XVNMLConsoleAppSample.genruntimeconfig.cache
 E:\Documents\Repositories\C#\XVNML\XVNMLTest\obj\Release\net7.0\ref\XVNMLConsoleAppSample.dll
+E:\Documents\Repositories\C#\XVNML\XVNMLTest\bin\Release\net7.0\Newtonsoft.Json.dll

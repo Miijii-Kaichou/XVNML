@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using XVNML.Core.Tags;
 
 using static XVNML.Constants;
@@ -8,7 +9,7 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("dialogueGroup", typeof(Proxy), TagOccurance.Multiple)]
     public sealed class DialogueGroup : TagBase
     {
-        public bool IsActingAsSceneController { get; private set; }
+        [JsonProperty] public bool IsActingAsSceneController { get; private set; }
 
         public Dialogue? this[int index]
         {

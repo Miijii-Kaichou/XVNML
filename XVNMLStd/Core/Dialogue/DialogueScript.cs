@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace XVNML.Core.Dialogue
 {
@@ -8,14 +9,13 @@ namespace XVNML.Core.Dialogue
     /// </summary>
     public sealed class DialogueScript
     {
-        public SkripterLine[] Lines => _lineList.ToArray();
-        private readonly List<SkripterLine> _lineList = new List<SkripterLine>();
+        [JsonProperty] public List<SkripterLine>? Lines { get; set; } = new List<SkripterLine>();
 
         public SkripterLine GetLine(int index) => Lines?[index]!;
         public void ComposeNewLine(SkripterLine? line)
         {
             if (line == null) return;
-            _lineList.Add(line);
+            Lines.Add(line);
         }
     }
 }

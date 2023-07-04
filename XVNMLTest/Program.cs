@@ -10,14 +10,14 @@ static class Program
     private static bool finished = false;
     static void Main(string[] args)
     {
-        XVNMLObj.Create(@"E:\Documents\Repositories\C#\XVNML\XVNMLTest\XVNMLFiles\test0.main.xvnml", dom =>
+        XVNMLObj.UseOrCreate(@"E:\Documents\Repositories\C#\XVNML\XVNMLTest\XVNMLFiles\test0.main.xvnml", dom =>
         {
             if (dom == null) return;
             if (dom.Root == null) return;
 
             Console.OutputEncoding = Encoding.UTF8;
 
-            DialogueScript script = dom.Root.GetElement<Dialogue>("DialogueSourceTest")?.dialogueOutput!;
+            DialogueScript script = dom.Root.GetElement<Dialogue>("Hello World")?.dialogueOutput!;
 
             DialogueWriter.AllocateChannels(1);
             DialogueWriter.OnPrompt![0] += DisplayPrompts;

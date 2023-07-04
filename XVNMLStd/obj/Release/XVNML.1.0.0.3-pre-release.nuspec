@@ -12,7 +12,9 @@
     <copyright>2019 Enjyoii</copyright>
     <repository url="https://github.com/Miijii-Kaichou/XVNML" />
     <dependencies>
-      <group targetFramework=".NETStandard2.1" />
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="Newtonsoft.Json" version="13.0.3" exclude="Build,Analyzers" />
+      </group>
     </dependencies>
   </metadata>
   <files>

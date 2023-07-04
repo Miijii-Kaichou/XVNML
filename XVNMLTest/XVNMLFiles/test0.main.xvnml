@@ -1,4 +1,4 @@
-﻿<proxy name::"test0.main">
+﻿<proxy name::"test0.main" screenWidth::1920 screenHeight::1080>
      <keycodeDefinitions name::"_globalInputDef">
           <keycode name::"_proceed0"     vkey::Mouse0        purpose::PROCEED/>
           <keycode name::"_proceed1"     vkey::Return       purpose::PROCEED/>
@@ -8,13 +8,40 @@
           <keycode name::"_navRight"    vkey::Right         purpose::NAVIGATE_RIGHT/>
      </keycodeDefinitions>
 
+     <castDefinitions>
+          <cast name::"Hana" src::"Hana\Hana.cast.xvnml"/>
+     </castDefinitions>
+
 	<dialogue name::"Hello World">
+        @ {sts::100}I honestly have no idea why I can't read my elements inside Unity.<
+        @ Today, our job is to figure that out.<
+        @ Because if I can get caching to work, then it's going to greatly improve
+        perform, especially when you create a stand-alone build of the game.<
+        @ So without further ado, let's begin the test.<
+        @ {set_text_speed::40}Welcome to XVNML2U!<
+        @ This package demonstrates the capabilities in which the XVNML{space}
+        Class Library is capable of{delay::500|clr}when used with the Unity Game Engine.<
+        @ What you see here{delay::750} is a normal dialogue.<
+        @ And {insert::"THIS"|delay::1000} is a dialogue with {set_text_speed::60} a 
+        looooooooooooooooooooooooooooooooooooooooooooooooooooot of {set_text_speed::30}charisma!!!!<
+        @ {set_text_speed::40}And with a normal XVNML Dialogue Control component, you can run whatever 
+        dialogue you want.<
+        @ This is just a sample of what XVNML can do.<
+        @ XVNML is a powerful tool with an EMPHASIS in story telling.<
+        @ And we're starting our journey off by integrating XVNML to Unity 
+        {paren}hence "XVNML2U"{paren_end}.<
+        @ We're very excited to see how you'll put this tool to the ultimate test.<
+        ?  What's boning on?>>
+        (
+            ("Nothing")>
+                @  I see.<<
+        )
 		["CL"]
-          @ {sts::100|del::1000}We hope that you've enjoyed this demo.<
-          @ Please consider loading the other Unity Scenes to 
-          get a more in-depth explanation on the different tools and features
-          that XVNML and XVNML2U can provide.<
-          @ {lindex::false}With that said, logging out!<<
+        @ {sts::100|del::1000}We hope that you've enjoyed this demo.<
+        @ Please consider loading the other Unity Scenes to 
+        get a more in-depth explanation on the different tools and features
+        that XVNML and XVNML2U can provide.<
+        @ {lindex::false}With that said, logging out!<<
 	</dialogue>
 
     <dialogue src::"Test/Test.dialogue.xvnml" pathMode::Relative/>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,42 +14,43 @@ namespace XVNML.Core.Dialogue
 {
     internal struct LineDataInfo
     {
-        internal int lineIndex;
-        internal int returnPoint;
-        internal bool isPartOfResponse;
-        internal string? fromResponse;
-        internal SkripterLine? parentLine;
-        internal bool isClosingLine;
-        internal string? responseString;
+        [JsonProperty] internal int lineIndex;
+        [JsonProperty] internal int returnPoint;
+        [JsonProperty] internal bool isPartOfResponse;
+        [JsonProperty] internal string? fromResponse;
+        [JsonProperty] internal SkripterLine? parentLine;
+        [JsonProperty] internal bool isClosingLine;
+        [JsonProperty] internal string? responseString;
 
         public DialogueLineMode Mode { get; set; }
     }
 
     public sealed class SkripterLine
     {
+        
         private static SkripterLine? Instance;
 
         internal string? lastAddedResponse;
-        internal LineDataInfo data;
+        [JsonProperty] internal LineDataInfo data;
         internal Stack<string> LastAddedResponseStack = new Stack<string>();
 
         private readonly StringBuilder _ContentStringBuilder = new StringBuilder();
-        public string? Content { get; private set; }
-        public Dictionary<string, (int sp, int rp)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
-        public DialogueLineMode Mode => data.Mode;
+        [JsonProperty] public string? Content { get; private set; }
+        [JsonProperty] public Dictionary<string, (int sp, int rp)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
+        [JsonProperty] public DialogueLineMode Mode => data.Mode;
 
         // Unique Tag
-        internal string? TaggedAs = string.Empty;
+        [JsonProperty] internal string? TaggedAs = string.Empty;
 
         // Scene Data
-        internal SceneInfo? SceneLoadInfo { get; set; }
+        [JsonProperty] internal SceneInfo? SceneLoadInfo { get; set; }
 
         // Cast Data
-        internal CastMemberSignature? SignatureInfo { get; set; }
-        internal CastInfo? InitialCastInfo { get; set; }
+        [JsonProperty] internal CastMemberSignature? SignatureInfo { get; set; }
+        [JsonProperty] internal CastInfo? InitialCastInfo { get; set; }
 
         // Macro Data
-        internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
+        [JsonProperty] internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
         internal Action? onReturnPointCorrection;
 
         internal void ReadPosAndExecute(DialogueWriterProcessor process)

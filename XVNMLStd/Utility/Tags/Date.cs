@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Globalization;
 using XVNML.Core.Tags;
 
@@ -9,7 +10,7 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("date", typeof(Metadata), TagOccurance.PragmaOnce)]
     public sealed class Date : TagBase
     {
-        public DateTime date;
+        [JsonProperty] public DateTime date;
         public override void OnResolve(string? fileOrigin)
         {
             AllowedParameters = new[] {

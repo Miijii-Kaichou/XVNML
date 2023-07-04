@@ -237,7 +237,7 @@ namespace XVNML.Core.Dialogue
                 IsPaused = false,
             };
 
-            var reversedList = input.Lines.Reverse();
+            var reversedList = input.Lines?.ToArray().Reverse();
 
             for (int i = 0; i < reversedList.Count(); i++)
             {

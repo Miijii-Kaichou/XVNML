@@ -24,6 +24,7 @@
 
         internal const string ActAsSceneControllerFlagString = "actAsSceneController";
         internal const string AllowOverrideFlagString = "allowOverride";
+        internal const string TextSpeedControlledExternallyFlagString = "textSpeedControlledExternally";
         internal const string DontDetainFlagString = "dontDetain";
 
         internal const string DefaultCastDirectory = @"\Casts\";
