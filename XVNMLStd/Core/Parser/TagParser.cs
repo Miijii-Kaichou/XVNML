@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using XVNML.Core.Lexer;
 using XVNML.Core.Parser.Enums;
 using XVNML.Core.Tags;
@@ -67,8 +68,8 @@ namespace XVNML.Core.Parser
             if (fileTarget == null)
                 throw new NullReferenceException("FileTarget cannot be null when parsing.");
 
-            _tokenizer = new Tokenizer(fileTarget, TokenizerReadState.IO, out _conflict);
-
+            _tokenizer = new Tokenizer(fileTarget, TokenizerReadState.IO);
+            _conflict = _tokenizer.GetConflictState();
 
             if (_conflict)
             {
@@ -82,29 +83,28 @@ namespace XVNML.Core.Parser
 
         private SyntaxToken? Peek(int offset, bool includeSpaces = false)
         {
-            if (_tokenizer == null) return null;
-            try
-            {
-                var token = _tokenizer[_position + offset];
+            if (_tokenizer == null)
+                return null;
 
-                while (true)
+            var length = _tokenizer.Length;
+            var index = _position + offset;
+
+            while (index < length)
+            {
+                var token = _tokenizer[index];
+
+                if ((token.Type == TokenType.WhiteSpace && !includeSpaces) ||
+                    token.Type == TokenType.SingleLineComment ||
+                    token.Type == TokenType.MultilineComment)
                 {
-                    token = _tokenizer[_position + offset] ?? default;
-
-                    if ((token!.Type == TokenType.WhiteSpace && includeSpaces == false) ||
-                        token.Type == TokenType.SingleLineComment ||
-                        token.Type == TokenType.MultilineComment)
-                    {
-                        _position++;
-                        continue;
-                    }
-                    return token;
+                    index++;
+                    continue;
                 }
+
+                return token;
             }
-            catch
-            {
-                return _tokenizer[_tokenizer.Length];
-            }
+
+            return _tokenizer[length];
         }
 
         private SyntaxToken? Next()

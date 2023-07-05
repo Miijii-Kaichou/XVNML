@@ -15,7 +15,7 @@
 	<dialogue name::"Hello World">
         @ {sts::100}I honestly have no idea why I can't read my elements inside Unity.<
         @ Today, our job is to figure that out.<
-        @ Because if I can get caching to work, then it's going to greatly improve
+        @ Because if I can get caching to work, then it's going to greatly improve 
         perform, especially when you create a stand-alone build of the game.<
         @ So without further ado, let's begin the test.<
         @ {set_text_speed::40}Welcome to XVNML2U!<

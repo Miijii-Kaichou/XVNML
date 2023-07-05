@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using XVNML.Core.Extensions;
 
 namespace XVNML.Core.Lexer
 {
@@ -80,57 +83,40 @@ namespace XVNML.Core.Lexer
             }
         }
 
-        private bool _isThereConflict = false;
+        private bool WasThereConflict = false;
 
         internal List<SyntaxToken> definedTokens = new List<SyntaxToken>();
 
-        public Tokenizer(string sourceText, TokenizerReadState state, out bool conflictResult)
+        public Tokenizer(string sourceText, TokenizerReadState state)
         {
-
-            try
+            switch (state)
             {
-                switch (state)
-                {
-                    case TokenizerReadState.Local:
-                        SourceText = sourceText;
-                        break;
-
-                    case TokenizerReadState.IO:
-                        //Read the file only once. This will later be replace by an IO class that will
-                        //hold the fileTarget's contents prior to Tokenizer and Parser initiation
-                        using (StreamReader sr = new StreamReader(sourceText))
-                        {
-                            SourceText = sr.ReadToEnd();
-                        }
-                        break;
-                }
-
-                //Now tokenize
-                Tokenize(out conflictResult);
-            }
-            catch
-            {
-                conflictResult = true;
-                return;
-            }
-        }
-
-        public void Tokenize(out bool conflictResult)
-        {
-            while (true)
-            {
-                var token = NextToken();
-                definedTokens.Add(token);
-                if (token.Type == TokenType.EOF || _isThereConflict)
-                {
-                    conflictResult = _isThereConflict;
+                case TokenizerReadState.Local:
+                    SourceText = sourceText;
                     break;
-                }
 
-                //Uncomment to debug
-                //Console.WriteLine($"{token.Type}: '{token.Text}'{(token.Value != null ? $" {token.Value}" : string.Empty)}");
+                case TokenizerReadState.IO:
+                    //Read the file only once. This will later be replace by an IO class that will
+                    //hold the fileTarget's contents prior to Tokenizer and Parser initiation
+                    var data = File.ReadLines(sourceText, System.Text.Encoding.UTF8);
+                    SourceText = data.JoinStringArray();
+                    break;
+            }
+
+           Tokenize();
+        }
+
+        public void Tokenize()
+        {
+            SyntaxToken token = new SyntaxToken(default, -1, -1, null, null);
+            while (token.Type != TokenType.EOF && !WasThereConflict)
+            {
+                token = NextToken();
+                definedTokens.Add(token);
             }
         }
+
+        public bool GetConflictState() => WasThereConflict;
 
         public void Next()
         {
@@ -366,14 +352,8 @@ namespace XVNML.Core.Lexer
             if (_Current == '+' || _Current == '＋') return new SyntaxToken(TokenType.Plus, _Line, _position++, "_", null);
             if (_Current == '=' || _Current == '＝') return new SyntaxToken(TokenType.Equal, _Line, _position++, "_", null);
 
-            _isThereConflict = true;
+            WasThereConflict = true;
             return new SyntaxToken(TokenType.Invalid, _Line, _position++, SourceText?.Substring(_position - 1, 1), null);
-        }
-
-        bool CheckIfEscape(char symbol, out bool result)
-        {
-            result = symbol == '\\';
-            return result;
         }
 
         bool Peek(int position, string stringSet)

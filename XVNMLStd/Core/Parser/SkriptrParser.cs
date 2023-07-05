@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Dialogue.Structs;
@@ -41,7 +42,7 @@ namespace XVNML.Core.Parser
         private static Stack<SkripterLine> ResolveStack = new Stack<SkripterLine>();
         private static bool ResolvePending;
 
-        public SkriptrParser(string dialogueSource, out DialogueScript output)
+        public SkriptrParser(string dialogueSource, out DialogueScript? output)
         {
             _position = -1;
             _Conflict = false;
@@ -51,18 +52,22 @@ namespace XVNML.Core.Parser
             CurrentMode = DialogueParserMode.Dialogue;
             Source = dialogueSource;
 
-            output = ParseDialogue() ?? default!;
+            output = ParseDialogue();
         }
 
         private DialogueScript? ParseDialogue()
         {
-            Tokenizer = new Tokenizer(Source, TokenizerReadState.Local, out _Conflict);
-            return CreateDialogueOutput();
+            Tokenizer = new Tokenizer(Source, TokenizerReadState.Local);
+            _Conflict = Tokenizer.GetConflictState();
+            if (_Conflict) return null;
+            return  CreateDialogueOutput();
         }
 
         private DialogueScript? CreateDialogueOutput()
         {
             if (Tokenizer == null) return null;
+
+            var tokenizer = Tokenizer;
 
             DialogueScript output = new DialogueScript();
             SkripterLine line = new SkripterLine();
@@ -80,7 +85,7 @@ namespace XVNML.Core.Parser
             bool isAttachingTagToLine = false;
             ResolvePending = false;
 
-            for (int i = 0; i < Tokenizer.Length; i++)
+            for (int i = 0; i < tokenizer.Length; i++)
             {
                 if (_Conflict) return null;
 

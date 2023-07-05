@@ -51,5 +51,6 @@ namespace XVNML.Core.Lexer
         DoubleCloseBracket = 1L << 41,
         DoubleOpenBracket = 1L << 42,
         AnonymousCastSymbol = 1L << 43,
+        Underscore = 562949953421313,
     }
 }
