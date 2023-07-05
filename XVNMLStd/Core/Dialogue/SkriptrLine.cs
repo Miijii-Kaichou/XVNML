@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,58 +7,61 @@ using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
 using XVNML.Core.Macros;
+using XVNML.Utility.Diagnostics;
 using XVNML.Utility.Macros;
 
 namespace XVNML.Core.Dialogue
 {
     internal struct LineDataInfo
     {
-        internal int lineIndex;
-        internal int returnPoint;
-        internal bool isPartOfResponse;
-        internal string? fromResponse;
-        internal SkripterLine? parentLine;
-        internal bool isClosingLine;
-        internal string? responseString;
+        [JsonProperty] internal int lineIndex;
+        [JsonProperty] internal int returnPoint;
+        [JsonProperty] internal bool isPartOfResponse;
+        [JsonProperty] internal string? fromResponse;
+        [JsonProperty] internal SkripterLine? parentLine;
+        [JsonProperty] internal bool isClosingLine;
+        [JsonProperty] internal string? responseString;
 
         public DialogueLineMode Mode { get; set; }
     }
 
     public sealed class SkripterLine
     {
+        
         private static SkripterLine? Instance;
 
         internal string? lastAddedResponse;
-        internal LineDataInfo data;
+        [JsonProperty] internal LineDataInfo data;
         internal Stack<string> LastAddedResponseStack = new Stack<string>();
 
         private readonly StringBuilder _ContentStringBuilder = new StringBuilder();
-        public string? Content { get; private set; }
-        public Dictionary<string, (int sp, int rp)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
-        public DialogueLineMode Mode => data.Mode;
+        [JsonProperty] public string? Content { get; private set; }
+        [JsonProperty] public Dictionary<string, (int sp, int rp)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
+        [JsonProperty] public DialogueLineMode Mode => data.Mode;
 
         // Unique Tag
-        internal string? TaggedAs = string.Empty;
+        [JsonProperty] internal string? TaggedAs = string.Empty;
 
         // Scene Data
-        internal SceneInfo? SceneLoadInfo { get; set; }
+        [JsonProperty] internal SceneInfo? SceneLoadInfo { get; set; }
 
         // Cast Data
-        internal CastMemberSignature? SignatureInfo { get; set; }
-        internal CastInfo? InitialCastInfo { get; set; }
+        [JsonProperty] internal CastMemberSignature? SignatureInfo { get; set; }
+        [JsonProperty] internal CastInfo? InitialCastInfo { get; set; }
 
         // Macro Data
-        internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
+        [JsonProperty] internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
         internal Action? onReturnPointCorrection;
+        private Tokenizer _sharedTokenizer;
 
         internal void ReadPosAndExecute(DialogueWriterProcessor process)
         {
             lock (process.processLock)
             {
                 macroInvocationList
-                .Where(macro => macro.blockPosition.Equals(process.linePosition))
+                .Where(macro => macro.blockPosition.Equals(process.cursorIndex))
                 .ToList()
-                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.linePosition }));
+                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.cursorIndex }));
             }
         }
 
@@ -76,7 +80,7 @@ namespace XVNML.Core.Dialogue
             while (LastAddedResponseStack.Count > 0)
             {
                 var response = LastAddedResponseStack.Pop();
-                var sp = PromptContent[response].Item1;
+                var sp = PromptContent[response].sp;
                 PromptContent[response] = (sp, index);
             }
             data.isPartOfResponse = true;
@@ -140,8 +144,9 @@ namespace XVNML.Core.Dialogue
         {
             // Use this as reference
             // @Me Hi!>Smile>000 {clr}How's it going?<<
+            _sharedTokenizer = new Tokenizer(stringBuilder.ToString(), TokenizerReadState.Local);
 
-            Tokenizer tokenizer = new Tokenizer(stringBuilder.ToString(), TokenizerReadState.Local, out bool conflictResult);
+            bool conflictResult = _sharedTokenizer.GetConflictState();
 
             const string ExpressionCode = "E::";
             const string VoiceCode = "V::";
@@ -153,7 +158,7 @@ namespace XVNML.Core.Dialogue
 
             CastEvaluationMode mode = CastEvaluationMode.Expression;
 
-            for (int i = 0; i < tokenizer.Length; i++)
+            for (int i = 0; i < _sharedTokenizer.Length; i++)
             {
                 if (conflictResult) return;
 
@@ -246,32 +251,18 @@ namespace XVNML.Core.Dialogue
 
             SyntaxToken? Peek(int offset, bool includeSpaces = false)
             {
-                if (tokenizer == null) return null;
-                try
-                {
-                    var token = tokenizer[_position + offset];
+                if (_sharedTokenizer == null) return null;
+                var index = _position + offset;
 
-                    while (true)
-                    {
-                        token = tokenizer[_position + offset];
+                var filteredTokens = _sharedTokenizer.definedTokens.Skip(index)
+                    .Where(token =>
+                        (includeSpaces || token?.Type != TokenType.WhiteSpace) &&
+                        token?.Type != TokenType.SingleLineComment &&
+                        token?.Type != TokenType.MultilineComment);
 
-                        if ((token?.Type == TokenType.WhiteSpace && includeSpaces == false) ||
-                            token?.Type == TokenType.SingleLineComment ||
-                            token?.Type == TokenType.MultilineComment)
-                        {
-                            _position++;
-                            continue;
-                        }
-
-                        return token;
-                    }
-
-                }
-                catch
-                {
-                    return tokenizer[tokenizer.Length];
-                }
+                return filteredTokens.FirstOrDefault();
             }
+
 
             SyntaxToken? Next()
             {
@@ -309,55 +300,50 @@ namespace XVNML.Core.Dialogue
 
             Instance = this;
 
-            Tokenizer tokenizer;
             MacroBlockInfo newBlock = new MacroBlockInfo();
 
             var pos = 0;
             var finished = false;
             var macroCount = 0;
 
-
-            while (finished == false)
+            while (!finished)
             {
                 finished = Content[position + length] == '}';
                 length++;
             }
-            var blockString = Content.Substring(position, length);
+            var blockString = Content[position..(position+length)];
             var macrosTotal = blockString.Split('|').Length;
 
-            tokenizer = new Tokenizer(blockString, TokenizerReadState.Local, out bool conflict);
+            _sharedTokenizer = new Tokenizer(blockString, TokenizerReadState.Local);
+            bool conflict = _sharedTokenizer.GetConflictState();
+
             if (conflict) return;
+
             finished = false;
             newBlock.Initialize(macrosTotal);
             newBlock.SetPosition(position);
             TokenType? expectingType = TokenType.Identifier;
 
             string? macroName = null;
-            List<(object, Type)> macroArgs = new List<(object, Type)>();
+            List<(object value, Type type)> macroArgs = new List<(object, Type)>();
             bool multiArgs = false;
-            while (finished == false)
+            while (!finished)
             {
-                macroInvocationList ??= new List<MacroBlockInfo>();
-
                 Next();
-                SyntaxToken? currentToken = tokenizer[pos];
+                SyntaxToken? currentToken = _sharedTokenizer[pos];
 
                 if (currentToken?.Type == TokenType.WhiteSpace)
                     continue;
 
-                if (expectingType.Value.HasFlag(currentToken?.Type) == false) return;
+                if (!expectingType.Value.HasFlag(currentToken?.Type))
+                    return;
 
                 switch (currentToken?.Type)
                 {
                     case TokenType.Identifier:
-                        // If we don't have a name
-                        // be sure we add that.
                         if (macroName == null)
                         {
                             macroName = currentToken.Text;
-
-                            // We're now expecting a double colon after this.
-                            // or a closed curly bracket
                             expectingType = TokenType.DoubleColon |
                                             TokenType.CloseCurlyBracket |
                                             TokenType.Line;
@@ -366,7 +352,6 @@ namespace XVNML.Core.Dialogue
 
                         var identifierType = typeof(object);
 
-                        //Otherwise, it could be interpreted as an Enum or Flag
                         if (currentToken.Text?.ToLower() == "true" ||
                             currentToken.Text?.ToLower() == "false")
                         {
@@ -375,21 +360,16 @@ namespace XVNML.Core.Dialogue
 
                         macroArgs.Add((currentToken?.Text!, identifierType));
 
-                        // Expect a comma or ) if it's multi
                         if (multiArgs)
                         {
                             expectingType = TokenType.CloseParentheses |
-                                                      TokenType.Comma;
+                                            TokenType.Comma;
                             continue;
                         }
                         expectingType = TokenType.CloseCurlyBracket |
                                         TokenType.Line;
                         continue;
 
-                    // If this was successful,
-                    // our expecting type is either
-                    // a number, a string, or an open paranthesis
-                    // (which denotes a macro with multiple arguments)
                     case TokenType.DoubleColon:
                         expectingType = TokenType.Number |
                                         TokenType.String |
@@ -398,9 +378,6 @@ namespace XVNML.Core.Dialogue
                                         TokenType.OpenParentheses;
                         continue;
 
-                    // If we encounter (, we have a macro with
-                    // multiple args.
-                    // Expect a number, string, or identifier
                     case TokenType.OpenParentheses:
                         multiArgs = true;
                         expectingType = TokenType.Number |
@@ -409,30 +386,18 @@ namespace XVNML.Core.Dialogue
                                         TokenType.Identifier;
                         continue;
 
-                    // Check if we're multiArgs
-                    // If we're not, abort.
-                    // Otherise, expect a number,
-                    // a string, or an identifier
                     case TokenType.Comma:
-                        if (multiArgs == false) return;
+                        if (!multiArgs)
+                            return;
                         expectingType = TokenType.Number |
                                         TokenType.String |
                                         TokenType.EmptyString |
                                         TokenType.Identifier;
                         continue;
 
-                    // The collection of multiple
-                    // arguments is complete of this macro.
-                    // Expect a } or a | next;
-                    case TokenType.CloseParentheses:
-                        expectingType = TokenType.CloseCurlyBracket |
-                                        TokenType.Line;
-                        continue;
-
-                    // There are more macros in this block
-                    // Always expect an Identifier
                     case TokenType.Line:
-                        if (macroName == null) return;
+                        if (macroName == null)
+                            return;
 
                         expectingType = TokenType.Identifier;
                         PopulateBlock(newBlock, macroCount, macroName, macroArgs);
@@ -442,7 +407,6 @@ namespace XVNML.Core.Dialogue
                         macroCount++;
                         continue;
 
-                    // We are now done with this block
                     case TokenType.CloseCurlyBracket:
                         PopulateBlock(newBlock, macroCount, macroName, macroArgs);
                         macroInvocationList.Add(newBlock);
@@ -461,7 +425,6 @@ namespace XVNML.Core.Dialogue
                                             TokenType.Comma;
                             continue;
                         }
-                        //Otherwise, it could be interpreted as an Enum or Flag
                         expectingType = TokenType.CloseCurlyBracket |
                                         TokenType.Line;
                         continue;
@@ -474,13 +437,11 @@ namespace XVNML.Core.Dialogue
                                             TokenType.Comma;
                             continue;
                         }
-                        //Otherwise, it could be interpreted as an Enum or Flag
                         expectingType = TokenType.CloseCurlyBracket |
                                         TokenType.Line;
                         continue;
 
                     case TokenType.EmptyString:
-                        //Otherwise, it could be interpreted as an Enum or Flag
                         macroArgs.Add((currentToken?.Text!, typeof(string)));
                         if (multiArgs)
                         {
@@ -491,6 +452,7 @@ namespace XVNML.Core.Dialogue
                         expectingType = TokenType.CloseCurlyBracket |
                                         TokenType.Line;
                         continue;
+
                     default:
                         break;
                 }
@@ -503,12 +465,12 @@ namespace XVNML.Core.Dialogue
         {
             if (macroSymbol == null)
             {
-                throw new ArgumentNullException(macroSymbol, "There was no macro symbol present");
+                throw new ArgumentNullException(nameof(macroSymbol), "There was no macro symbol present.");
             }
 
-            if (DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == false)
+            if (!DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == true)
             {
-                throw new InvalidMacroException(macroSymbol, Instance!);
+                throw new InvalidMacroException($"The macro \"{macroSymbol}\" is undefined.", macroSymbol, Instance!);
             }
 
             newBlock!.macroCalls![macroCount].macroSymbol = macroSymbol;
@@ -518,13 +480,14 @@ namespace XVNML.Core.Dialogue
         private void CleanOutExcessWhiteSpaces()
         {
             if (Content == null) return;
-            for (int i = 0; i < Content.Length; i++)
+            int i = 0;
+            while (i < Content.Length)
             {
                 if (Content[i] == '\n')
                 {
                     int peek = 0;
                     bool cleared = false;
-                    while (cleared == false)
+                    while (!cleared)
                     {
                         peek++;
                         cleared = !(Content[i + peek] == ' ');
@@ -532,22 +495,26 @@ namespace XVNML.Core.Dialogue
                     i++;
                     Content = Content.Remove(i, peek - 1);
                 }
+                else
+                {
+                    i++;
+                }
             }
         }
 
         private void RemoveReturnCarriages()
         {
             if (Content == null) return;
-            Content = Content.Replace("\r", string.Empty).
-                              Replace("\n", string.Empty).
-                              Replace("\t", string.Empty);
+            Content = Content.Replace("\r", string.Empty)
+                             .Replace("\n", string.Empty)
+                             .Replace("\t", string.Empty);
         }
 
         private void EvaluateNumericType(SyntaxToken? token, out Type? resultType)
         {
             int length = token!.Text!.Length;
             var text = token!.Text;
-            var character = text.Last();
+            var character = text[length - 1];
             if (char.IsLetter(character)) text = text.Remove(length - 1, 1);
 
             if (char.ToUpper(character) == 'F' || text.Contains('.'))
@@ -573,7 +540,6 @@ namespace XVNML.Core.Dialogue
                 resultType = typeof(int);
                 return;
             }
-
 
             character = text[0];
 

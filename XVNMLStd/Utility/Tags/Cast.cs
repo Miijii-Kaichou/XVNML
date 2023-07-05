@@ -1,4 +1,5 @@
-﻿using XVNML.Core.Tags;
+﻿using Newtonsoft.Json;
+using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
 
 using static XVNML.Constants;
@@ -8,10 +9,10 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("cast", new[] { typeof(Source), typeof(CastDefinitions) }, TagOccurance.Multiple)]
     public sealed class Cast : TagBase
     {
-        const string _CastDir = @"\Casts\";
+        const string _CastDir = DefaultCastDirectory;
 
-        PortraitDefinitions? _portraitDefinitions;
-        VoiceDefinitions? _voiceDefinitions;
+        [JsonProperty] PortraitDefinitions? _portraitDefinitions;
+        [JsonProperty] VoiceDefinitions? _voiceDefinitions;
 
         public Portrait[]? Portraits => _portraitDefinitions?.Portraits;
         public Voice[]? Voices => _voiceDefinitions?.Voices;

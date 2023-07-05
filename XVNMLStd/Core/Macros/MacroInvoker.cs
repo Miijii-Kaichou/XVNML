@@ -97,6 +97,8 @@ namespace XVNML.Core.Macros
                 for (int i = 0; i < m!.argumentTypes?.Length; i++)
                 {
                     var type = m.argumentTypes[i];
+                    
+                    if (m.argumentTypes.Length != argTypes.Length) return false;
                     if (type == typeof(int) && argTypes[i] == typeof(uint)) continue;
                     if (ReferenceEquals(type, argTypes[i]) == false) return false;
                 }

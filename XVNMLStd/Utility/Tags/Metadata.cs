@@ -1,16 +1,17 @@
-﻿using XVNML.Core.Tags;
+﻿using Newtonsoft.Json;
+using XVNML.Core.Tags;
 namespace XVNML.XVNMLUtility.Tags
 {
     [AssociateWithTag("metadata", TagOccurance.PragmaOnce)]
     public sealed class Metadata : TagBase
     {
-        public Title? title;
-        public Author? author;
-        public Date? date;
-        public Description? description;
-        public Copyright? copyright;
-        public Url? url;
-        public Tags? tags;
+        [JsonProperty] public Title? title;
+        [JsonProperty] public Author? author;
+        [JsonProperty] public Date? date;
+        [JsonProperty] public Description? description;
+        [JsonProperty] public Copyright? copyright;
+        [JsonProperty] public Url? url;
+        [JsonProperty] public Tags? tags;
 
         public override void OnResolve(string? fileOrigin)
         {

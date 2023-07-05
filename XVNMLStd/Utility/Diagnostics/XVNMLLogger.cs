@@ -6,7 +6,7 @@ namespace XVNML.Utility.Diagnostics
     {
         internal static ConcurrentQueue<XVNMLLogMessage> LoggerQueue = new ConcurrentQueue<XVNMLLogMessage>();
 
-        internal static void Log(string msg, object context)
+        internal static void Log(string msg, object? context)
         {
             XVNMLLogMessage message = new XVNMLLogMessage()
             {
@@ -17,7 +17,7 @@ namespace XVNML.Utility.Diagnostics
             LoggerQueue.Enqueue(message);
         }
 
-        internal static void LogError(string msg, object context, object blame)
+        internal static void LogError(string msg, object? context, object? blame)
         {
             XVNMLLogMessage message = new XVNMLLogMessage()
             {
@@ -29,7 +29,7 @@ namespace XVNML.Utility.Diagnostics
             LoggerQueue.Enqueue(message);
         }
 
-        internal static void LogWarning(string msg, object context)
+        internal static void LogWarning(string msg, object? context)
         {
             XVNMLLogMessage message = new XVNMLLogMessage()
             {

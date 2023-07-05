@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using XVNML.Core.Enums;
 using XVNML.Core.Extensions;
 using XVNML.Core.Parser;
 
@@ -9,7 +11,10 @@ namespace XVNML.Core.Tags
 {
     public class TagBase : IResolvable
     {
+        protected TagFormRestrictionMode TagFormRestrictionMode { get; } = TagFormRestrictionMode.None;
+
         public string? tagTypeName;
+        [JsonProperty]
         public string? TagName
         {
             get
@@ -21,10 +26,14 @@ namespace XVNML.Core.Tags
                 }
 
                 return tagTypeName;
+            } internal set
+            {
+                tagTypeName = value;
             }
         }
 
         private int? _tagId = null;
+        [JsonProperty]
         public int? TagID
         {
             get
@@ -42,6 +51,7 @@ namespace XVNML.Core.Tags
             }
         }
 
+        [JsonProperty]
         public string[]? AlternativeTagNames
         {
             get
@@ -53,6 +63,7 @@ namespace XVNML.Core.Tags
         }
 
         internal string[]? _allowParameters;
+        [JsonProperty]
         public string[]? AllowedParameters
         {
             get
@@ -66,6 +77,9 @@ namespace XVNML.Core.Tags
         }
 
         internal string[]? _allowFlags;
+
+
+        [JsonProperty]
         public string[]? AllowedFlags
         {
             get
@@ -78,9 +92,9 @@ namespace XVNML.Core.Tags
             }
         }
 
-        public List<TagBase>? elements;
-        public TagBase? parentTag;
-        public object? value;
+        public List<TagBase>? elements = null;
+        public TagBase? parentTag = null;
+        public object? value = new object();
         public bool isSelfClosing = false;
         public bool IsResolved { get; internal set; }
         public TagParser? ParserRef { get; internal set; }
@@ -92,7 +106,7 @@ namespace XVNML.Core.Tags
         private bool _allowParametersValidated = false;
         private bool _allowFlagsValidated = false;
 
-
+        protected TagBase() { }
 
         private readonly string[] DefaultAllowedParameters = new string[3]
         {
@@ -170,7 +184,11 @@ namespace XVNML.Core.Tags
             if (value == null) return default!;
 
             if (typeof(T).IsEnum)
-                return (T)System.Enum.Parse(typeof(T), value?.ToString());
+            {
+                if (Enum.IsDefined(typeof(T), value))
+                    return (T)Enum.Parse(typeof(T), value?.ToString());
+                return default!;
+            }
 
             return (T)Convert.ChangeType(value, typeof(T));
         }
@@ -259,6 +277,7 @@ namespace XVNML.Core.Tags
             Construct<List<T>>(out var list);
             elements?.ForEach(item =>
             {
+                if (item == null) return;
                 if (item.TagID == null)
                 {
                     item.TagID = id++;

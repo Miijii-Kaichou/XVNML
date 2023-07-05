@@ -1,27 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
     <OutputType>Library</OutputType>
-	 <StartupObject></StartupObject>
-	 <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	 <Title>XVNML</Title>
-	 <Authors>Enjyoii</Authors>
-	 <RootNamespace>XVNML</RootNamespace>
-	 <AssemblyName>XVNML</AssemblyName>
-	 <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-	 <SignAssembly>False</SignAssembly>
-	 <RepositoryUrl>https://github.com/Miijii-Kaichou/XVNML</RepositoryUrl>
-	 <Copyright>2019 Enjyoii</Copyright>
-	 <Description>A utility tool to interact with XVNML files.</Description>
-	 <IncludeSymbols>False</IncludeSymbols>
-	 <AssemblyVersion>1.0.0.0</AssemblyVersion>
-	 <PackageReadmeFile>README.md</PackageReadmeFile>
-	 <FileVersion>1.0.0.0</FileVersion>
-	 <PackAsTool>False</PackAsTool>
-	 <Version>1.0.0-pre-release</Version>
-	 <PackageLicenseFile>LICENSE.MD</PackageLicenseFile>
+	<StartupObject></StartupObject>
+	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<Title>XVNML</Title>
+	<Authors>Enjyoii</Authors>
+	<RootNamespace>XVNML</RootNamespace>
+	<AssemblyName>XVNML</AssemblyName>
+	<AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+	<SignAssembly>True</SignAssembly>
+	<RepositoryUrl>https://github.com/Miijii-Kaichou/XVNML</RepositoryUrl>
+	<Copyright>2019 Enjyoii</Copyright>
+	<Description>A utility tool to interact with XVNML files.</Description>
+	<IncludeSymbols>False</IncludeSymbols>
+	<AssemblyVersion>1.0.0.3</AssemblyVersion>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+	<FileVersion>1.0.0.3</FileVersion>
+	<PackAsTool>False</PackAsTool>
+	<Version>1.0.0.3-pre-release</Version>
+	<PackageLicenseFile>LICENSE.MD</PackageLicenseFile>
+	<AssemblyOriginatorKeyFile>C:\Users\tclte\Desktop\xvsnk.snk</AssemblyOriginatorKeyFile>
+	<GenerateDocumentationFile>False</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -41,5 +42,9 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 </Project>

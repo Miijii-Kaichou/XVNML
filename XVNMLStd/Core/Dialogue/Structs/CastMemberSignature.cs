@@ -1,13 +1,16 @@
-﻿internal class CastMemberSignature
+﻿using Newtonsoft.Json;
+
+internal class CastMemberSignature
 {
-    internal bool IsNarrative;
-    internal bool IsFull;
-    internal bool IsPartial;
-    internal bool IsAnonymous;
-    internal bool IsPersistent;
-    internal bool IsPrimitive;
-    internal bool IsInversed;
-    internal Role CurrentRole;
+    [JsonProperty] internal bool IsNarrative;
+    [JsonProperty] internal bool IsFull;
+    [JsonProperty] internal bool IsPartial;
+    [JsonProperty] internal bool IsAnonymous;
+    [JsonProperty] internal bool IsPersistent;
+    [JsonProperty] internal bool IsPrimitive;
+    [JsonProperty] internal bool IsInversed;
+    [JsonProperty] internal Role CurrentRole;
+
     public CastMemberSignature()
     {
         IsNarrative = false;

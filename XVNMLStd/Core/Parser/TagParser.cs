@@ -5,6 +5,7 @@ using System.Text;
 using XVNML.Core.Lexer;
 using XVNML.Core.Parser.Enums;
 using XVNML.Core.Tags;
+using XVNML.Utility.Diagnostics;
 
 namespace XVNML.Core.Parser
 {
@@ -20,7 +21,6 @@ namespace XVNML.Core.Parser
         Tokenizer? _tokenizer = null;
 
         private ParserEvaluationState _evaluationState = ParserEvaluationState.Tag;
-        private ParseResourceState? _evaluationResourceState = ParseResourceState.Internal;
 
         readonly Stack<TagBase> _tagStackFrame = new Stack<TagBase>();
         int TagLevel => _tagStackFrame.Count - 1;
@@ -56,21 +56,24 @@ namespace XVNML.Core.Parser
             _onParserCompleted = onComplete;
             _position = -1;
             _conflict = false;
-            _evaluationResourceState = ParseResourceState.Internal;
             _evaluationState = ParserEvaluationState.Tag;
             root = null;
             _cachedTagName = null;
             _cachedTagParameterInfo = null;
-            _tagValueStringBuilder = new StringBuilder();
+            _tagValueStringBuilder = new StringBuilder(1024);
+            
             if (fileTarget == null)
-                throw new NullReferenceException("FileTarget cannot be null when parsing.");
+            {
+                Abort("FileTarget cannot be null when parsing.");
+                return;
+            }
 
-            _tokenizer = new Tokenizer(fileTarget, TokenizerReadState.IO, out _conflict);
-
+            _tokenizer = new Tokenizer(fileTarget, TokenizerReadState.IO);
+            _conflict = _tokenizer.GetConflictState();
 
             if (_conflict)
             {
-                Console.WriteLine($"There was conflict with tokenizer. Failed to parse xvnml file: Located in {fileTarget}");
+                Abort($"There was conflict with tokenizer. Failed to parse xvnml file: Located in {fileTarget}");
                 return;
             }
 
@@ -80,29 +83,34 @@ namespace XVNML.Core.Parser
 
         private SyntaxToken? Peek(int offset, bool includeSpaces = false)
         {
-            if (_tokenizer == null) return null;
-            try
+            if (_tokenizer == null)
+                return null;
+
+            var length = _tokenizer.Length;
+            var index = _position + offset;
+
+            while (index < length)
             {
-                var token = _tokenizer[_position + offset];
+                var token = _tokenizer[index];
 
-                while (true)
+                if (token == null)
                 {
-                    token = _tokenizer[_position + offset] ?? default;
-
-                    if ((token!.Type == TokenType.WhiteSpace && includeSpaces == false) ||
-                        token.Type == TokenType.SingleLineComment ||
-                        token.Type == TokenType.MultilineComment)
-                    {
-                        _position++;
-                        continue;
-                    }
+                    Abort("Token was null");
                     return token;
                 }
+
+                if ((token.Type == TokenType.WhiteSpace && !includeSpaces) ||
+                    token.Type == TokenType.SingleLineComment ||
+                    token.Type == TokenType.MultilineComment)
+                {
+                    index++;
+                    continue;
+                }
+
+                return token;
             }
-            catch
-            {
-                return _tokenizer[_tokenizer.Length];
-            }
+
+            return _tokenizer[length];
         }
 
         private SyntaxToken? Next()
@@ -129,236 +137,72 @@ namespace XVNML.Core.Parser
 
                 if (_evaluationState == ParserEvaluationState.TagValue || _evaluationState == ParserEvaluationState.Dialogue)
                 {
-
-                    if (_Current?.Type == TokenType.OpenBracket && Peek(1, true)?.Type == TokenType.ForwardSlash)
-                    {
-                        ChangeEvaluationState(ParserEvaluationState.Tag);
-                        _position--;
-                        continue;
-                    }
-
-                    _tagValueStringBuilder.Append(_Current?.Type == TokenType.String ?
-                        $"\"{_Current?.Text}\"" :
-                        _Current?.Text);
+                    HandleTagValue();
+                    continue;
                 }
 
                 if (_evaluationState == ParserEvaluationState.Tag)
                 {
-                    #region Tag Evaluation
-                    switch (token?.Type)
-                    {
-                        case TokenType.Invalid:
-                            Console.WriteLine($"Invalid token: \"{token.Type}\" at Line {token.Line} Position {token.Position}");
-                            break;
-
-                        case TokenType.OpenBracket:
-                            //Check for <any_string_of_characters)
-                            while (true)
-                            {
-                                Next();
-
-                                if (_Current == null || _Current.Type == TokenType.EOF) break;
-
-                                //Check if foward/slash
-                                if (_Current.Type == TokenType.ForwardSlash)
-                                {
-                                    //This means the tag is about to close
-                                    Next();
-
-                                    //Expect name
-                                    if (_Current.Type != TokenType.Identifier)
-                                    {
-                                        //TODO: Create ExpectedIdentifierException
-                                        Console.WriteLine($"Expected Identifier at Line {_Current.Line} Position {_Current.Position}");
-                                        return;
-                                    }
-
-                                    //Expect matching name
-                                    if (_Current.Text != _topOfStack?.tagTypeName)
-                                    {
-                                        Console.WriteLine($"Tag Leveling for {_topOfStack?.tagTypeName} does not match with closing tag " +
-                                            $"{_Current.Text}");
-                                        return;
-                                    }
-
-                                    Next();
-
-                                    //Close Bracket is now expected
-                                    if (_Current.Type != TokenType.CloseBracket)
-                                    {
-                                        //TODO: Create ExpectedIdentifierException
-                                        Console.WriteLine($"Expected CloseBracket Line {_Current.Line} Position {_Current.Position}");
-                                        return;
-                                    }
-
-                                    //Now the object can be closed
-                                    CloseCurrentTag();
-                                    continue;
-                                }
-
-                                //Check if what comes after < is an identifier
-                                //and a white space.
-                                //If it is, we'll property gather information
-                                //regarding the tag.
-                                if (_Current.Type == TokenType.Identifier)
-                                {
-                                    //This means that we are creating a tag
-                                    var newTag = TagConverter.Convert(_Current.Text!);
-                                    newTag!.tagTypeName = _Current.Text;
-
-                                    //If top is still open, it means we're nesting
-                                    if (_topOfStack != null &&
-                                        _topOfStack.tagState == TagEvaluationState.Open)
-                                    {
-                                        _topOfStack.elements = _topOfStack.elements ?? new List<TagBase>();
-                                        _topOfStack.elements.Add(newTag);
-                                        newTag.parentTag = _topOfStack;
-                                    }
-
-                                    _tagStackFrame.Push(newTag);
-                                    break;
-                                }
-                            }
-                            continue;
-
-                        case TokenType.CloseBracket:
-                            //Change the stat of the tag if there is any
-                            if (_topOfStack!.isSelfClosing)
-                            {
-                                CloseCurrentTag();
-                                continue;
-                            }
-
-                            _topOfStack.tagState = TagEvaluationState.Open;
-                            _topOfStack._parameterInfo = _cachedTagParameterInfo;
-                            _cachedTagParameterInfo = null;
-
-                            if (Peek(1)?.Type == TokenType.OpenBracket) continue;
-
-                            ChangeEvaluationState(ParserEvaluationState.TagValue);
-                            continue;
-
-                        case TokenType.ForwardSlash:
-                            //Check if a CloseBracket exceeds that
-                            //If it is, mark as SelfClosing
-                            if (Peek(1)?.Type == TokenType.CloseBracket)
-                            {
-                                //The tag is self-closing
-                                _topOfStack!.isSelfClosing = true;
-                            }
-                            continue;
-
-
-                        case TokenType.Pound:
-                            //There will have to be a unique feature
-                            //where flags are set prior to calculations.
-                            if (_topOfStack!.tagState != TagEvaluationState.OnParameters) continue;
-
-                            // This means that we are about to send in a flag
-                            // Expect a identifier, but the identifier should not 
-                            // expect a ::, since it's just a flag
-                            _topOfStack.isSettingFlag = true;
-                            continue;
-
-                        case TokenType.Identifier:
-                            //After a tag has been set, check it's status
-                            if (_topOfStack!.tagState == TagEvaluationState.OnParameters)
-                            {
-                                if (_cachedTagParameterInfo == null)
-                                    _cachedTagParameterInfo = new TagParameterInfo();
-
-                                //Check if flag
-                                if (_topOfStack!.isSettingFlag == true && Peek(1, true)?.Type != TokenType.DoubleColon)
-                                {
-                                    //This means this is a Flag for the tag
-                                    _cachedTagParameterInfo.flagParameters.Add(_Current?.Text!);
-                                    _topOfStack!.isSettingFlag = false;
-                                    continue;
-                                }
-
-                                if (_topOfStack!.isSettingFlag)
-                                {
-                                    Abort($"A flag should not expect the token {Peek(1)?.Text}");
-                                    return;
-                                }
-
-                                TagParameter newParameter = new TagParameter()
-                                {
-                                    name = _Current?.Value?.ToString()
-                                };
-
-                                //Cache string name
-                                _cachedTagName = newParameter?.name;
-
-                                _cachedTagParameterInfo.paramters.Add(_cachedTagName!, newParameter!);
-                            }
-                            continue;
-
-                        case TokenType.EOF:
-                            Console.WriteLine($"Parsing of XVNML Document now complete.: {fileTarget}");
-                            RunReferenceSolveProcedure();
-                            return;
-
-                        case TokenType.DoubleColon:
-                            {
-                                int length = _cachedTagParameterInfo!.totalParameters;
-                                var parameterName = _cachedTagParameterInfo.paramters[_cachedTagName!].name;
-
-                                var expected = Peek(1);
-
-                                //Go next, and grab the value for the TagParameter
-
-                                //Make sure it's valid input
-                                //Expecting the following:
-                                if (expected?.Type == TokenType.Char ||
-                                    expected?.Type == TokenType.String ||
-                                    expected?.Type == TokenType.Number ||
-                                    expected?.Type == TokenType.EmptyString ||
-                                    expected?.Type == TokenType.Identifier)
-                                {
-                                    Next();
-                                    _cachedTagParameterInfo.paramters[_cachedTagName!].value = _Current?.Value;
-                                    continue;
-                                }
-
-                                //Find a reference
-                                if (expected?.Type == TokenType.DollarSign)
-                                {
-                                    Next();
-
-                                    //Expect Identifer
-                                    if (Peek(1)?.Type != TokenType.Identifier)
-                                    {
-                                        Console.WriteLine($"Reference Error at Line {_Current?.Line} Position {_Current?.Position}: Expected Identifier: {fileTarget}");
-                                        return;
-                                    }
-                                    Next();
-                                    _cachedTagParameterInfo.paramters[_cachedTagName!].value = _Current?.Value;
-                                    _cachedTagParameterInfo.paramters[_cachedTagName!].isReferencing = true;
-
-                                    continue;
-                                }
-
-                                Console.WriteLine($"Invalid assignment to parameter: {parameterName} at Line {_Current?.Line} Position {_Current?.Position}: {fileTarget}");
-                            }
-                            return;
-
-                        case TokenType.String:
-                            if (_topOfStack?.tagState == TagEvaluationState.Open)
-                            {
-                                //Add as tag value
-                                _topOfStack.value = _Current?.Value;
-                            }
-                            continue;
-
-                        case TokenType.At:
-                            if (_evaluationState == ParserEvaluationState.TagValue) ChangeEvaluationState(ParserEvaluationState.Dialogue);
-                            continue;
-                        default:
-                            break;
-                    }
+                    EvaluateTags(ref token, out bool complete);
+                    if (complete) return;
+                    continue;
                 }
-                #endregion
+            }
+        }
+
+        private void EvaluateTags(ref SyntaxToken? token, out bool complete)
+        {
+            complete = false;
+            TokenType? tokenType = token?.Type;
+
+            switch (tokenType)
+            {
+                case TokenType.Invalid:
+                    Abort($"Invalid token: \"{token.Type}\" at Line {token.Line} Position {token.Position}");
+                    complete = !complete;
+                    return;
+
+                case TokenType.OpenBracket:
+                    HandleOpenBracket();
+                    return;
+
+                case TokenType.CloseBracket:
+                    HandleCloseBracket();
+                    return;
+
+                case TokenType.ForwardSlash:
+                    HandleForwardSlash();
+                    return;
+
+                case TokenType.Pound:
+                    HandlePound();
+                    return;
+
+                case TokenType.Identifier:
+                    HandleIdentifier();
+                    return;
+
+                case TokenType.EOF:
+                    XVNMLLogger.Log($"Parsing of XVNML Document now complete.: {fileTarget}", this);
+                    RunReferenceSolveProcedure();
+                    complete = !complete;
+                    return;
+
+                case TokenType.DoubleColon:
+                    HandleDoubleColon();
+                    return;
+
+                case TokenType.String:
+                    HandleString();
+                    return;
+
+                case TokenType.At:
+                    if (_evaluationState == ParserEvaluationState.TagValue)
+                        ChangeEvaluationState(ParserEvaluationState.Dialogue);
+                    return;
+
+                default:
+                    break;
             }
         }
 
@@ -381,28 +225,33 @@ namespace XVNML.Core.Parser
 
         public static void Abort(string? reason)
         {
+            XVNMLLogger.LogError(reason!, null, null);
             throw new Exception($"Parser has aborted. Reason: {reason ?? "Undefined"}");
         }
 
         private void CloseCurrentTag()
         {
+            var top = _topOfStack;
+
+            if (top == null) return;
+
             //Now the object can be closed
-            _topOfStack!.tagState = TagEvaluationState.Close;
-            _topOfStack._parameterInfo = _topOfStack._parameterInfo ?? _cachedTagParameterInfo;
+            top.tagState = TagEvaluationState.Close;
+            top._parameterInfo ??= _cachedTagParameterInfo;
 
             _cachedTagParameterInfo = null;
             _cachedTagName = string.Empty;
 
             if (_tagValueStringBuilder.Length > 0)
             {
-                _topOfStack.value = _tagValueStringBuilder.ToString().Trim('\n');
+                top.value = _tagValueStringBuilder.ToString().Trim('\n');
                 _tagValueStringBuilder.Clear();
             }
 
             var dirInfo = new DirectoryInfo(fileTarget!);
             var fileOrigin = dirInfo.Parent?.ToString();
-            _topOfStack.ParserRef = this;
-            _topOfStack.OnResolve(fileOrigin);
+            top.ParserRef = this;
+            top.OnResolve(fileOrigin);
 
             root = _tagStackFrame.Pop();
         }
@@ -411,5 +260,194 @@ namespace XVNML.Core.Parser
         {
             _evaluationState = state;
         }
+
+        #region Handler Methods
+        private void HandleOpenBracket()
+        {
+            //Check for <any_string_of_characters)
+            while (_Current != null && _Current.Type != TokenType.EOF)
+            {
+                Next();
+
+                //Check if foward/slash
+                if (_Current.Type == TokenType.ForwardSlash)
+                {
+                    //This means the tag is about to close
+                    Next();
+
+                    //Expect name
+                    if (_Current.Type != TokenType.Identifier)
+                    {
+                        //TODO: Create ExpectedIdentifierException
+                        Abort($"Expected Identifier at Line {_Current.Line} Position {_Current.Position}");
+                        return;
+                    }
+
+                    //Expect matching name
+                    if (_Current.Text != _topOfStack?.tagTypeName)
+                    {
+                        Abort($"Tag Leveling for {_topOfStack?.tagTypeName} does not match with closing tag " +
+                            $"{_Current.Text}");
+                        return;
+                    }
+
+                    Next();
+
+                    //Close Bracket is now expected
+                    if (_Current.Type != TokenType.CloseBracket)
+                    {
+                        //TODO: Create ExpectedIdentifierException
+                        Abort($"Expected CloseBracket Line {_Current.Line} Position {_Current.Position}");
+                        return;
+                    }
+
+                    //Now the object can be closed
+                    CloseCurrentTag();
+                    continue;
+                }
+
+                //Check if what comes after < is an identifier
+                //and a white space.
+                //If it is, we'll property gather information
+                //regarding the tag.
+                if (_Current.Type == TokenType.Identifier)
+                {
+                    //This means that we are creating a tag
+                    var newTag = TagConverter.Convert(_Current.Text!);
+                    newTag!.tagTypeName = _Current.Text;
+
+                    //If top is still open, it means we're nesting
+                    if (_topOfStack != null &&
+                        _topOfStack.tagState == TagEvaluationState.Open)
+                    {
+                        _topOfStack.elements = _topOfStack.elements ?? new List<TagBase>();
+                        _topOfStack.elements.Add(newTag);
+                        newTag.parentTag = _topOfStack;
+                    }
+
+                    _tagStackFrame.Push(newTag);
+                    break;
+                }
+            }
+        }
+        
+        private void HandleCloseBracket()
+        {
+            if (_topOfStack!.isSelfClosing)
+            {
+                CloseCurrentTag();
+                return;
+            }
+
+            _topOfStack.tagState = TagEvaluationState.Open;
+            _topOfStack._parameterInfo = _cachedTagParameterInfo;
+            _cachedTagParameterInfo = null;
+
+            if (Peek(1)?.Type == TokenType.OpenBracket) return;
+
+            ChangeEvaluationState(ParserEvaluationState.TagValue);
+        }
+
+        private void HandleForwardSlash()
+        {
+            if (Peek(1)?.Type != TokenType.CloseBracket) return;
+            _topOfStack!.isSelfClosing = true;
+        }
+
+        private void HandlePound()
+        {
+            if (_topOfStack!.tagState != TagEvaluationState.OnParameters) return;
+            _topOfStack.isSettingFlag = true;
+        }
+
+        private void HandleIdentifier()
+        {
+            if (_topOfStack!.tagState != TagEvaluationState.OnParameters) return;
+
+            _cachedTagParameterInfo ??= new TagParameterInfo();
+
+            if (_topOfStack!.isSettingFlag == true)
+            {
+                if (Peek(1, true)?.Type != TokenType.DoubleColon)
+                {
+                    //This means this is a Flag for the tag
+                    _cachedTagParameterInfo.flagParameters.Add(_Current?.Text!);
+                    _topOfStack!.isSettingFlag = false;
+                    return;
+                }
+
+                Abort($"A flag should not expect the token {Peek(1)?.Text}");
+                return;
+            }
+
+            TagParameter newParameter = new TagParameter()
+            {
+                name = _Current?.Value?.ToString()
+            };
+
+            _cachedTagName = newParameter?.name;
+
+            _cachedTagParameterInfo.paramters.Add(_cachedTagName!, newParameter!);
+        }
+
+        private void HandleDoubleColon()
+        {
+            var parameterName = _cachedTagParameterInfo!.paramters[_cachedTagName!].name;
+            var expected = Peek(1);
+
+            if (expected?.Type! == TokenType.Char ||
+                expected?.Type! == TokenType.String ||
+                expected?.Type! == TokenType.Number ||
+                expected?.Type! == TokenType.EmptyString ||
+                expected?.Type! == TokenType.Identifier)
+            {
+                Next();
+                _cachedTagParameterInfo.paramters[_cachedTagName!].value = _Current?.Value;
+                return;
+            }
+
+            if (expected?.Type == TokenType.DollarSign)
+            {
+                Next();
+
+                expected = Peek(1);
+
+                if (expected?.Type != TokenType.Identifier)
+                {
+                    Abort($"Reference Error at Line {_Current?.Line} Position {_Current?.Position}: Expected Identifier: {fileTarget}");
+                    return;
+                }
+
+                Next();
+
+                _cachedTagParameterInfo.paramters[_cachedTagName!].value = _Current?.Value;
+                _cachedTagParameterInfo.paramters[_cachedTagName!].isReferencing = true;
+
+                return;
+            }
+
+            Abort($"Invalid assignment to parameter: {parameterName} at Line {_Current?.Line} Position {_Current?.Position}: {fileTarget}");
+        }
+
+        private void HandleString()
+        {
+            if (_topOfStack?.tagState != TagEvaluationState.Open) return;
+            _topOfStack.value = _Current?.Value;
+        }
+
+        private void HandleTagValue()
+        {
+            if (_Current?.Type == TokenType.OpenBracket && Peek(1, true)?.Type == TokenType.ForwardSlash)
+            {
+                ChangeEvaluationState(ParserEvaluationState.Tag);
+                _position--;
+                return;
+            }
+
+            _tagValueStringBuilder.Append(_Current?.Type == TokenType.String ?
+                $"\"{_Current?.Text}\"" :
+                _Current?.Text);
+        }
+        #endregion
     }
 }

@@ -1,12 +1,15 @@
-﻿using System.Linq;
+﻿using Newtonsoft.Json;
+using System.Linq;
 using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
 {
-    [AssociateWithTag("keycodes", new[] { typeof(Proxy), typeof(Source) }, TagOccurance.PragmaOnce)]
+    [AssociateWithTag("keycodeDefinitions", new[] { typeof(Proxy), typeof(Source) }, TagOccurance.PragmaOnce)]
     public sealed class KeycodeDefinitions : TagBase
     {
-        public Keycode[]? KeyCodes => Collect<Keycode>();
+        [JsonProperty]private Keycode[]? _keyCodes;
+        public Keycode[]? KeyCodes => _keyCodes;
+
         public Keycode? this[string name]
         {
             get { return GetKeyCode(name); }
@@ -15,6 +18,7 @@ namespace XVNML.XVNMLUtility.Tags
         public override void OnResolve(string? fileOrigin)
         {
             base.OnResolve(fileOrigin);
+            _keyCodes = Collect<Keycode>();
         }
 
         public Keycode? GetKeyCode(string name) => KeyCodes.First(keyCode => keyCode.TagName?.Equals(name) == true);

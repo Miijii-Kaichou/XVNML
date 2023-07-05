@@ -1,0 +1,6 @@
+<source name::"Test.Dialogue.XVNML">
+	<dialogue name::"DialogueSourceTest">
+		@ This is just a test on if I can grab dialogue as a{space}
+		source now.<
+	</dialogue>
+</source>

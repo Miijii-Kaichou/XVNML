@@ -1,0 +1,4 @@
+﻿namespace XVNML.Core.Enums
+{
+    
+}

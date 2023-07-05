@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
 
@@ -9,7 +10,7 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("voice", typeof(VoiceDefinitions), TagOccurance.Multiple)]
     public sealed class Voice : TagBase
     {
-        public Audio? audioTarget;
+        [JsonProperty] public Audio? audioTarget;
         public override void OnResolve(string? fileOrigin)
         {
             AllowedParameters = new[]

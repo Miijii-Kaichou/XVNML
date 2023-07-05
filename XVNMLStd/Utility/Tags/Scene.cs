@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Linq;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
@@ -10,7 +11,7 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("scene", typeof(SceneDefinitions), TagOccurance.Multiple)]
     public sealed class Scene : TagBase
     {
-        public Image? imageTarget;
+        [JsonProperty] public Image? imageTarget;
 
         public override void OnResolve(string? fileOrigin)
         {

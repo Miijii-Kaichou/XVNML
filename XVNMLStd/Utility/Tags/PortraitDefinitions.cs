@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Newtonsoft.Json;
+using System.Linq;
 using XVNML.Core.Tags;
 
 namespace XVNML.XVNMLUtility.Tags
@@ -6,7 +7,9 @@ namespace XVNML.XVNMLUtility.Tags
     [AssociateWithTag("portraitDefinitions", typeof(Cast), TagOccurance.PragmaLocalOnce)]
     public sealed class PortraitDefinitions : TagBase
     {
-        public Portrait[]? Portraits => Collect<Portrait>();
+        [JsonProperty] private Portrait[]? _portraits;
+        public Portrait[]? Portraits =>  _portraits;
+
         public Portrait? this[string name]
         {
             get { return GetPortrait(name.ToString()); }
@@ -15,6 +18,7 @@ namespace XVNML.XVNMLUtility.Tags
         public override void OnResolve(string? fileOrigin)
         {
             base.OnResolve(fileOrigin);
+            _portraits = Collect<Portrait>();
         }
 
         Portrait? GetPortrait(string name) => Portraits.First(portrait => portrait.TagName?.Equals(name) == true);

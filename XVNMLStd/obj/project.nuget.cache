@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "wo9Zb0f/F31vgVl0fqcDjKVy2pWRea/QcZBT3M37RVWijHLTYBssKQ/rgwaXOyHAwK9lyBc8+CiikvHarYFaGw==",
+  "dgSpecHash": "abat1a+8cJOCwu1sM437xcZHYh+UZUK9MhKrBAGBmSaWf5tpQMO8cPm9Nl92DT+vJUfIjtrfC2LZ2H0RxrX2Sg==",
   "success": true,
   "projectFilePath": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\XVNMLStd.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\tclte\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
   "logs": []
 }
