@@ -369,7 +369,7 @@ namespace XVNML.Core.Parser
                         if (line.data.isPartOfResponse)
                         {
                             line.data.parentLine = promptCacheStack?.Peek().Item1.Item1;
-                            line.data.responseString = line.data.parentLine.PromptContent.Last().Key;
+                            line.data.responseString = line.data.parentLine?.PromptContent.Last().Key;
                         }
 
                         if (isClosingLine) line.MarkAsClosing();
@@ -413,7 +413,7 @@ namespace XVNML.Core.Parser
             {
                 var prompt = promptCacheStack.Pop();
                 var dialogueData = prompt.Item1.Item1;
-                output.Lines[prompt.Item1.Item2].SetReturnPointOnAllChoices(lineIndex);
+                output.Lines?[prompt.Item1.Item2].SetReturnPointOnAllChoices(lineIndex);
                 _PreviousCast = (dialogueData.InitialCastInfo?.name, dialogueData.InitialCastInfo?.expression, dialogueData.InitialCastInfo?.voice);
             }
         }
@@ -441,7 +441,7 @@ namespace XVNML.Core.Parser
             //Finalize Signature at the end
             CastMemberSignature signature = new CastMemberSignature();
 
-            CastEvaluationMode mode = CastEvaluationMode.Expression;
+            CastEvaluationMode mode;
             void RaiseCastEvaluationState() => mode = (CastEvaluationMode)(++evaluationValue);
             void LowerCastEvaluationState() => mode = (CastEvaluationMode)(--evaluationValue);
 

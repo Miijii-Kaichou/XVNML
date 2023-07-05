@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using XVNML.Core.Extensions;
@@ -34,6 +36,8 @@ namespace XVNML.Core.Lexer
 
     public class Tokenizer
     {
+        private readonly int bufferSize = 8192;
+
         private int _position = 0;
 
         public int Length
@@ -89,25 +93,52 @@ namespace XVNML.Core.Lexer
 
         public Tokenizer(string sourceText, TokenizerReadState state)
         {
+            SourceText = sourceText;
             switch (state)
             {
                 case TokenizerReadState.Local:
-                    SourceText = sourceText;
-                    break;
+                    TokenizeLocally();
+                    return;
 
                 case TokenizerReadState.IO:
-                    //Read the file only once. This will later be replace by an IO class that will
-                    //hold the fileTarget's contents prior to Tokenizer and Parser initiation
-                    var data = File.ReadLines(sourceText, System.Text.Encoding.UTF8);
-                    SourceText = data.JoinStringArray();
-                    break;
+                    ReadAndTokenize();
+                    return;
             }
-
-           Tokenize();
         }
 
-        public void Tokenize()
+        private void ReadAndTokenize()
         {
+            var sourceText = SourceText;
+            SourceText = string.Empty;
+            using (StreamReader sr = new StreamReader(sourceText))
+            {
+                long fileSize = new FileInfo(sourceText).Length;
+                StringBuilder sb = new StringBuilder((int)fileSize); // Set expectedTextLength to an appropriate value
+
+                char[] buffer = new char[bufferSize];
+                int bytesRead;
+
+                while ((bytesRead = sr.ReadBlock(buffer, 0, bufferSize)) > 0)
+                {
+                    sb.Append(buffer, 0, bytesRead);
+                }
+                SourceText = sb.ToString();
+
+                TokenizeLocally();
+
+                // Batch removal of specific tokens
+                var tokensToRemove = definedTokens
+                    .Where(t => t.Type == TokenType.EOF && t != definedTokens[^1])
+                    .ToList();
+                definedTokens.RemoveAll(tokensToRemove.Contains);
+            }
+        }
+
+        internal void TokenizeLocally()
+        {
+            // Tokenize the entire markup text
+            _position = 0;
+
             SyntaxToken token = new SyntaxToken(default, -1, -1, null, null);
             while (token.Type != TokenType.EOF && !WasThereConflict)
             {
@@ -134,21 +165,32 @@ namespace XVNML.Core.Lexer
             {
                 var start = _position;
 
-                while (char.IsDigit(_Current) ||
-                    _Current == '.' ||
-                    _Current == '-' ||
-                    char.ToUpper(_Current) == 'F' ||
-                    char.ToUpper(_Current) == 'D' ||
-                    char.ToUpper(_Current) == 'L' ||
-                    char.ToUpper(_Current) == 'I')
-                    Next();
+                bool continueLoop = true;
+                while (continueLoop)
+                {
+                    switch (_Current)
+                    {
+                        case char c when char.IsDigit(c):
+                        case '.':
+                        case '-':
+                        case 'F':
+                        case 'D':
+                        case 'L':
+                        case 'I':
+                            Next();
+                            break;
 
-                var length = _position - start;
-                var text = SourceText?.Substring(start, length);
-                var suffix = text!.Last();
+                        default:
+                            continueLoop = false;
+                            break;
+                    }
+                }
+
+                var text = SourceText?[start.._position];
+                var suffix = text![^1];
                 var valueString = string.Empty;
 
-                if (char.IsLetter(suffix)) valueString = SourceText?.Substring(start, length - 1);
+                if (char.IsLetter(suffix)) valueString = SourceText?[start..(_position - 1)];
 
                 var finalValueString = valueString != string.Empty ? valueString : text;
 
@@ -187,8 +229,7 @@ namespace XVNML.Core.Lexer
                 while (char.IsWhiteSpace(_Current))
                     Next();
 
-                var length = _position - start;
-                var text = SourceText?.Substring(start, length);
+                var text = SourceText?[start.._position];
 
                 return new SyntaxToken(TokenType.WhiteSpace, _Line, start, text, null);
             }
@@ -202,8 +243,7 @@ namespace XVNML.Core.Lexer
                     char.IsNumber(_Current))
                     Next();
 
-                var length = _position - start;
-                var text = SourceText?.Substring(start, length);
+                var text = SourceText?[start.._position];
 
                 return new SyntaxToken(TokenType.Identifier, _Line, start, text, text);
             }
@@ -218,8 +258,7 @@ namespace XVNML.Core.Lexer
                 while (_Current != '\n')
                     Next();
 
-                var length = _position - start;
-                var text = SourceText?.Substring(start, length);
+                var text = SourceText?[start.._position];
                 text = text?.Trim(' ', '\n', '\r', '\t');
 
                 return new SyntaxToken(TokenType.SingleLineComment, _Line, start, text, text);
@@ -235,8 +274,7 @@ namespace XVNML.Core.Lexer
                 while (_Current != '\n')
                     Next();
 
-                var length = _position - start;
-                var text = SourceText?.Substring(start, length);
+                var text = SourceText?[start.._position];
                 text = text?.Trim(' ', '\n', '\r', '\t');
 
                 return new SyntaxToken(TokenType.SingleLineComment, _Line, start, text, text);
@@ -252,8 +290,7 @@ namespace XVNML.Core.Lexer
                 while (Peek(_position, "/$") == false)
                     Next();
 
-                var length = _position - start;
-                var text = SourceText?.Substring(start, length);
+                var text = SourceText?[start.._position];
                 text = text?.Trim(' ', '\n', '\r', '\t');
 
                 JumpPosition(2);
@@ -307,14 +344,14 @@ namespace XVNML.Core.Lexer
                 Next();
 
                 var start = _position;
-                var end = 0;
+                var end = start;
                 while (end == 0 || _Current != '\"')
                 {
                     Next();
                     end++;
                 }
 
-                var text = SourceText?.Substring(start, end);
+                var text = SourceText?[start..end];
 
                 return new SyntaxToken(TokenType.String, _Line, _position++, text, text);
             }
@@ -358,22 +395,22 @@ namespace XVNML.Core.Lexer
 
         bool Peek(int position, string stringSet)
         {
-            try
-            {
-                var start = position;
-                var length = stringSet.Length;
-                var proceedingString = SourceText?.Substring(start, length);
-                return proceedingString!.Equals(stringSet);
-            }
-            catch
+            if (SourceText == null || position < 0 || position + stringSet.Length > SourceText.Length)
             {
                 return false;
             }
+
+            var start = position;
+            var length = stringSet.Length;
+            var proceedingString = SourceText?[start..(start + length)];
+            return proceedingString!.Equals(stringSet);
         }
 
         void JumpPosition(int distance)
         {
             _position += distance;
         }
+
+        internal void SetSourceText(string inputString) => SourceText = inputString;
     }
 }

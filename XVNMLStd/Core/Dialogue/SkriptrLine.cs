@@ -52,6 +52,7 @@ namespace XVNML.Core.Dialogue
         // Macro Data
         [JsonProperty] internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
         internal Action? onReturnPointCorrection;
+        private Tokenizer _sharedTokenizer;
 
         internal void ReadPosAndExecute(DialogueWriterProcessor process)
         {
@@ -79,7 +80,7 @@ namespace XVNML.Core.Dialogue
             while (LastAddedResponseStack.Count > 0)
             {
                 var response = LastAddedResponseStack.Pop();
-                var sp = PromptContent[response].Item1;
+                var sp = PromptContent[response].sp;
                 PromptContent[response] = (sp, index);
             }
             data.isPartOfResponse = true;
@@ -143,9 +144,9 @@ namespace XVNML.Core.Dialogue
         {
             // Use this as reference
             // @Me Hi!>Smile>000 {clr}How's it going?<<
+            _sharedTokenizer = new Tokenizer(stringBuilder.ToString(), TokenizerReadState.Local);
 
-            Tokenizer tokenizer = new Tokenizer(stringBuilder.ToString(), TokenizerReadState.Local);
-            bool conflictResult = tokenizer.GetConflictState();
+            bool conflictResult = _sharedTokenizer.GetConflictState();
 
             const string ExpressionCode = "E::";
             const string VoiceCode = "V::";
@@ -157,7 +158,7 @@ namespace XVNML.Core.Dialogue
 
             CastEvaluationMode mode = CastEvaluationMode.Expression;
 
-            for (int i = 0; i < tokenizer.Length; i++)
+            for (int i = 0; i < _sharedTokenizer.Length; i++)
             {
                 if (conflictResult) return;
 
@@ -250,32 +251,18 @@ namespace XVNML.Core.Dialogue
 
             SyntaxToken? Peek(int offset, bool includeSpaces = false)
             {
-                if (tokenizer == null) return null;
-                try
-                {
-                    var token = tokenizer[_position + offset];
+                if (_sharedTokenizer == null) return null;
+                var index = _position + offset;
 
-                    while (true)
-                    {
-                        token = tokenizer[_position + offset];
+                var filteredTokens = _sharedTokenizer.definedTokens.Skip(index)
+                    .Where(token =>
+                        (includeSpaces || token?.Type != TokenType.WhiteSpace) &&
+                        token?.Type != TokenType.SingleLineComment &&
+                        token?.Type != TokenType.MultilineComment);
 
-                        if ((token?.Type == TokenType.WhiteSpace && includeSpaces == false) ||
-                            token?.Type == TokenType.SingleLineComment ||
-                            token?.Type == TokenType.MultilineComment)
-                        {
-                            _position++;
-                            continue;
-                        }
-
-                        return token;
-                    }
-
-                }
-                catch
-                {
-                    return tokenizer[tokenizer.Length];
-                }
+                return filteredTokens.FirstOrDefault();
             }
+
 
             SyntaxToken? Next()
             {
@@ -324,11 +311,12 @@ namespace XVNML.Core.Dialogue
                 finished = Content[position + length] == '}';
                 length++;
             }
-            var blockString = Content.Substring(position, length);
+            var blockString = Content[position..(position+length)];
             var macrosTotal = blockString.Split('|').Length;
 
-            Tokenizer tokenizer = new Tokenizer(blockString, TokenizerReadState.Local);
-            bool conflict = tokenizer.GetConflictState();
+            _sharedTokenizer = new Tokenizer(blockString, TokenizerReadState.Local);
+            bool conflict = _sharedTokenizer.GetConflictState();
+
             if (conflict) return;
 
             finished = false;
@@ -337,12 +325,12 @@ namespace XVNML.Core.Dialogue
             TokenType? expectingType = TokenType.Identifier;
 
             string? macroName = null;
-            List<(object, Type)> macroArgs = new List<(object, Type)>();
+            List<(object value, Type type)> macroArgs = new List<(object, Type)>();
             bool multiArgs = false;
             while (!finished)
             {
                 Next();
-                SyntaxToken? currentToken = tokenizer[pos];
+                SyntaxToken? currentToken = _sharedTokenizer[pos];
 
                 if (currentToken?.Type == TokenType.WhiteSpace)
                     continue;
