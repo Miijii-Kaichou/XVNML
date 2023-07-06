@@ -1,0 +1,23 @@
+<source name::"Raven.Cast.XVNML">
+    <imageDefinitions>
+        <image name::"Neutral"      src::"COMMON\portraits\Raven\Neutral.png"          />
+        <image name::"Wondering"    src::"COMMON\portraits\Raven\Wondering.png"        />
+        <image name::"Happy"        src::"COMMON\portraits\Raven\Raven\Happy.png"      />
+        <image name::"Serious"      src::"COMMON\portraits\Raven\Raven\Serious.png"    />
+        <image name::"Determined"   src::"COMMON\portraits\Raven\Raven\Determined.png" />
+        <image name::"Mystic"       src::"COMMON\portraits\Raven\Raven\Mystic.png"     />
+    </imageDefinitions>
+    <castDefinitions>
+        <cast name::"Raven" altNames::"レイブン">
+            <portraitDefinitions>
+                <portrait name::"Neutral"      img::$Neutral/>
+                <portrait name::"Wondering"    img::$Wondering/>
+                <portrait name::"Happy"        img::$Happy/>
+                <portrait name::"Serious"      img::$Serious/>
+                <portrait name::"Determined"   img::$Determined/>
+                <portrait name::"Mystic"       img::$Mystic/>
+            </portraitDefinitions>
+            <voiceDefinitions/>
+        </cast>
+    </castDefinitions>
+</source>

@@ -40,8 +40,7 @@ namespace XVNML.XVNMLUtility.Tags
                 {
                     if (dom == null) return;
 
-                    var target = dom?.source?.GetElement<SceneDefinitions>()?.GetScene(TagName ?? string.Empty) ??
-                               dom?.source?.GetElement<SceneDefinitions>()?.GetElement<Scene>();
+                    var target = dom?.source?.SearchElement<Scene>(TagName ?? string.Empty);
                     if (target == null) return;
 
                     imgRef = target.GetParameter(ImageParameterString);

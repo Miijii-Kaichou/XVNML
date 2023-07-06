@@ -54,8 +54,7 @@ namespace XVNML.XVNMLUtility.Tags
                 XVNMLObj.Create(fileOrigin + _DialogueDir + source!.ToString(), dom =>
                 {
                     if (dom == null) return;
-                    var target = dom?.source?.GetElement<Dialogue>(TagName ?? string.Empty) ??
-                        dom?.source?.GetElement<Dialogue>();
+                    var target = dom?.source?.SearchElement<Dialogue>(TagName ?? string.Empty);
                     if (target == null) return;
                     value = target.value;
                     TagName = target.TagName;

@@ -111,13 +111,51 @@ namespace XVNML.Core.Tags
         private readonly string[] DefaultAllowedParameters = new string[3]
         {
             "name",
-            "altName",
+            "altNames",
             "id"
         };
 
         public object? this[ReadOnlySpan<char> name]
         {
             get { return _parameterInfo?.GetParameter(name.ToString())?.value; }
+        }
+
+        /// <summary>
+        /// Will perform a through search from this tag.
+        /// If it can't find the name, it will return the first
+        /// occurance of the tag with the matching type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="tagName"></param>
+        /// <remarks>Use this sparly, as it may hender performance.</remarks>
+        public T? SearchElement<T>(string tagName) where T : TagBase
+        {
+            if (elements == null)
+                return null;
+
+            foreach (var currentChildElement in elements)
+            {
+                if (TagMatches(currentChildElement, tagName))
+                    return (T?)currentChildElement;
+
+                T? element = currentChildElement.SearchElement<T>(tagName);
+
+                if (element != null)
+                    return element;
+            }
+
+            return null;
+        }
+
+        private bool TagMatches(TagBase tag, string tagName)
+        {
+            if (tag.TagName == tagName)
+                return true;
+
+            if (tag.AlternativeTagNames != null && tag.AlternativeTagNames.Contains(tagName))
+                return true;
+
+            return false;
         }
 
         /// <summary>

@@ -50,16 +50,6 @@ namespace XVNML.Core.Lexer
         DoubleCloseBracket = 1L << 41,
         DoubleOpenBracket = 1L << 42,
         AnonymousCastSymbol = 1L << 43,
-        Underscore = 1L << 44,
-
-        //
-        SkriptrString = 1L << 45,
-        DeclarativeSkriptrLine = 1L << 48,
-        InterrogativeSkriptrLine = 1L << 49,
-        TagParameter = 1L << 50,
-        TagFlag = 1L << 51,
-        MacroBlock = 1L << 52,
-        NamedTag = 1L << 53,
-        PromptBlock = 1L << 54
+        Underscore = 1L << 44
     }
 }

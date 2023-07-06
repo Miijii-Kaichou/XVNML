@@ -14,7 +14,10 @@ namespace XVNML.XVNMLUtility.Tags
         [JsonProperty] PortraitDefinitions? _portraitDefinitions;
         [JsonProperty] VoiceDefinitions? _voiceDefinitions;
 
+        [JsonIgnore]
         public Portrait[]? Portraits => _portraitDefinitions?.Portraits;
+
+        [JsonIgnore]
         public Voice[]? Voices => _voiceDefinitions?.Voices;
 
         public override void OnResolve(string? fileOrigin)
@@ -40,8 +43,8 @@ namespace XVNML.XVNMLUtility.Tags
                 XVNMLObj.Create(fileOrigin + _CastDir + source!.ToString(), dom =>
                 {
                     if (dom == null) return;
-                    var target = dom?.source?.GetElement<CastDefinitions>()!.GetCast(TagName ?? string.Empty) ??
-                               dom?.source?.GetElement<CastDefinitions>()!.GetElement<Cast>();
+                    var target = dom?.source?.SearchElement<Cast>(TagName ?? string.Empty);
+
                     if (target == null) return;
                     _portraitDefinitions = target!._portraitDefinitions;
                     _voiceDefinitions = target!._voiceDefinitions;

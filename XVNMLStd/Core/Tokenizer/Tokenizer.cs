@@ -82,7 +82,7 @@ namespace XVNML.Core.Lexer
             get
             {
                 Regex returns = new Regex("\r");
-                string substring = SourceText?.Substring(0, _position)!;
+                string substring = SourceText?[.._position]!;
                 return substring == string.Empty ? 1 : returns.Matches(substring).Count() + 1;
             }
         }
@@ -106,7 +106,7 @@ namespace XVNML.Core.Lexer
             }
         }
 
-        private void ReadAndTokenize()
+        internal void ReadAndTokenize()
         {
             var sourceText = SourceText;
             SourceText = string.Empty;
