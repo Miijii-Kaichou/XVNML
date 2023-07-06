@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using XVNML.Core.Assemblies;
 using XVNML.Utility.Macros;
 
 namespace XVNML.Core.Macros
@@ -18,15 +19,10 @@ namespace XVNML.Core.Macros
 
             ValidMacros = new SortedDictionary<string, List<MacroAttribute>>();
 
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             Type[] libraryTypes;
 
-            for (int i = 0; i < assemblies.Length; i++)
-            {
-                Assembly assembly = assemblies[i];
-                libraryTypes = assembly.GetTypes().Where(c => c.IsClass && c.GetCustomAttribute<MacroLibraryAttribute>() != null).ToArray();
-                EstablishLibraries(libraryTypes);
-            }
+            libraryTypes = DomainAssemblyState.DefinedTypes.Where(c => c.IsClass && c.GetCustomAttribute<MacroLibraryAttribute>() != null).ToArray();
+            EstablishLibraries(libraryTypes);
 
             IsInitialized = true;
         }

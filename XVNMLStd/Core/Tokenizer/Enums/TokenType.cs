@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace XVNML.Core.Lexer
+namespace XVNML.Core.Enums
 {
     [Flags]
     public enum TokenType : long
@@ -50,6 +50,7 @@ namespace XVNML.Core.Lexer
         DoubleCloseBracket = 1L << 41,
         DoubleOpenBracket = 1L << 42,
         AnonymousCastSymbol = 1L << 43,
-        Underscore = 1L << 44
+        Underscore = 1L << 44,
+        ScopeBlock = 1L << 45
     }
 }

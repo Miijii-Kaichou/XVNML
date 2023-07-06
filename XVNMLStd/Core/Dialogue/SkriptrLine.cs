@@ -7,52 +7,32 @@ using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
 using XVNML.Core.Macros;
-using XVNML.Utility.Diagnostics;
+using XVNML.Core.Enums;
 using XVNML.Utility.Macros;
 
 namespace XVNML.Core.Dialogue
 {
-    internal struct LineDataInfo
-    {
-        [JsonProperty] internal int lineIndex;
-        [JsonProperty] internal int returnPoint;
-        [JsonProperty] internal bool isPartOfResponse;
-        [JsonProperty] internal string? fromResponse;
-        [JsonProperty] internal SkripterLine? parentLine;
-        [JsonProperty] internal bool isClosingLine;
-        [JsonProperty] internal string? responseString;
-
-        public DialogueLineMode Mode { get; set; }
-    }
-
     public sealed class SkripterLine
     {
+        internal string? lastAddedResponse;
+        internal Stack<string> LastAddedResponseStack = new Stack<string>();
+        internal Action? onReturnPointCorrection;
+
+        private SyntaxToken[]? _tokenCache;
         
         private static SkripterLine? Instance;
-
-        internal string? lastAddedResponse;
-        [JsonProperty] internal LineDataInfo data;
-        internal Stack<string> LastAddedResponseStack = new Stack<string>();
-
         private readonly StringBuilder _ContentStringBuilder = new StringBuilder();
+
         [JsonProperty] public string? Content { get; private set; }
         [JsonProperty] public Dictionary<string, (int sp, int rp)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
         [JsonProperty] public DialogueLineMode Mode => data.Mode;
-
-        // Unique Tag
-        [JsonProperty] internal string? TaggedAs = string.Empty;
-
-        // Scene Data
+        
+        [JsonProperty] internal LineDataInfo data;
+        [JsonProperty] internal string? Name = string.Empty;
         [JsonProperty] internal SceneInfo? SceneLoadInfo { get; set; }
-
-        // Cast Data
         [JsonProperty] internal CastMemberSignature? SignatureInfo { get; set; }
         [JsonProperty] internal CastInfo? InitialCastInfo { get; set; }
-
-        // Macro Data
         [JsonProperty] internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
-        internal Action? onReturnPointCorrection;
-        private Tokenizer _sharedTokenizer;
 
         internal void ReadPosAndExecute(DialogueWriterProcessor process)
         {
@@ -100,22 +80,22 @@ namespace XVNML.Core.Dialogue
         internal void MarkAsClosing() => data.isClosingLine = true;
 
 
-        internal void FinalizeAndCleanBuilder()
+        internal void FinalizeAndCleanBuilder(SyntaxToken?[] tokenCache)
         {
+            _tokenCache = tokenCache!;
+
             // Trim any < and >
             Content = _ContentStringBuilder
                 .ToString()
                 .TrimEnd('<')
                 .Replace(">>", string.Empty);
 
-            // Replacing .Replace(">", "{pause}"); with
-            // with a method that checks if it has >ExpName>VoiceName or anything like that
-            // We'll convert it to BlockNotation just like how we did for the pause
-            for (int i = 0; i < Content.Length; i++)
+            for (int i = 0; i < _tokenCache.Length; i++)
             {
-                var character = Content[i];
+                var token = tokenCache[i];
 
-                if (character == '>') ParsePauseControlCharacter(i);
+                if (token!.Type != TokenType.CloseBracket) continue;
+                ParsePauseControlCharacter(i);
             }
 
             // Get rid of excess white spaces
@@ -126,28 +106,23 @@ namespace XVNML.Core.Dialogue
 
         private void ParsePauseControlCharacter(int startIndex)
         {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = startIndex; i < Content?.Length; i++)
+            List<SyntaxToken?> tokenList = new List<SyntaxToken?>(128);
+            for (int i = startIndex; i < _tokenCache.Length; i++)
             {
-                var character = Content[i];
+                var token = _tokenCache[i];
+                var tokenType = token.Type;
 
-                if (char.IsWhiteSpace(character))
+                if (tokenType == TokenType.WhiteSpace )
                 {
-                    ConvertToCallBlock(stringBuilder);
+                    ConvertToCallBlock(tokenList);
                     break;
                 }
-                stringBuilder.Append(character);
+                tokenList.Add(token);
             }
         }
 
-        private void ConvertToCallBlock(StringBuilder stringBuilder)
+        private void ConvertToCallBlock(List<SyntaxToken?> tokenList)
         {
-            // Use this as reference
-            // @Me Hi!>Smile>000 {clr}How's it going?<<
-            _sharedTokenizer = new Tokenizer(stringBuilder.ToString(), TokenizerReadState.Local);
-
-            bool conflictResult = _sharedTokenizer.GetConflictState();
-
             const string ExpressionCode = "E::";
             const string VoiceCode = "V::";
 
@@ -156,12 +131,12 @@ namespace XVNML.Core.Dialogue
             string? expression = null;
             string? voice = null;
 
+            int count = tokenList.Count;
+
             CastEvaluationMode mode = CastEvaluationMode.Expression;
 
-            for (int i = 0; i < _sharedTokenizer.Length; i++)
+            for (int i = 0; i < count; i++)
             {
-                if (conflictResult) return;
-
                 Next();
 
                 SyntaxToken? token = Peek(0, true);
@@ -178,18 +153,12 @@ namespace XVNML.Core.Dialogue
                     var isQualifiedToken = token?.Type == TokenType.Identifier ||
                     token?.Type == TokenType.Number;
 
-
-                    // We have 2 outputs for this one: Expression or Voice
-                    // Check for E:: or V::
                     if (isQualifiedToken &&
                         (token?.Text == ExpressionCode[0].ToString() ||
                         token?.Text == VoiceCode[0].ToString()))
                     {
                         mode = token?.Text == ExpressionCode[0].ToString() ? CastEvaluationMode.Expression : CastEvaluationMode.Voice;
 
-                        //Otherwise, see where we are. If one of them is null,
-                        //check if the other one isn't. If it isn't, we have to fill
-                        //information for the one that doesnt' have anything.
                         if (expression == null && voice != null && isQualifiedToken)
                         {
                             expression = voice;
@@ -247,14 +216,14 @@ namespace XVNML.Core.Dialogue
 
             blockStringBuilder.Append("}");
 
-            Content = Content?.Replace(stringBuilder.ToString(), blockStringBuilder.ToString());
+            Content = blockStringBuilder.ToString();
 
             SyntaxToken? Peek(int offset, bool includeSpaces = false)
             {
-                if (_sharedTokenizer == null) return null;
+                if (_tokenCache == null) return null;
                 var index = _position + offset;
 
-                var filteredTokens = _sharedTokenizer.definedTokens.Skip(index)
+                var filteredTokens = _tokenCache.Skip(index)
                     .Where(token =>
                         (includeSpaces || token?.Type != TokenType.WhiteSpace) &&
                         token?.Type != TokenType.SingleLineComment &&
@@ -273,64 +242,70 @@ namespace XVNML.Core.Dialogue
 
         private void ExtractMacroBlocks()
         {
-            if (Content == null) return;
-            //TODO: Find Macro Data and extract
-            //We're going to replace each block with a control
-            //character of /0 to denote a macro is in that position
+            if (_tokenCache == null) return;
 
-            for (int i = 0; i < Content.Length; i++)
+            for (int i = 0; i < _tokenCache.Length; i++)
             {
-                var currentCharacter = Content[i];
-                if (currentCharacter == '{')
+                var currentCharacter = _tokenCache[i];
+                if (currentCharacter.Type == TokenType.OpenCurlyBracket)
                 {
-                    // A new block as been established.
-                    EvaluateBlock(i, out int length);
-
-                    // Remove block from final content
-                    Content = Content.Remove(i, length);
-                    i--;
+                    EvaluateBlock(i, out string outputString);
+                    Content = Content!.Replace(outputString, string.Empty);
                 }
             }
         }
 
-        private void EvaluateBlock(int position, out int length)
+        private void EvaluateBlock(int position, out string outputString)
         {
-            length = 0;
-            if (Content == null) return;
+            outputString = string.Empty;
+            if (_tokenCache == null) return;
 
             Instance = this;
 
-            MacroBlockInfo newBlock = new MacroBlockInfo();
+            bool finished = false;
+            int length = 0;
+            int macroCount = 0;
+            int macrosTotal = 0;
+            int tokenIndex = 0;
 
-            var pos = 0;
-            var finished = false;
-            var macroCount = 0;
+            MacroBlockInfo newBlock = new MacroBlockInfo();
+            List<SyntaxToken?> tokenList = new List<SyntaxToken?>();
+            StringBuilder sb = new StringBuilder(2048);
 
             while (!finished)
             {
-                finished = Content[position + length] == '}';
+                var token = _tokenCache[position + length];
+                var tokenType = token.Type;
+
+                if (tokenType == TokenType.String) sb.Append('\"');
+                sb.Append(token.Text);
+                if (tokenType == TokenType.String) sb.Append('\"');
+                
+                tokenList.Add(token);
+                macrosTotal += (tokenType == TokenType.Line ? 1 : 0);
+                finished = tokenType == TokenType.CloseCurlyBracket;
                 length++;
             }
-            var blockString = Content[position..(position+length)];
-            var macrosTotal = blockString.Split('|').Length;
 
-            _sharedTokenizer = new Tokenizer(blockString, TokenizerReadState.Local);
-            bool conflict = _sharedTokenizer.GetConflictState();
-
-            if (conflict) return;
+            outputString = sb.ToString();
+            macrosTotal += 1;
+            
+            int tokenInvocationPosition = Content!.IndexOf(outputString);
 
             finished = false;
             newBlock.Initialize(macrosTotal);
-            newBlock.SetPosition(position);
+            newBlock.SetPosition(tokenInvocationPosition);
+
+            bool multiArgs = false;
+            string? macroName = null;
+
+            List<(object value, Type type)> macroArgs = new List<(object, Type)>(2048);
             TokenType? expectingType = TokenType.Identifier;
 
-            string? macroName = null;
-            List<(object value, Type type)> macroArgs = new List<(object, Type)>();
-            bool multiArgs = false;
             while (!finished)
             {
                 Next();
-                SyntaxToken? currentToken = _sharedTokenizer[pos];
+                SyntaxToken? currentToken = tokenList[tokenIndex];
 
                 if (currentToken?.Type == TokenType.WhiteSpace)
                     continue;
@@ -458,7 +433,7 @@ namespace XVNML.Core.Dialogue
                 }
             }
 
-            void Next() => pos++;
+            void Next() => tokenIndex++;
         }
 
         private static void PopulateBlock(MacroBlockInfo newBlock, int macroCount, string? macroSymbol, List<(object, Type)> macroArgs)
@@ -554,7 +529,7 @@ namespace XVNML.Core.Dialogue
 
         internal void SetLineTag(string? identifier)
         {
-            TaggedAs = identifier;
+            Name = identifier;
         }
     }
 }

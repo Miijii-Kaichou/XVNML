@@ -1,40 +1,13 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using XVNML.Core.Extensions;
+using XVNML.Core.Enums;
 
 namespace XVNML.Core.Lexer
 {
-    public enum TokenizerReadState
-    {
-        Local,
-        IO
-    }
-
-    public class SyntaxToken
-    {
-        public SyntaxToken(TokenType type, int line, int position, string? text, object? value)
-        {
-            Type = type;
-            Line = line;
-            Position = position;
-            Text = text;
-            Value = value;
-        }
-
-        public TokenType? Type { get; }
-        public int? Line { get; }
-        public int? Position { get; }
-        public string? Text { get; }
-        public object? Value { get; }
-    }
-
-    public class Tokenizer
+    public sealed class Tokenizer
     {
         private readonly int bufferSize = 8192;
 
@@ -89,7 +62,7 @@ namespace XVNML.Core.Lexer
 
         private bool WasThereConflict = false;
 
-        internal List<SyntaxToken> definedTokens = new List<SyntaxToken>();
+        internal List<SyntaxToken> definedTokens = new List<SyntaxToken>(0xFFFF);
 
         public Tokenizer(string sourceText, TokenizerReadState state)
         {
@@ -158,7 +131,7 @@ namespace XVNML.Core.Lexer
         {
             if (_position >= SourceText?.Length)
             {
-                return new SyntaxToken(TokenType.EOF, _Line, _position, "\0", null);
+                return new SyntaxToken(TokenType.EOF, _Line, _position, "\0", 0x0);
             }
 
             if ((_Current == '-' && char.IsDigit(SourceText![_position + 1])) || char.IsDigit(_Current))
@@ -193,26 +166,27 @@ namespace XVNML.Core.Lexer
                 if (char.IsLetter(suffix)) valueString = SourceText?[start..(_position - 1)];
 
                 var finalValueString = valueString != string.Empty ? valueString : text;
-
-                if (char.ToUpper(suffix) == 'F' || text!.Contains('.'))
+                char upperVariant = char.ToUpper(suffix);
+                
+                if (upperVariant == 'F' || text!.Contains('.'))
                 {
                     float.TryParse(finalValueString, out float floatValue);
                     return new SyntaxToken(TokenType.Number, _Line, start, text, floatValue);
                 }
 
-                if (char.ToUpper(suffix) == 'D')
+                if (upperVariant == 'D')
                 {
                     double.TryParse(finalValueString, out double doubleValue);
                     return new SyntaxToken(TokenType.Number, _Line, start, text, doubleValue);
                 }
 
-                if (char.ToUpper(suffix) == 'L')
+                if (upperVariant == 'L')
                 {
                     long.TryParse(finalValueString, out long longValue);
                     return new SyntaxToken(TokenType.Number, _Line, start, text, longValue);
                 }
 
-                if (text?[0] == '-' || char.ToUpper(suffix) == 'I')
+                if (text?[0] == '-' || upperVariant == 'I')
                 {
                     int.TryParse(finalValueString, out int intValue);
                     return new SyntaxToken(TokenType.Number, _Line, start, text, intValue);

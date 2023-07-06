@@ -89,7 +89,7 @@ internal sealed class StandardMacroLibrary
     [Macro("jump_to")]
     internal static void JumpToMacro(MacroCallInfo info, string tagName)
     {
-        if (info.process.lineProcesses.Where(sl => sl.TaggedAs == tagName.ToString()).Any() == false) return;
+        if (info.process.lineProcesses.Where(sl => sl.Name == tagName.ToString()).Any() == false) return;
 
         info.process.JumpTo(tagName.ToString());
     }

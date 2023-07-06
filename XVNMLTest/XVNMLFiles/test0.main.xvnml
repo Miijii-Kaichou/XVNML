@@ -40,7 +40,7 @@
         @ This package demonstrates the capabilities in which the XVNML{space}
         Class Library is capable of{delay::500|clr}when used with the Unity Game Engine.<
         @ What you see here{delay::750} is a normal dialogue.<
-        @ And {insert::"THIS"|delay::1000} is a dialogue with {set_text_speed::60} a 
+        @ And {insert::"THIS"|delay::1000} is a dialogue with{set_text_speed::100} a 
         looooooooooooooooooooooooooooooooooooooooooooooooooooot of {set_text_speed::30}charisma!!!!<
         @ {set_text_speed::40}And with a normal XVNML Dialogue Control component, you can run whatever 
         dialogue you want.<
@@ -506,7 +506,6 @@
         @ If it's easier branching prompts in, then you can do it.<
         @ Otherwise, make use of Named Lines and the {paren}jump_to{paren_end} macro for{space}
         nicer looking mark-up.{jump_to::"P3-XVNML2U-UnityComponents-Main"}<
-
         ["P3-XVNML2U-UnityComponents-ResponseControl"]
         @ The ResponseControl Component is a component that must be a child of the gameObject with the{space}
         XVNMLPromptControl component.<
@@ -516,957 +515,433 @@
         @ There are 12 gameObjects with this components, and receiving all information from the{space}
         XVNMLPromptControl componenent.<
         @ That's about it really.{jump_to::"P3-XVNML2U-UnityComponents-Main"}<
-        @ {lindex::false}With that said, logging out!<<
-	</dialogue>
-
-    <dialogue src::"Test/Test.dialogue.xvnml" pathMode::Relative/>
-
-<dialogueGroup name::"Maple's Academy(Raven)[EN]">
-        <dialogue name::"Intro">
-            @Maple Hello everyone!<
-            @* And welcome to Maple's Academy!<
-            @* With I, Maple Mirrip Maplestar, as your instructor!<
-            
-            @* What is this white space yo may ask?<
-            @* Well, in order for me to show you the ropes, we're going to have to simulate all of these exercise inside a...<
-            @* Well...> special room.<
-            @* More like special plane of existance.<
-            @* I call it the Star Simulatre.<
-            
-            @* If I were to explain it in detail, I think you'd end up having a brain aneurysm.<
-            @* I will say thought, that this "pocket dimension" is able to simulate any past, present, or future events with apex-level precision.<
-            @* Which in my opinion makes for an excellent training hall!<
-            
-            @* Well, with that out of tway, let's bein the lecture!<
-            @* Today, I've brought a very special guest to act as a volunteer.<
-            @* Soooo special in fact that we're practically family!<
-            @* Please give a bign, warm welcome to Raven Lilac!<
-            
-            @Raven What experiement are you having me do this time?<
-
-            @Maple No experiments this time!<
-            @* I just needed someone to act as a volunteer for our friend on the other side of the monitor.<
-            
-            @Raven There you go spouting deranged jargon again...<
-            
-            @Maple But it's not weird.> In this realm of existence, literally anything's possible.<
-            @* And I mean anything...<
-            
-            @Raven Please, do tell me what a monitor even is...<
-            
-            @Maple Don't worry about all the minor details!>
-                   What's important is that you'll be showing us a couple of 
-                   demonstrations on how this game functions.<
-            
-            @Raven Again, what "game" are you even talking about?<
-            @* Are you perhaps implying that something omnipresent is currently watching us from the "other side"?<
-
-            @Maple No!> That's not it at all!<
-
-            @Raven You worry me sometimes Maple.<
-
-            @Maple If I were to explain it all, this would just turn into a hefty seminar.<
-            
-            @Raven Sigh...> Well... Alright then...<
-            @* So I am to show this unknown entity... what exactly?<
-            
-            @Maple The basics on how to play this game.<
-
-            @Raven Right.... right... Whatever this "game" is, I am supposed to be demonstrating, correct?<
-            
-            @Maple That's correct! As I said, I won't be conducting any more experiments this time!<
-            @* Think of this as some sort of out-of-this-world magic-enhancment training.<
-            
-            @Raven Makes sense, though I haven't done anything like that in awhile...<
-            @* In any case, this should not be so much of a nuisance.<
-
-            @Maple Thanks Sis!>
-                   I can always count on you to assist me during a time of need!<
-            @* Shall we get started?<
-        </dialogue>
-    </dialogueGroup>
-
-    $/  This is Raven's Route. The events that she goes through is canonical.
-        Not fully canonical since characters like Maple and Hanabi are in the scenario,
-        but are not featured in Raven's route. There will be external material to be
-        release that explains the actual events that took place based on your 3
-        playthroughs.   /$
-    <dialogueGroup name::"RavenRoute">
-        $> Dialogue Sets for Stage 1 - Grasslands
-        $> Cast Members: Raven, Devi
-		<dialogue name::"Stage1 (Pre-Fight)">
-            @Raven This area's filled with countless familiars.<
-            @* The world is way out of hand right now.<
-            @* And that girl...<
-            @* I've seen that attire from somewhere...<
-            @* I feel her essence is in disarray.<
-            @* Unstable, not in an ideal state of mind...<
-            @* However...> I guess I know where she's coming from.<
-            @* I digress.{delay::500} I need to caught up to her with haste.<
-
-            @??? Uwah!<
-
-            @??? Another one?!<
-
-            @Raven Strange...<
-            @* What business does a devil have in Fauna's sacred lands?<
-
-            @??? Uwahhhhhh!<
-            @* Please don't hurt me!<
-            @* I'm just trying to find my master!<
-            @* I thought she was right now! Huggggggh! I'm so bad with direction.<
-            
-            @Raven Perhaps the Magus Distrubance that hinder's the World's magus.<
-
-            @??? I already had one person bully me just a minute ago, but she said I wasn't even 
-            worth the trouble!<
-            @??? No compassion! Where's the love?!<
-
-            @Raven Perhaps it's that young maiden I say flying by...<
-            @Raven May I have a name, young devil?<
-
-            @??? It's Devi!<
-            @Devi If you're trying to banish me, I won't have it!<
-            @* I may not look like it, but I've very strong!<
-
-            @Raven Wait!{delay::500} I wish for no confrontation!<
-            @* She's on edge. Seems her mind must be eased.<
-            @* But from her forma, T'is evident that her remark is no bluff.<
-
-            @Devi N... No more bullying!<
-            @* There can only be love!<
-            @* I just want to find my master!<
-            @* Nothing more!{delay::3000}<<
-		</dialogue>
-        <dialogue name::"Stage1 (Post-Fight)" >
-            @Devi Uwah!<
-            @* What good is it if I can never protect myself.<
-            @* I'll never find my master at this rate.<
-
-            @Raven You musn't falter.<
-            @* You in fact have a lot of potential.<
-            @* But your forma was very irregular.<
-
-            @Devi Where could she be?<
-            @* I can sense her all the way from here?<
-
-            @Raven Pardon?<
-
-            @Devi My master.<
-            @* I seen her magic everyone...<
-            @* Or at least reminiscient of that of my master...<
-
-            @Raven Could this magus disturbanced be the product of your master?<
-
-            @Devi I...> not sure on that...<
-            @* It feels like her...{delay::1000} but also...<
-            @* it doesn't.<
-            
-            @Raven In any case, I'm making my way to the source promptly.<
-            @* Rather it's your master or not is unsure.<
-
-            @Devi Ah!<
-            @* Miss Witch?<
-
-            @Raven Name's Raven Lilac of the Lilac Cult.<
-
-            @Devi Okay, then... Raven...<
-            @* Please take me with you!<
-            @* If it's my master, I can stop it!<
-            @* However, she's never the kind to cause such grief and mishap amongst mortals...<
-            @* ...<
-            @* In any case...> I'm sorry for all the trouble that we may be causing.<
-            @* I have nothing but love for mortals.<
-
-            @Raven It's quite alright.<
-            @* As you speak of your master, I don't she's the cause of the magus disturbance.<
-            @* I'm doing the best I can to resolve this.<
-            @* And hopefully, this will validate my humanity.<
-
-            @Devi Ms. Raven!<
-            @* Please take me with you!<
-            @* I won't be a hinderance to you!<
-            @* You know my name...> So... you can summon me at any will.<
-
-            @Raven Is it not that a contract must be form between man and devil?<
-            
-            @Devi Well...<
-            @* Uwahhhhh! You're right! You're absolutely right.<
-
-            @Raven Here...<
-            
-            @Devi An pretty gem?!<
-            @* But I couldn't! We've just met after all.<
-
-            @Raven Precisely why I'm handing it to you.<
-            @* We can sustain all connections between each other.<
-            @* Treat it as a memento of our acquaintanceship.<
-
-            @Devi A...{delay::1000} whadda...{delay::250} ship.<
-            @* Ah!<
-            @* Does this means that we're friends?<
-
-            @Raven Suppose{delay::500} you may put it that way.<
-            @* Makes it less formal.<
-            @* If you wish it to be so.<
-
-            @Devi ...<
-            @* Finally, my first friend with a mortal!<
-            @* ...<
-
-            @Raven You must bare your memento on your person indefinitely for 
-            when I am of need of your assistance.<
-
-            @Devi I will treasure it!<
-            @* I can't want to tell my master about this.<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 2 - Silka's Forest
-        $> Cast Members: Raven, Hana, Ageha, Konoha, Urara, Silka Mei
-        <dialogue name::"Stage2 (Hana Introduction)" >
-            @Raven This Nymph's Forest...<
-            @* It too is feeling the effects.<
-            @* Perhaps...<
-
-            @??? A human!<
-            @??? You're not allowed here!<
-
-            @Raven Who must you be?<
-
-            @Hana I'm Hana, Equinoxist of Spring.<
-            @* It's kind of rude that you'd asked that without giving your name.<
-
-            @Raven Raven Lilac of the Lilac Cult.<
-            @* It's evident that this forest is losing it's magus reserves.<
-
-            @Hana Which is why you're not allowed!< 
-        </dialogue>
-        <dialogue name::"Stage2 (Hana Outro)" >
-            @Hana Hmph!<
-            @* You're such a dummy!<
-            
-            @Raven ???<<
-        </dialogue>
-        <dialogue name::"Stage2 (Ageha Introduction)" >
-            @??? A HUMAN!<
-            @??? Hello human!<
-            @Ageha I'm Ageha! Equinoxist of Summer!<
-            @* Welcome to our beloved home!<
-
-            @Raven Hello.<
-            @* I am Raven Lilac of the Lilac Cult.<
-            @* How long have the inhabitants been struggling from this endeavour?<
-
-            @Ageha I honestly have no idea!<
-            @* But the others told me that we were in serious trouble!<
-            @* If I were to see any humans, I were to drive them out!<
-
-            @Raven I can not blame you. Conduct your duties as promptly.<<
-        </dialogue>
-        <dialogue name::"Stage2 (Ageha Outro)" >
-            @Ageha Wow! You're so strong!<
-            
-            @Raven The situation must be more dire than I've preceived.<
-            @* I may be able to do something about it.<
-        </dialogue>
-        <dialogue name::"Stage2 (Konoha and Urara Introduction)" >
-            @??? Sister, look!<
-            @??? Was this the human that Ageha was talking about?<
-            @??? She's absolutely elegant.<
-
-            @Raven More nymphs...<
-            @* Their sizes counts me as astonishing.<
-            @* Especially these two.<
-
-            @??? Ageha came running to us saying {quot}I meet a human, and she was soooo strong!.<
-            @??? You guys will definitely have a really hard time with her!{quot}<
-            @??? It seems she was right.<
-            @??? Unfortunately, as mush as we want you to stay, we have an obligation to drive any suspected bodies away from our home.<
-            @Konoha I'm Konoha, Equinoxist of Autumn.<
-            @Urara I'm Urara, Equinoxist of Winter, elegantly so.<
-            @Konoha Leave, or prepare to meet your end!<<
-        </dialogue>
-        <dialogue name::"Stage2 (Konoha and Urara Outro)" >
-            @Urara Ageha was right...<
-            @* She is quite elegantly formitable.<
-            
-            @Konoha Seems there's no pursuading her.<
-            @* I wish to not fight her again to be honest.<
-        </dialogue>
-        <dialogue name::"Stage2 (Pre-Fight)">
-            @Raven This forest is really on high alert.<
-            @* Not only that, but there's been 4 highly developed nymphs so far...<
-            @* There must be a very powerful influence.<
-
-            @Konoha Seems you've fail to heed our warning...<
-
-            @??? Hiiii!<
-
-            @??? No need for hostility.<
-            @??? It's very nice to meet you human.<
-            @Silka My name is Silka Mei, and I'm the protector of this forest.<
-            @* Tell me, what brings you here to our home?<
-
-            @Raven Simply passing by...<
-            @* Though I couldn't help seeing your home in a dire situation.<
-
-            @Silka Ever since the Magus Disturbance occured, our plants have simply wilted away.<
-            @* Leaves falling prematurally...<
-            @* It's a dire situation indeed.<
-            @* Who must you be?<
-
-            @Raven Name's Lilac, member of the Lilac Cult.<
-
-            @Silka As I expected!<
-            @* That would make you a witch.<
-            @* My sisters have told me a lot about you.<
-
-            @Ageha A Witch?!<
-            @* No wonder she was so strong!<
-
-            @Urara And elegant might I had.<
-
-            @Silka Yes. She is quite well dignified.<
-            @* I've definltey recognized your attire, but that was eons ago.<
-
-            @Hana I didn't know Witches were real...<
-            @* I've heard stories from Silka...<
-            @* But we've personally never encountered them before.<
-
-            @Silka Sorry for the chaos.<
-            @* Me and my sisters mean no ill will.<
-            @* I see all creatures as good.<
-            @* Though, I suppose Mother Nature would know best after all...<
-
-            @* These turn of events have really been Unfortunate.<
-            @* Since you're here, we should put together a welcome party.<
-            @* It's the least we can do since you'll be the last to be here.<
-
-            @Hana Please don't take this personally.<
-            @Konoha We'll be sure to have you fall as gracefully as the autumn leaves.<
-            @Urara Elegantly I might add!<
-            @Ageha Yay! We get to play with the Witch!<
-            @Hana I don't think now's the time for that...<<
-        </dialogue>
-        <dialogue name::"Stage2 (Mid-Fight)">
-            @Silka It's as they say.<
-            @* Witches are indeed very powerful...<
-            @* Especially of the Lilac Cult.<
-
-            @Raven I wish to not continue this.<
-
-            @Silka I understand.<
-            @* Mother Nature knows best after all.<
-            @* But this place is very special.<
-            @* Saying that I'm it's protected is an understatement.<
-            @* That would simply do you an injustice.<
-            @* I'll rid of anything and everything...<
-            @* No matter the moral spectrum.<
-            @* This is something that has been entrusted by someone very important to me...<
-            @* And I can never break her promise.<
-        </dialogue>
-        <dialogue name::"Stage2 (Post-Fight)">
-            @Silka I suppose we can't best you at all.<
-            
-            @Raven My apologizes.<
-            @* I didn't mean to cause any distubance.<
-
-            @Silka It's quite alright.<
-            @* Though, I don't know what to make of the situation.<
-            @* Was the Blessing of Mother Nature not enough...<
-            @* To protect our home?<
-            
-            @Ageha Sis, please don't be sad.<
-            @Hana Silka.<
-
-            @Silka I'm alright.<
-            @* I can't not afford to be sad.<
-            @* We'll continue as we are to protect what was almost lost.<
-
-            @Urara A blessing we can never lose.<
-            @Konoha A paradise that can never fall.<
-
-            @Raven ...<
-            @* This forest...<
-            @* Is that precious to you...<
-
-            @Silka Centries ago, this forest was on the verge of collapse.<
-            @* Perhaps far worse than how it already is...<
-            @* But a young maiden quite like yourself came along.<
-            @* A dryad on the verge of death...<
-            @* I was so weak back them.<
-            @* Bless her kinded soul.<
-            @* She was the blessing that we needed most.<
-            @* A blessing Mother Nature knew was the answer.<
-            @* As she stayed, she cured me of my aliments...<
-            @* then bestowed me a name.<
-            @* She left a promise to me, which my gift shall I further protect our home.<
-            @* I can never forget that day.<
-            @* I've then give life to my sisters and bestowed them names as well.<
-            
-            @Raven I see.<
-            @* You were given so much from her...<
-            @* Enough to even part from your own tree.<
-            @* Enough to give strength to your sisters.<
-
-            @Silka You know of Dryads?<
-
-            @Raven Enough so.<
-            @* It presents me more the reason to assist.<
-            @* At least to give me enough time to resolve this matter.<
-
-            @Silka You say you will help us.<
-
-            @Raven I couldn't help but notice how much the magus distubance is drawing all the life from this forest.<
-            @* I should have enough to aid you and restore this forest to once it was.<
-            @* If that's alright with you.<
-
-            @Silka You mustn't.<
-
-            @Raven Leaving it be would be a grave disservice.<
-            
-            @Konoha So does that mean our home will last forevermore?<
-            @Urara Elegant as you are kind.<
-            @Hana Thank you, Miss. Raven!<
-            @Ageha Many, many thanks Big Sis!<
-
-            @Silka Hehe!<
-            @* ...<
-            @* When I look in to your eyes, you remind me a lot about her.<
-            @* Loving, compassionate, strong, beautiful.<
-            @* We are forever in your debt.< 
-            @* Please do come back once you've completed your task.<
-            @* We'll have a proper welcome party.<
-            @* But without the farewell.<
-
-            @Ageha Please come back, Big Sis!<
-            
-            @Hana Please come back... And be safe as well...<
-            @* Big sis...<
-            
-            @Urara How extravagant! We have a new big Sister!<
-            
-            @Konoha It would seem.<
-            @* We wish you save travels.<
-
-            @Silka With Mother Nature's embrace, shall she aid in your endeavours.<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 3 - Capitole Ruins
-        $> Cast Members: Raven, Anemelle
-        <dialogue name::"Stage3 (Introduction)">
-            @Raven I can sense the Day of Renascence hastily approaching.<
-            @* I need to make it to the source, post haste.<
-            @* But this rubble...<
-            @* Was it once an ancient civilization brought to ruin?<<
-        </dialogue>
-        <dialogue name::"Stage3 (Pre-Fight)">
-            @* ...<
-            @* Such a sad sight.<
-            @* It could be the last thing that I'll ever see.<
-
-            @??? Hold it there, suspection entity!<
-            @??? What are you doing in the Realm of Heroes?<
-            @??? State your business, and address yourself promptly.<
-
-            @Raven Name's Raven.<
-            @* I'm simply passing over your land to address an important matter.<
-
-            @??? You've got some vendeta against Orighd?<
-            @??? Might you be the cause of the atrocities happening across all over the Far Land of Magic?<
-
-            @Raven You must jest.<
-            @* I'm not the one causing this phenomenon.<
-            @* A witch is on the verge of rebirth.<
-            @* A very powerful one.<
-
-            @??? I, I see...<
-            @??? I thought as much.<
-            @??? My blade has told me that you're not the culprit.<
-            @??? I simply can't sense any malice in you.<
-            
-            @Anemelle My name is Anemelle Lumen, a bearer of Hyromagnda, the Holy Sword.<
-            @* A noble by serventhood of the Kingdom of Lorrim.<
-            @* And also among the strongest of soceress over the land.<
-
-            @Raven Hyromagnda...<
-            @* I've definitely heard the name in ancient scriptures.<
-            
-            @Anemelle I sense that your business that you have in the Realm of Heroes is valid, Witch of the Lilac Cult.<
-            @* Although you have no malice towards Orighd, as the highest order of the Holy Knights...<
-            @* I must uphold my duties as such.<
-            @* Though why have interest in this witch soon to reborn?<
-            @* Us Holy Knights have everything taken care of.<
-            @* There's no need for intervention.<
-
-            @Raven As a Witch myself, I have an obligation to settle this matter as a single body.<
-            @* The longer this proceeds, this land will face far worse atrocities.<
-            @* Worse than the ancient wars combined.<
-
-            @Anemelle It's as if you know so much about the situation.<
-            @* Were you perhaps allies with this person?<
-            @* An enemy perhaps?<
-            @* What unfound powers do they hold?<
-            @* How can the banished even be revived as such?<
-            @* You must tell me, at once!<
-
-            @Raven I bare no time for interrogations.<
-
-            @Anemelle ...<
-            @* I see...<
-            @* Well, my deepest apologies.<
-            @* But the time to reconsider is now!<
-            @* The path you are taking is sacred ground.<
-            @* As I've said, Mount Saintere is watch-guarded.<
-            @* Even if you pass me, it's deemed unreachable.<
-            @* Especially those deriving from the wicked.<
-            @* Such as the one before you.<
-            @* You'll most certainly die in vain, whatever your plans might of been.<
-
-            @Raven You seem very capable.<
-            @* Why did you not stop her?<
-
-            @* Cooperations seems imminate.<
-            @* Please, I ask you to go back from once you came.<
-            @* Or show your resolve, right here, and now!<<       
-        </dialogue>
-        <dialogue name::"Stage3 (Post-Fight)">
-            @Anemelle Astounding!<
-            @* Your Crystal magic is impeccible!<
-            @* Much expected for a member of the Lilac Cult.<
-            @* But you're so much different from any Witch I've encountered.<
-            
-            @Raven ...<
-            @* You're acknowledgement is very much appreciated...<
-            @* However...> I wish to cast aside such notions.<
-
-            @Anemelle ...<
-            @* My apologizes, Raven Lilac.<
-            @* How inconsiderate of me to disregard your feelings.<
-            @* The blade speaks of your kindness...<
-            @* But bares no answers.<
-
-            @Raven My standing as a Witch was already determined at birth.<
-            @* The life in which I should live is not of my own.<
-            @* What I've done can't never be reconciled.<
-            @* Time only moves forward.<
-            @* So, whilest I still have my humanity, I wish to give and not take.<
-            @* For the sake of my humanity of which hangs by a thread.<
-            @* Resolve this issue will stand as my atonement.<
-
-            @Anemelle A selfish do-gooder.<
-            @* I suppose fate is your enemy?<
-            @* ...<
-            @* So strong... so admirable.<
-            @* This was bestowed upon me by the King's Advisor of Lorrim.<
-            @* The Hyromagnda knows, and so do I.<
-            @* And since that day, deep inside...<
-            @* I felt the need to protect this land.<
-            @* ...<
-            @* It pains me... so much so.<
-            @* This knowledge I bare should be sin.<
-            @* In honesty, I don't know what to make of this world.<
-            @* I know the feeling... of fate deeming antagonistic.<
-            @* Bearing the Hyromagnda means becoming the new heir of Bezzelet...<
-            @* The rubble that stands before us.<
-            @* Despite my status and sheer strange, I can't help but ponder...<
-            @* If I'm fit to liberate, rebuild, and become queen of once an ancient civilization.<
-            @* With this strength, who am I to fight for?<
-            @* The current King and his advisor have done so much for me.<
-            @* Would standing before you now and exchanging words of passion be an act of treason...<
-            @* Despite witnessing with the greatest of sight that your humanity is plattered in gold...<
-            @* A Cardinal Sin?<
-            @* I beared these insecurites for so long...<
-            @* However, how can fate be the enemy if it has gifted me the greatest thing in the world?<
-            @* With every ounce of our essence clashing...<
-            @* Comparing your troubles through my sword is immeasurable.<
-            @* The mainly young maiden that could frolic through these fields...<
-            @* Are instead stripe of their being... their humanity...<
-            @* Their freedom...<
-            @* I felt it from the young maiden before you.<
-            @* However, through my blade, I fear that her actions may lead to distruction.<
-
-            @Raven Indeed.<
-
-            @Anemelle Raven Lilac, as one who bares a marker of a Witch, you must assure that 
-            the young maiden strays from that aura.<
-            @* With your resolve and humanity proven...<
-            @* You are the only one to stop her.<
-
-            @Raven ...<
-
-            @Anemlle Over there... Is your next destination.<
-            @* Mount Saintere is a sacred place...<
-            @* It is said to be the Origin of all magic.<
-            @* It may take you several moons to reach...<
-            @* But as you know, it's not a place for the wicked.<
-            @* It's highly guarded by the Holy Knights, as natural.<
-            @* However, it's likely that They will be guarding it as well...<
-            @* Please, conduct your deed with the likelihood that paint will show.<
-
-            @Raven Understood.<
-
-            @Anemelle ...<
-            @* And please...<
-            @* Whenever you do return...<
-            @* And I am able to restore these ruins to its former glory and more...<
-            @* I would like you to be by my side.<
-
-            @Raven ...<
-            @Raven Thank you.<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 4 - The Base of Mt.Saintere
-        $> Cast Members: Raven, Saki, ???
-        <dialogue name::"Stage4 (Saki Introduction)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage4 (Pre-Fight)">
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage 4 (Mid-Fight)">
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage 4 (Post-Fight)">
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 5 - The Summit of Mt. Saintere
-        $> Cast Members: Raven, Luu
-        <dialogue name::"Stage5 (Introduction)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage5 (Luu Introduction)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>        
-        <dialogue name::"Stage5 (Pre-Fight)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage5 (Mid-Fight)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage5 (Post-Fight)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 6 - Inside Gelmorithe's Dream
-        $> Cast Members: Raven, Devi, Mythril
-        $> (Sidenote) Gelmorithe's Dream is a realm that seperates all things opposing...
-        $> That includes bridging the gap between what's living and non-living.
-        <dialogue name::"Stage6" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage6" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage6" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 7 - White Zenithe
-        $> Cast Members: Raven, Mythril, Adula
-        <dialogue name::"Stage7 (Introduction)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage7 (Mythril Introduction)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage7 (Pre-Fight)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage7 (Mid-Fight)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage7 (Post-Fight)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 8 - Star Simulatre
-        $> Cast Members: Raven, Maplestar
-        <dialogue name::"Stage8 (Maple Introduction)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage8 (Pre-Fight)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage8 (Post-Fight)" >
-            @Raven Temporary Dialogue...{pause}<<
-        </dialogue>
-	</dialogueGroup>
-
-    $/  This is going to be Maple's Main Route.
-        Her route is mostly close to the canonical story
-        that Raven goes through. Still, what you see in the game
-        isn't how it usually is. Of course, reading external material
-        of the actual events in Tomakunihahaji will open a few gaps./$
-    <dialogueGroup name::"MapleRoute">
-        $> Dialogue Sets for Stage 1 - Grasslands
-        $> Cast Members: Raven, Devi
-		<dialogue name::"Stage1 (Pre-Fight)" >
-            @Maple Temporary Dialogue...{pause}<<
-		</dialogue>
-        <dialogue name::"Stage1 (Post-Fight)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 2 - Silka's Forest
-        $> Cast Members: Raven, Hana, Ageha, Konoha, Urara, Silka Mei
-        <dialogue name::"Stage2 (Stage Introduction)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Hana Introduction)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Hana Outro)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Ageha Introduction)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Ageha Outro)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Konoha and Urara Introduction)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Konoha and Urara Outro)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Pre-Fight)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Mid-Fight)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Post-Fight)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 3 - Capitole Ruins
-        $> Cast Members: Raven, Anemelle
-        <dialogue name::"Stage3 (Introduction)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage3 (Pre-Fight)">
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage3 (Post-Fight)">
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 4 - The Base of Mt.Saintere
-        $> Cast Members: Raven, Saki, ???
-        <dialogue name::"Stage4 (Saki Introduction)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage4 (Pre-Fight)">
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage 4 (Mid-Fight)">
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage 4 (Post-Fight)">
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 5 - The Summit of Mt. Saintere
-        $> Cast Members: Raven, Luu
-        <dialogue name::"Stage5 (Introduction)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage5 (Luu Introduction)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>        
-        <dialogue name::"Stage5 (Pre-Fight)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage5 (Mid-Fight)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage5 (Post-Fight)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 6 - Inside Gelmorithe's Dream
-        $> Cast Members: Raven, Devi, Mythril
-        $> (Sidenote) Gelmorithe's Dream is a realm that seperates all things opposing...
-        $> That includes bridging the gap between what's living and non-living.
-        <dialogue name::"Stage6" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage6" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage6" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 7 - White Zenithe
-        $> Cast Members: Raven, Mythril, Adula
-        <dialogue name::"Stage7 (Introduction)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage7 (Mythril Introduction)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage7 (Pre-Fight)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage7 (Mid-Fight)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage7 (Post-Fight)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 8 - Star Simulatre
-        $> Cast Members: Raven, Maplestar
-        <dialogue name::"Stage8 (Maple Introduction)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage8 (Pre-Fight)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage8 (Post-Fight)" >
-            @Maple Temporary Dialogue...{pause}<<
-        </dialogue>
-    </dialogueGroup>
-
-    $/  This is going to be Hanabi's Main Route.
-        Her route is supposedly not canon to the game's
-        actual story (at least not completely). The 
-        events she goes through ties in some way, just not in
-        that fashion.   /$
-    <dialogueGroup name::"HanabiRoute">
-        $> Dialogue Sets for Stage 1 - Grasslands
-        $> Cast Members: Raven, Devi
-		<dialogue name::"Stage1 (Pre-Fight)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-		</dialogue>
-        <dialogue name::"Stage1 (Post-Fight)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 2 - Silka's Forest
-        $> Cast Members: Raven, Hana, Ageha, Konoha, Urara, Silka Mei
-        <dialogue name::"Stage2 (Stage Introduction)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Hana Introduction)" >
-            @Hanabi  Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Hana Outro)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Ageha Introduction)" >
-            @Hanabi  Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Ageha Outro)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Konoha and Urara Introduction)" >
-            @Hanabi  Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Konoha and Urara Outro)" >
-            @Hanabi  Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Pre-Fight)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Mid-Fight)" >
-            @Hanabi  Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage2 (Post-Fight)" >
-            @Hanabi  Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 3 - Capitole Ruins
-        $> Cast Members: Raven, Anemelle
-        <dialogue name::"Stage3 (Introduction)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage3 (Pre-Fight)">
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage3 (Post-Fight)">
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 4 - The Base of Mt.Saintere
-        $> Cast Members: Raven, Saki, ???
-        <dialogue name::"Stage4 (Saki Introduction)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage4 (Pre-Fight)">
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage 4 (Mid-Fight)">
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage 4 (Post-Fight)">
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 5 - The Summit of Mt. Saintere
-        $> Cast Members: Raven, Luu
-        <dialogue name::"Stage5 (Introduction)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage5 (Luu Introduction)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>        
-        <dialogue name::"Stage5 (Pre-Fight)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage5 (Mid-Fight)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage5 (Post-Fight)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 6 - Inside Gelmorithe's Dream
-        $> Cast Members: Raven, Devi, Mythril
-        $> (Sidenote) Gelmorithe's Dream is a realm that seperates all things opposing...
-        $> That includes bridging the gap between what's living and non-living.
-        <dialogue name::"Stage6" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage6" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage6" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 7 - White Zenithe
-        $> Cast Members: Raven, Mythril, Adula
-        <dialogue name::"Stage7 (Introduction)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage7 (Mythril Introduction)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage7 (Pre-Fight)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage7 (Mid-Fight)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage7 (Post-Fight)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-
-        $> Dialogue Sets for Stage 8 - Star Simulatre
-        $> Cast Members: Raven, Maplestar
-        <dialogue name::"Stage8 (Maple Introduction)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage8 (Pre-Fight)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-        <dialogue name::"Stage8 (Post-Fight)" >
-            @Hanabi Temporary Dialogue...{pause}<<
-        </dialogue>
-    </dialogueGroup>
+        @ {lindex::false}With that said, logging out!<
+        @Maple Hello everyone!<
+        @* And welcome to Maple's Academy!<
+        @* With I, Maple Mirrip Maplestar, as your instructor!<           
+        @* What is this white space yo may ask?<
+        @* Well, in order for me to show you the ropes, we're going to have to simulate all of these exercise inside a...<
+        @* Well...> special room.<
+        @* More like special plane of existance.<
+        @* I call it the Star Simulatre.<           
+        @* If I were to explain it in detail, I think you'd end up having a brain aneurysm.<
+        @* I will say thought, that this "pocket dimension" is able to simulate any past, present, or future events with apex-level precision.<
+        @* Which in my opinion makes for an excellent training hall!<           
+        @* Well, with that out of tway, let's bein the lecture!<
+        @* Today, I've brought a very special guest to act as a volunteer.<
+        @* Soooo special in fact that we're practically family!<
+        @* Please give a bign, warm welcome to Raven Lilac!<        
+        @Raven What experiement are you having me do this time?<
+        @Maple No experiments this time!<
+        @* I just needed someone to act as a volunteer for our friend on the other side of the monitor.<
+        @Raven There you go spouting deranged jargon again...<
+        @Maple But it's not weird.> In this realm of existence, literally anything's possible.<
+        @* And I mean anything...<
+        @Raven Please, do tell me what a monitor even is...<
+        @Maple Don't worry about all the minor details!>
+                What's important is that you'll be showing us a couple of 
+                demonstrations on how this game functions.<
+        @Raven Again, what "game" are you even talking about?<
+        @* Are you perhaps implying that something omnipresent is currently watching us from the "other side"?<
+        @Maple No!> That's not it at all!<
+        @Raven You worry me sometimes Maple.<
+        @Maple If I were to explain it all, this would just turn into a hefty seminar.<
+        @Raven Sigh...> Well... Alright then...<
+        @* So I am to show this unknown entity... what exactly?<
+        @Maple The basics on how to play this game.<
+        @Raven Right.... right... Whatever this "game" is, I am supposed to be demonstrating, correct?<
+        @Maple That's correct! As I said, I won't be conducting any more experiments this time!<
+        @* Think of this as some sort of out-of-this-world magic-enhancment training.<
+        @Raven Makes sense, though I haven't done anything like that in awhile...<
+        @* In any case, this should not be so much of a nuisance.<
+        @Maple Thanks Sis!>
+                I can always count on you to assist me during a time of need!<
+        @* Shall we get started?<
+        @Raven This area's filled with countless familiars.<
+        @* The world is way out of hand right now.<
+        @* And that girl...<
+        @* I've seen that attire from somewhere...<
+        @* I feel her essence is in disarray.<
+        @* Unstable, not in an ideal state of mind...<
+        @* However...> I guess I know where she's coming from.<
+        @* I digress.{delay::500} I need to caught up to her with haste.<
+        @??? Uwah!<
+        @??? Another one?!<
+        @Raven Strange...<
+        @* What business does a devil have in Fauna's sacred lands?<
+        @??? Uwahhhhhh!<
+        @* Please don't hurt me!<
+        @* I'm just trying to find my master!<
+        @* I thought she was right now! Huggggggh! I'm so bad with direction.<
+        @Raven Perhaps the Magus Distrubance that hinder's the World's magus.<
+        @??? I already had one person bully me just a minute ago, but she said I wasn't even 
+        worth the trouble!<
+        @??? No compassion! Where's the love?!<
+        @Raven Perhaps it's that young maiden I say flying by...<
+        @Raven May I have a name, young devil?<
+        @??? It's Devi!<
+        @Devi If you're trying to banish me, I won't have it!<
+        @* I may not look like it, but I've very strong!<
+        @Raven Wait!{delay::500} I wish for no confrontation!<
+        @* She's on edge. Seems her mind must be eased.<
+        @* But from her forma, T'is evident that her remark is no bluff.<
+        @Devi N... No more bullying!<
+        @* There can only be love!<
+        @* I just want to find my master!<
+        @* Nothing more!{delay::3000}<<
+        @Devi Uwah!<
+        @* What good is it if I can never protect myself.<
+        @* I'll never find my master at this rate.<
+        @Raven You musn't falter.<
+        @* You in fact have a lot of potential.<
+        @* But your forma was very irregular.<
+        @Devi Where could she be?<
+        @* I can sense her all the way from here?<
+        @Raven Pardon?<
+        @Devi My master.<
+        @* I seen her magic everyone...<
+        @* Or at least reminiscient of that of my master...<
+        @Raven Could this magus disturbanced be the product of your master?<
+        @Devi I...> not sure on that...<
+        @* It feels like her...{delay::1000} but also...<
+        @* it doesn't.<
+        @Raven In any case, I'm making my way to the source promptly.<
+        @* Rather it's your master or not is unsure.<
+        @Devi Ah!<
+        @* Miss Witch?<
+        @Raven Name's Raven Lilac of the Lilac Cult.<
+        @Devi Okay, then... Raven...<
+        @* Please take me with you!<
+        @* If it's my master, I can stop it!<
+        @* However, she's never the kind to cause such grief and mishap amongst mortals...<
+        @* ...<
+        @* In any case...> I'm sorry for all the trouble that we may be causing.<
+        @* I have nothing but love for mortals.<
+        @Raven It's quite alright.<
+        @* As you speak of your master, I don't she's the cause of the magus disturbance.<
+        @* I'm doing the best I can to resolve this.<
+        @* And hopefully, this will validate my humanity.<
+        @Devi Ms. Raven!<
+        @* Please take me with you!<
+        @* I won't be a hinderance to you!<
+        @* You know my name...> So... you can summon me at any will.<
+        @Raven Is it not that a contract must be form between man and devil?<
+        @Devi Well...<
+        @* Uwahhhhh! You're right! You're absolutely right.<
+        @Raven Here...<
+        @Devi An pretty gem?!<
+        @* But I couldn't! We've just met after all.<
+        @Raven Precisely why I'm handing it to you.<
+        @* We can sustain all connections between each other.<
+        @* Treat it as a memento of our acquaintanceship.<
+        @Devi A...{delay::1000} whadda...{delay::250} ship.<
+        @* Ah!<
+        @* Does this means that we're friends?<
+        @Raven Suppose{delay::500} you may put it that way.<
+        @* Makes it less formal.<
+        @* If you wish it to be so.<
+        @Devi ...<
+        @* Finally, my first friend with a mortal!<
+        @* ...<
+        @Raven You must bare your memento on your person indefinitely for 
+        when I am of need of your assistance.<
+        @Devi I will treasure it!<
+        @* I can't want to tell my master about this.<<
+        @Raven This Nymph's Forest...<
+        @* It too is feeling the effects.<
+        @* Perhaps...<
+        @??? A human!<
+        @??? You're not allowed here!<
+        @Raven Who must you be?<
+        @Hana I'm Hana, Equinoxist of Spring.<
+        @* It's kind of rude that you'd asked that without giving your name.<
+        @Raven Raven Lilac of the Lilac Cult.<
+        @* It's evident that this forest is losing it's magus reserves.<
+        @Hana Which is why you're not allowed!< 
+        @Hana Hmph!<
+        @* You're such a dummy!<
+        @Raven ???<<
+        @??? A HUMAN!<
+        @??? Hello human!<
+        @Ageha I'm Ageha! Equinoxist of Summer!<
+        @* Welcome to our beloved home!<
+        @Raven Hello.<
+        @* I am Raven Lilac of the Lilac Cult.<
+        @* How long have the inhabitants been struggling from this endeavour?<
+        @Ageha I honestly have no idea!<
+        @* But the others told me that we were in serious trouble!<
+        @* If I were to see any humans, I were to drive them out!<
+        @Raven I can not blame you. Conduct your duties as promptly.<
+        @Ageha Wow! You're so strong!<
+        @Raven The situation must be more dire than I've preceived.<
+        @* I may be able to do something about it.<
+        @??? Sister, look!<
+        @??? Was this the human that Ageha was talking about?<
+        @??? She's absolutely elegant.<
+        @Raven More nymphs...<
+        @* Their sizes counts me as astonishing.<
+        @* Especially these two.<
+        @??? Ageha came running to us saying {quot}I meet a human, and she was soooo strong!.<
+        @??? You guys will definitely have a really hard time with her!{quot}<
+        @??? It seems she was right.<
+        @??? Unfortunately, as mush as we want you to stay, we have an obligation to drive any suspected bodies away from our home.<
+        @Konoha I'm Konoha, Equinoxist of Autumn.<
+        @Urara I'm Urara, Equinoxist of Winter, elegantly so.<
+        @Konoha Leave, or prepare to meet your end!<<
+        @Urara Ageha was right...<
+        @* She is quite elegantly formitable.<
+        @Konoha Seems there's no pursuading her.<
+        @* I wish to not fight her again to be honest.<
+        @Raven This forest is really on high alert.<
+        @* Not only that, but there's been 4 highly developed nymphs so far...<
+        @* There must be a very powerful influence.<
+        @Konoha Seems you've fail to heed our warning...<
+        @??? Hiiii!<
+        @??? No need for hostility.<
+        @??? It's very nice to meet you human.<
+        @Silka My name is Silka Mei, and I'm the protector of this forest.<
+        @* Tell me, what brings you here to our home?<
+        @Raven Simply passing by...<
+        @* Though I couldn't help seeing your home in a dire situation.<
+        @Silka Ever since the Magus Disturbance occured, our plants have simply wilted away.<
+        @* Leaves falling prematurally...<
+        @* It's a dire situation indeed.<
+        @* Who must you be?<
+        @Raven Name's Lilac, member of the Lilac Cult.<
+        @Silka As I expected!<
+        @* That would make you a witch.<
+        @* My sisters have told me a lot about you.<
+        @Ageha A Witch?!<
+        @* No wonder she was so strong!<
+        @Urara And elegant might I had.<
+        @Silka Yes. She is quite well dignified.<
+        @* I've definltey recognized your attire, but that was eons ago.<
+        @Hana I didn't know Witches were real...<
+        @* I've heard stories from Silka...<
+        @* But we've personally never encountered them before.<
+        @Silka Sorry for the chaos.<
+        @* Me and my sisters mean no ill will.<
+        @* I see all creatures as good.<
+        @* Though, I suppose Mother Nature would know best after all...<
+        @* These turn of events have really been Unfortunate.<
+        @* Since you're here, we should put together a welcome party.<
+        @* It's the least we can do since you'll be the last to be here.<
+        @Hana Please don't take this personally.<
+        @Konoha We'll be sure to have you fall as gracefully as the autumn leaves.<
+        @Urara Elegantly I might add!<
+        @Ageha Yay! We get to play with the Witch!<
+        @Hana I don't think now's the time for that...<<
+        @Silka It's as they say.<
+        @* Witches are indeed very powerful...<
+        @* Especially of the Lilac Cult.<
+        @Raven I wish to not continue this.<
+        @Silka I understand.<
+        @* Mother Nature knows best after all.<
+        @* But this place is very special.<
+        @* Saying that I'm it's protected is an understatement.<
+        @* That would simply do you an injustice.<
+        @* I'll rid of anything and everything...<
+        @* No matter the moral spectrum.<
+        @* This is something that has been entrusted by someone very important to me...<
+        @* And I can never break her promise.<
+        @Silka I suppose we can't best you at all.<
+        @Raven My apologizes.<
+        @* I didn't mean to cause any distubance.<
+        @Silka It's quite alright.<
+        @* Though, I don't know what to make of the situation.<
+        @* Was the Blessing of Mother Nature not enough...<
+        @* To protect our home?<
+        @Ageha Sis, please don't be sad.<
+        @Hana Silka.<
+        @Silka I'm alright.<
+        @* I can't not afford to be sad.<
+        @* We'll continue as we are to protect what was almost lost.<
+        @Urara A blessing we can never lose.<
+        @Konoha A paradise that can never fall.<
+        @Raven ...<
+        @* This forest...<
+        @* Is that precious to you...<
+        @Silka Centries ago, this forest was on the verge of collapse.<
+        @* Perhaps far worse than how it already is...<
+        @* But a young maiden quite like yourself came along.<
+        @* A dryad on the verge of death...<
+        @* I was so weak back them.<
+        @* Bless her kinded soul.<
+        @* She was the blessing that we needed most.<
+        @* A blessing Mother Nature knew was the answer.<
+        @* As she stayed, she cured me of my aliments...<
+        @* then bestowed me a name.<
+        @* She left a promise to me, which my gift shall I further protect our home.<
+        @* I can never forget that day.<
+        @* I've then give life to my sisters and bestowed them names as well.<          
+        @Raven I see.<
+        @* You were given so much from her...<
+        @* Enough to even part from your own tree.<
+        @* Enough to give strength to your sisters.<
+        @Silka You know of Dryads?<
+        @Raven Enough so.<
+        @* It presents me more the reason to assist.<
+        @* At least to give me enough time to resolve this matter.<
+        @Silka You say you will help us.<
+        @Raven I couldn't help but notice how much the magus distubance is drawing all the life from this forest.<
+        @* I should have enough to aid you and restore this forest to once it was.<
+        @* If that's alright with you.<
+        @Silka You mustn't.<
+        @Raven Leaving it be would be a grave disservice.<       
+        @Konoha So does that mean our home will last forevermore?<
+        @Urara Elegant as you are kind.<
+        @Hana Thank you, Miss. Raven!<
+        @Ageha Many, many thanks Big Sis!<
+        @Silka Hehe!<
+        @* ...<
+        @* When I look in to your eyes, you remind me a lot about her.<
+        @* Loving, compassionate, strong, beautiful.<
+        @* We are forever in your debt.< 
+        @* Please do come back once you've completed your task.<
+        @* We'll have a proper welcome party.<
+        @* But without the farewell.<
+        @Ageha Please come back, Big Sis!<   
+        @Hana Please come back... And be safe as well...<
+        @* Big sis...<
+        @Urara How extravagant! We have a new big Sister!< 
+        @Konoha It would seem.<
+        @* We wish you save travels.<
+        @Silka With Mother Nature's embrace, shall she aid in your endeavours.<
+        @Raven I can sense the Day of Renascence hastily approaching.<
+        @* I need to make it to the source, post haste.<
+        @* But this rubble...<
+        @* Was it once an ancient civilization brought to ruin?<<
+        @* ...<
+        @* Such a sad sight.<
+        @* It could be the last thing that I'll ever see.<
+        @??? Hold it there, suspection entity!<
+        @??? What are you doing in the Realm of Heroes?<
+        @??? State your business, and address yourself promptly.<
+        @Raven Name's Raven.<
+        @* I'm simply passing over your land to address an important matter.<
+        @??? You've got some vendeta against Orighd?<
+        @??? Might you be the cause of the atrocities happening across all over the Far Land of Magic?<
+        @Raven You must jest.<
+        @* I'm not the one causing this phenomenon.<
+        @* A witch is on the verge of rebirth.<
+        @* A very powerful one.<
+        @??? I, I see...<
+        @??? I thought as much.<
+        @??? My blade has told me that you're not the culprit.<
+        @??? I simply can't sense any malice in you.<  
+        @Anemelle My name is Anemelle Lumen, a bearer of Hyromagnda, the Holy Sword.<
+        @* A noble by serventhood of the Kingdom of Lorrim.<
+        @* And also among the strongest of soceress over the land.<
+        @Raven Hyromagnda...<
+        @* I've definitely heard the name in ancient scriptures.<   
+        @Anemelle I sense that your business that you have in the Realm of Heroes is valid, Witch of the Lilac Cult.<
+        @* Although you have no malice towards Orighd, as the highest order of the Holy Knights...<
+        @* I must uphold my duties as such.<
+        @* Though why have interest in this witch soon to reborn?<
+        @* Us Holy Knights have everything taken care of.<
+        @* There's no need for intervention.<
+        @Raven As a Witch myself, I have an obligation to settle this matter as a single body.<
+        @* The longer this proceeds, this land will face far worse atrocities.<
+        @* Worse than the ancient wars combined.<
+        @Anemelle It's as if you know so much about the situation.<
+        @* Were you perhaps allies with this person?<
+        @* An enemy perhaps?<
+        @* What unfound powers do they hold?<
+        @* How can the banished even be revived as such?<
+        @* You must tell me, at once!<
+        @Raven I bare no time for interrogations.<
+        @Anemelle ...<
+        @* I see...<
+        @* Well, my deepest apologies.<
+        @* But the time to reconsider is now!<
+        @* The path you are taking is sacred ground.<
+        @* As I've said, Mount Saintere is watch-guarded.<
+        @* Even if you pass me, it's deemed unreachable.<
+        @* Especially those deriving from the wicked.<
+        @* Such as the one before you.<
+        @* You'll most certainly die in vain, whatever your plans might of been.<
+        @Raven You seem very capable.<
+        @* Why did you not stop her?<
+        @* Cooperations seems imminate.<
+        @* Please, I ask you to go back from once you came.<
+        @* Or show your resolve, right here, and now!<<       
+        @Anemelle Astounding!<
+        @* Your Crystal magic is impeccible!<
+        @* Much expected for a member of the Lilac Cult.<
+        @* But you're so much different from any Witch I've encountered.<
+        @Raven ...<
+        @* You're acknowledgement is very much appreciated...<
+        @* However...> I wish to cast aside such notions.<
+        @Anemelle ...<
+        @* My apologizes, Raven Lilac.<
+        @* How inconsiderate of me to disregard your feelings.<
+        @* The blade speaks of your kindness...<
+        @* But bares no answers.<
+        @Raven My standing as a Witch was already determined at birth.<
+        @* The life in which I should live is not of my own.<
+        @* What I've done can't never be reconciled.<
+        @* Time only moves forward.<
+        @* So, whilest I still have my humanity, I wish to give and not take.<
+        @* For the sake of my humanity of which hangs by a thread.<
+        @* Resolve this issue will stand as my atonement.<
+        @Anemelle A selfish do-gooder.<
+        @* I suppose fate is your enemy?<
+        @* ...<
+        @* So strong... so admirable.<
+        @* This was bestowed upon me by the King's Advisor of Lorrim.<
+        @* The Hyromagnda knows, and so do I.<
+        @* And since that day, deep inside...<
+        @* I felt the need to protect this land.<
+        @* ...<
+        @* It pains me... so much so.<
+        @* This knowledge I bare should be sin.<
+        @* In honesty, I don't know what to make of this world.<
+        @* I know the feeling... of fate deeming antagonistic.<
+        @* Bearing the Hyromagnda means becoming the new heir of Bezzelet...<
+        @* The rubble that stands before us.<
+        @* Despite my status and sheer strange, I can't help but ponder...<
+        @* If I'm fit to liberate, rebuild, and become queen of once an ancient civilization.<
+        @* With this strength, who am I to fight for?<
+        @* The current King and his advisor have done so much for me.<
+        @* Would standing before you now and exchanging words of passion be an act of treason...<
+        @* Despite witnessing with the greatest of sight that your humanity is plattered in gold...<
+        @* A Cardinal Sin?<
+        @* I beared these insecurites for so long...<
+        @* However, how can fate be the enemy if it has gifted me the greatest thing in the world?<
+        @* With every ounce of our essence clashing...<
+        @* Comparing your troubles through my sword is immeasurable.<
+        @* The mainly young maiden that could frolic through these fields...<
+        @* Are instead stripe of their being... their humanity...<
+        @* Their freedom...<
+        @* I felt it from the young maiden before you.<
+        @* However, through my blade, I fear that her actions may lead to distruction.<
+        @Raven Indeed.<
+        @Anemelle Raven Lilac, as one who bares a marker of a Witch, you must assure that 
+        the young maiden strays from that aura.<
+        @* With your resolve and humanity proven...<
+        @* You are the only one to stop her.<
+        @Raven ...<
+        @Anemlle Over there... Is your next destination.<
+        @* Mount Saintere is a sacred place...<
+        @* It is said to be the Origin of all magic.<
+        @* It may take you several moons to reach...<
+        @* But as you know, it's not a place for the wicked.<
+        @* It's highly guarded by the Holy Knights, as natural.<
+        @* However, it's likely that They will be guarding it as well...<
+        @* Please, conduct your deed with the likelihood that paint will show.<
+        @Raven Understood.<
+        @Anemelle ...<
+        @* And please...<
+        @* Whenever you do return...<
+        @* And I am able to restore these ruins to its former glory and more...<
+        @* I would like you to be by my side.<
+        @Raven ...<
+        @Raven Thank you.<
+        @Raven Temporary Dialogue...{pause}<
+        @Raven Temporary Dialogue...{pause}<
+        @Raven Temporary Dialogue...{pause}<
+        @Raven Temporary Dialogue...{pause}<
+        @Raven Temporary Dialogue...{pause}<
+        @Raven Temporary Dialogue...{pause}<<
+    </dialogue>        
 </proxy>

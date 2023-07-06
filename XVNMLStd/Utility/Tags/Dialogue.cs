@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using XVNML.Core.Dialogue;
+using XVNML.Core.Lexer;
 using XVNML.Core.Parser;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
@@ -14,7 +16,7 @@ namespace XVNML.XVNMLUtility.Tags
     {
         const string _DialogueDir = DefaultDialogueDirectory;
 
-        [JsonProperty] public string? Script { get; private set; }
+        [JsonProperty] public SyntaxToken?[]? Script { get; private set; }
         [JsonProperty] public string? Name { get; private set; }
         [JsonProperty] public bool DoNotDetain { get; private set; } = false;
 
@@ -68,7 +70,7 @@ namespace XVNML.XVNMLUtility.Tags
 
         private void Configure()
         {
-            Script = value?.ToString();
+            Script = (SyntaxToken[])value!;
             Name = TagName;
 
             // Flags

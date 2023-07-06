@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using XVNML.Core.Lexer;
 using XVNML.Core.Parser.Enums;
 using XVNML.Core.Tags;
+using XVNML.Core.Enums;
 using XVNML.Utility.Diagnostics;
 
 namespace XVNML.Core.Parser
@@ -12,20 +14,26 @@ namespace XVNML.Core.Parser
     public sealed class TagParser
     {
         #region Fields and Properties
-        protected int _position = -1;
 
         internal string? fileTarget;
+        internal TagBase? root;
+        internal Action? _onParserCompleted;
 
         private bool _conflict;
+        private int _position = -1;
+        private string? _cachedTagName;
 
-        Tokenizer? _tokenizer = null;
-
+        private List<SyntaxToken?> _dialogueValueTokenCache = new List<SyntaxToken?>(0xFFFF);
         private ParserEvaluationState _evaluationState = ParserEvaluationState.Tag;
+        private StringBuilder _tagValueStringBuilder = new StringBuilder(0xFFFF);
+        private SyntaxToken? _Current => Peek(0, true);
+        private Tokenizer? _tokenizer = null;
+        private TagParameterInfo? _cachedTagParameterInfo;
+        
+        private readonly Queue<Action> _solvingQueue = new Queue<Action>(1024);
+        private readonly Stack<TagBase> _tagStackFrame = new Stack<TagBase>(128);
 
-        readonly Stack<TagBase> _tagStackFrame = new Stack<TagBase>();
-        int TagLevel => _tagStackFrame.Count - 1;
-
-        TagBase? _topOfStack
+        private TagBase? TopOfStack
         {
             get
             {
@@ -33,24 +41,10 @@ namespace XVNML.Core.Parser
                 return _tagStackFrame.Peek();
             }
         }
-
-        internal TagBase? root;
-
-        //Temporary Cache
-        TagParameterInfo? _cachedTagParameterInfo;
-        string? _cachedTagName;
-
-        public void SetTarget(string fileTarget) => this.fileTarget = fileTarget.ToString();
-
-        private SyntaxToken? _Current => Peek(0, true);
-
-        //This is important for anything in between tags (for example) <title>Hi</title>
-        private StringBuilder _tagValueStringBuilder = new StringBuilder();
-        private readonly Queue<Action> _solvingQueue = new Queue<Action>();
-
-        internal Action? _onParserCompleted;
         #endregion
 
+        public void SetTarget(string fileTarget) => this.fileTarget = fileTarget.ToString();
+        
         public void Parse(Action? onComplete)
         {
             _onParserCompleted = onComplete;
@@ -135,11 +129,18 @@ namespace XVNML.Core.Parser
 
                 SyntaxToken? token = _Current;
 
-                if (_evaluationState == ParserEvaluationState.TagValue || _evaluationState == ParserEvaluationState.Dialogue)
+                if (_evaluationState == ParserEvaluationState.Dialogue)
+                {
+                    HandleDialogueValue();
+                    continue;
+                }
+
+                if (_evaluationState == ParserEvaluationState.TagValue)
                 {
                     HandleTagValue();
                     continue;
                 }
+
 
                 if (_evaluationState == ParserEvaluationState.Tag)
                 {
@@ -149,6 +150,7 @@ namespace XVNML.Core.Parser
                 }
             }
         }
+
 
         private void EvaluateTags(ref SyntaxToken? token, out bool complete)
         {
@@ -196,11 +198,6 @@ namespace XVNML.Core.Parser
                     HandleString();
                     return;
 
-                case TokenType.At:
-                    if (_evaluationState == ParserEvaluationState.TagValue)
-                        ChangeEvaluationState(ParserEvaluationState.Dialogue);
-                    return;
-
                 default:
                     break;
             }
@@ -231,7 +228,7 @@ namespace XVNML.Core.Parser
 
         private void CloseCurrentTag()
         {
-            var top = _topOfStack;
+            var top = TopOfStack;
 
             if (top == null) return;
 
@@ -246,6 +243,12 @@ namespace XVNML.Core.Parser
             {
                 top.value = _tagValueStringBuilder.ToString().Trim('\n');
                 _tagValueStringBuilder.Clear();
+            }
+
+            if (_dialogueValueTokenCache.Count > 0)
+            {
+                top.value = _dialogueValueTokenCache.ToArray();
+                _dialogueValueTokenCache.Clear();
             }
 
             var dirInfo = new DirectoryInfo(fileTarget!);
@@ -284,9 +287,9 @@ namespace XVNML.Core.Parser
                     }
 
                     //Expect matching name
-                    if (_Current.Text != _topOfStack?.tagTypeName)
+                    if (_Current.Text != TopOfStack?.tagTypeName)
                     {
-                        Abort($"Tag Leveling for {_topOfStack?.tagTypeName} does not match with closing tag " +
+                        Abort($"Tag Leveling for {TopOfStack?.tagTypeName} does not match with closing tag " +
                             $"{_Current.Text}");
                         return;
                     }
@@ -313,16 +316,16 @@ namespace XVNML.Core.Parser
                 if (_Current.Type == TokenType.Identifier)
                 {
                     //This means that we are creating a tag
-                    var newTag = TagConverter.Convert(_Current.Text!);
+                    var newTag = TagConverter.ConvertToTagInstance(_Current.Text!);
                     newTag!.tagTypeName = _Current.Text;
 
                     //If top is still open, it means we're nesting
-                    if (_topOfStack != null &&
-                        _topOfStack.tagState == TagEvaluationState.Open)
+                    if (TopOfStack != null &&
+                        TopOfStack.tagState == TagEvaluationState.Open)
                     {
-                        _topOfStack.elements = _topOfStack.elements ?? new List<TagBase>();
-                        _topOfStack.elements.Add(newTag);
-                        newTag.parentTag = _topOfStack;
+                        TopOfStack.elements = TopOfStack.elements ?? new List<TagBase>();
+                        TopOfStack.elements.Add(newTag);
+                        newTag.parentTag = TopOfStack;
                     }
 
                     _tagStackFrame.Push(newTag);
@@ -333,46 +336,53 @@ namespace XVNML.Core.Parser
         
         private void HandleCloseBracket()
         {
-            if (_topOfStack!.isSelfClosing)
+            if (TopOfStack!.isSelfClosing)
             {
                 CloseCurrentTag();
                 return;
             }
 
-            _topOfStack.tagState = TagEvaluationState.Open;
-            _topOfStack._parameterInfo = _cachedTagParameterInfo;
+            TopOfStack.tagState = TagEvaluationState.Open;
+            TopOfStack._parameterInfo = _cachedTagParameterInfo;
             _cachedTagParameterInfo = null;
 
-            if (Peek(1)?.Type == TokenType.OpenBracket) return;
+            var nextToken = Peek(1);
+            var nextTokenType = nextToken?.Type;
 
+            if (nextTokenType == TokenType.OpenBracket) return;
+            if (nextTokenType == TokenType.At)
+            {
+                ChangeEvaluationState(ParserEvaluationState.Dialogue);
+                return;
+            }
             ChangeEvaluationState(ParserEvaluationState.TagValue);
         }
 
         private void HandleForwardSlash()
         {
             if (Peek(1)?.Type != TokenType.CloseBracket) return;
-            _topOfStack!.isSelfClosing = true;
+            TopOfStack!.isSelfClosing = true;
         }
 
         private void HandlePound()
         {
-            if (_topOfStack!.tagState != TagEvaluationState.OnParameters) return;
-            _topOfStack.isSettingFlag = true;
+            if (TopOfStack!.tagState != TagEvaluationState.OnParameters) return;
+            TopOfStack.isSettingFlag = true;
         }
 
         private void HandleIdentifier()
         {
-            if (_topOfStack!.tagState != TagEvaluationState.OnParameters) return;
+            if (TopOfStack!.tagState != TagEvaluationState.OnParameters) return;
 
             _cachedTagParameterInfo ??= new TagParameterInfo();
 
-            if (_topOfStack!.isSettingFlag == true)
+            if (TopOfStack!.isSettingFlag == true)
             {
                 if (Peek(1, true)?.Type != TokenType.DoubleColon)
                 {
                     //This means this is a Flag for the tag
                     _cachedTagParameterInfo.flagParameters.Add(_Current?.Text!);
-                    _topOfStack!.isSettingFlag = false;
+                    TopOfStack!.isSettingFlag = false;
                     return;
                 }
 
@@ -431,22 +441,35 @@ namespace XVNML.Core.Parser
 
         private void HandleString()
         {
-            if (_topOfStack?.tagState != TagEvaluationState.Open) return;
-            _topOfStack.value = _Current?.Value;
+            if (TopOfStack?.tagState != TagEvaluationState.Open) return;
+            TopOfStack.value = _Current?.Value;
         }
 
         private void HandleTagValue()
+        {
+            if (CurrentlyAtEndOfValueScope()) return;
+
+            _tagValueStringBuilder.Append(_Current?.Type == TokenType.String ?
+                $"\"{_Current?.Text}\"" :
+                _Current?.Text);
+        }
+
+        private void HandleDialogueValue()
+        {
+            if (CurrentlyAtEndOfValueScope()) return;
+
+            _dialogueValueTokenCache.Add(_Current);
+        }
+
+        private bool CurrentlyAtEndOfValueScope()
         {
             if (_Current?.Type == TokenType.OpenBracket && Peek(1, true)?.Type == TokenType.ForwardSlash)
             {
                 ChangeEvaluationState(ParserEvaluationState.Tag);
                 _position--;
-                return;
+                return true;
             }
-
-            _tagValueStringBuilder.Append(_Current?.Type == TokenType.String ?
-                $"\"{_Current?.Text}\"" :
-                _Current?.Text);
+            return false;
         }
         #endregion
     }

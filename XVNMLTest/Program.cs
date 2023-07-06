@@ -10,7 +10,7 @@ static class Program
     private static bool finished = false;
     static void Main(string[] args)
     {
-        XVNMLObj.UseOrCreate(@"E:\Documents\Repositories\C#\XVNML\XVNMLTest\XVNMLFiles\test0.main.xvnml", dom =>
+        XVNMLObj.Create(@"E:\Documents\Repositories\C#\XVNML\XVNMLTest\XVNMLFiles\test0.main.xvnml", dom =>
         {
             if (dom == null) return;
             if (dom.Root == null) return;

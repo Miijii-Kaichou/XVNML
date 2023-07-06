@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
 using XVNML.Core.Tags;
+using XVNML.Core.Enums;
 
 internal delegate void ReferenceLinkerHandler(TagBase? sender, TagBase? referencingTag, Type type);
 
@@ -16,7 +15,9 @@ namespace XVNML.Core.Parser
 {
     internal sealed class SkriptrParser
     {
-        public string Source { get; }
+        private static SkriptrParser? Instance;
+
+        public SyntaxToken?[] TokenCache { get; }
 
         private DialogueParserMode CurrentMode;
 
@@ -29,7 +30,6 @@ namespace XVNML.Core.Parser
         private bool? IsReadingLineContent = false;
         private bool? IsCreatingPromptChoices = false;
 
-        private static Tokenizer? Tokenizer;
         private static bool _Conflict;
         private static int _position = -1;
 
@@ -42,54 +42,47 @@ namespace XVNML.Core.Parser
         private static Stack<SkripterLine> ResolveStack = new Stack<SkripterLine>();
         private static bool ResolvePending;
 
-        public SkriptrParser(string dialogueSource, out DialogueScript? output)
+        public SkriptrParser(SyntaxToken?[] dialogueTokenCache, out DialogueScript? output)
         {
+            Instance = this;
+
             _position = -1;
             _Conflict = false;
             ReadyToBuild = false;
             FindFirstLine = false;
             _evaluatingCast = false;
             CurrentMode = DialogueParserMode.Dialogue;
-            Source = dialogueSource;
+            TokenCache = dialogueTokenCache;
 
-            output = ParseDialogue();
-        }
-
-        private DialogueScript? ParseDialogue()
-        {
-            Tokenizer = new Tokenizer(Source, TokenizerReadState.Local);
-            _Conflict = Tokenizer.GetConflictState();
-            if (_Conflict) return null;
-            return  CreateDialogueOutput();
+            output = CreateDialogueOutput();
         }
 
         private DialogueScript? CreateDialogueOutput()
         {
-            if (Tokenizer == null) return null;
+            if (TokenCache == null) return null;
 
-            var tokenizer = Tokenizer;
+            var tokenList = TokenCache;
 
             DialogueScript output = new DialogueScript();
             SkripterLine line = new SkripterLine();
             int linesCollected = -1;
-            Stack<((SkripterLine, int), Stack<string>)>? promptCacheStack = new Stack<((SkripterLine, int), Stack<string>)>();
-            Stack<int> responseLengthStack = new Stack<int>();
+            Stack<((SkripterLine, int), Stack<string>)>? promptCacheStack = new Stack<((SkripterLine, int), Stack<string>)>(1024);
+            Stack<int> responseLengthStack = new Stack<int>(1024);
 
 
             // Used to define a Cast Signature (based on documentation)
             var castSignatureCollection = new List<SyntaxToken>();
-            var castSignatureString = new StringBuilder();
             var isClosingLine = false;
 
             string? _cachedLineTag = null;
             bool isAttachingTagToLine = false;
             ResolvePending = false;
 
-            for (int i = 0; i < tokenizer.Length; i++)
+            List<SyntaxToken?> skriptLineTokenCache = new List<SyntaxToken?>(0xFFFF);
+
+            for (_position = 0; _position < tokenList.Length; _position++)
             {
                 if (_Conflict) return null;
-
-                Next();
 
                 SyntaxToken? token = Current;
 
@@ -97,6 +90,7 @@ namespace XVNML.Core.Parser
                 {
                     ReadyToBuild = false;
                     line?.AppendContent(token?.Type == TokenType.String ? $"\"{token?.Text!}\"" : token?.Text!);
+                    skriptLineTokenCache.Add(token);
                     IsReadingLineContent = token?.Type != TokenType.DoubleOpenBracket &&
                     token?.Type != TokenType.OpenBracket;
                     ReadyToBuild = !IsReadingLineContent.Value;
@@ -107,9 +101,9 @@ namespace XVNML.Core.Parser
 
                 if (IsReadingLineContent.Value && CurrentMode == DialogueParserMode.Prompt)
                 {
-
                     ReadyToBuild = false;
                     line?.AppendContent(token?.Type == TokenType.String ? $"\"{token?.Text!}\"" : token?.Text!);
+                    skriptLineTokenCache.Add(token);
                     IsReadingLineContent = token?.Type != TokenType.DoubleCloseBracket;
                     ReadyToBuild = !IsReadingLineContent.Value;
                     if (IsReadingLineContent.Value)
@@ -123,10 +117,9 @@ namespace XVNML.Core.Parser
                         if (FindFirstLine) FindFirstLine = !FindFirstLine;
                         if (ResolvePending) PurgeResolveStack(linesCollected + 1, ref ResolveStack);
                         castSignatureCollection = new List<SyntaxToken>();
-                        castSignatureString = new StringBuilder();
                         ChangeDialogueParserMode(DialogueParserMode.Dialogue);
                         _evaluatingCast = true;
-                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, token);
                         continue;
 
                     //Denote the start of a prompt
@@ -134,10 +127,9 @@ namespace XVNML.Core.Parser
                         if (FindFirstLine) FindFirstLine = !FindFirstLine;
                         if (ResolvePending) PurgeResolveStack(linesCollected + 1, ref ResolveStack);
                         castSignatureCollection = new List<SyntaxToken>();
-                        castSignatureString = new StringBuilder();
                         ChangeDialogueParserMode(DialogueParserMode.Prompt);
                         _evaluatingCast = true;
-                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, token);
                         continue;
 
                     //While in At or Prompt Phase, get information between
@@ -145,7 +137,7 @@ namespace XVNML.Core.Parser
                     // or (Cast>Expression/Voice)
                     case TokenType.OpenBracket:
                         if (!_evaluatingCast) continue;
-                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, token);
                         continue;
 
                     //Only validate at the start or in between {} delimiters
@@ -169,28 +161,20 @@ namespace XVNML.Core.Parser
                             }
                             continue;
                         }
-                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
                         //Otherwise, the identifier will be in-between brackets
-                        continue;
-
-                    //Starting of internal method call, reference, or macro
-                    case TokenType.OpenCurlyBracket:
+                        ConsumeCastSignatureData(castSignatureCollection, token);
                         continue;
 
                     //Acts as delimiter to known dependencies (like the dot operator .)
                     case TokenType.DoubleColon:
                         if (!_evaluatingCast) continue;
-                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, token);
                         continue;
 
                     //At start, means use the same cast character
                     case TokenType.Star:
                         if (!_evaluatingCast) continue;
-                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
-                        continue;
-
-                    //Ending of internal method call
-                    case TokenType.CloseCurlyBracket:
+                        ConsumeCastSignatureData(castSignatureCollection, token);
                         continue;
 
                     //End of current line. If this is the last line in the dialogue set, it is interpretted
@@ -201,16 +185,13 @@ namespace XVNML.Core.Parser
                         // Otherwise, if it's a V:, a vocal is being evaluated.
                         // This also means overriding the evaluationState from Expression
                         // to Voice
-                        if (!_evaluatingCast)
-                        {
-                            continue;
-                        }
-                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
+                        if (!_evaluatingCast) continue;
+                        ConsumeCastSignatureData(castSignatureCollection, token);
                         continue;
 
                     case TokenType.AnonymousCastSymbol:
                         if (!_evaluatingCast) continue;
-                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, token);
                         continue;
 
                     //Leap out of the prompt or dialogue set (this denotes that this is the end of
@@ -227,18 +208,14 @@ namespace XVNML.Core.Parser
                         }
                         continue;
 
-
-                    //This during a cast definition is for setting an expression (or voice) as null
-                    //This can also bee used to put a pause, and have the dialogue continue playing after
-                    //user feedback (as opposed to < where after the dialogue, the whole test would clear).
                     case TokenType.DoubleCloseBracket:
                         if (!_evaluatingCast) continue;
-                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, token);
                         continue;
 
                     case TokenType.Number:
                         if (!_evaluatingCast) continue;
-                        ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
+                        ConsumeCastSignatureData(castSignatureCollection, token);
                         continue;
 
                     //You will mainly find a string within curly brackets, or being
@@ -331,8 +308,8 @@ namespace XVNML.Core.Parser
                     case TokenType.WhiteSpace:
                         if (_evaluatingCast)
                         {
-                            ConsumeCastSignatureData(castSignatureCollection, castSignatureString, token);
-                            DefineCastSignature(castSignatureString, castSignatureCollection, CurrentMode, out (string? Character, string? Expression, string? Voice) cachedData, out CastMemberSignature definedSignature);
+                            ConsumeCastSignatureData(castSignatureCollection, token);
+                            DefineCastSignature(castSignatureCollection, CurrentMode, out (string? Character, string? Expression, string? Voice) cachedData, out CastMemberSignature definedSignature);
 
                             //Create a line
                             line = new SkripterLine()
@@ -378,7 +355,9 @@ namespace XVNML.Core.Parser
                         isClosingLine = false;
                         _cachedLineTag = null;
 
-                        line?.FinalizeAndCleanBuilder();
+                        line?.FinalizeAndCleanBuilder(skriptLineTokenCache!.ToArray());
+
+                        skriptLineTokenCache?.Clear();
 
                         output.ComposeNewLine(line);
                         ReadyToBuild = false;
@@ -418,18 +397,12 @@ namespace XVNML.Core.Parser
             }
         }
 
-        private static void ConsumeCastSignatureData(List<SyntaxToken>? castSignatureCollection, StringBuilder castSignatureString, SyntaxToken? token)
-        {
-            castSignatureCollection?.Add(token ?? default!);
-            castSignatureString.Append(token?.Text);
-        }
-
         /// <summary>
         /// Defines the cast signature based on the given string
         /// </summary>
         /// <param name="queue"></param>
         /// <param name="parsingMode"></param>
-        private void DefineCastSignature(StringBuilder signatureString, List<SyntaxToken> queue, DialogueParserMode parsingMode, out (string? Character, string? Expression, string? Voice) output, out CastMemberSignature signatureDataOutput)
+        private void DefineCastSignature(List<SyntaxToken> queue, DialogueParserMode parsingMode, out (string? Character, string? Expression, string? Voice) output, out CastMemberSignature signatureDataOutput)
         {
             int evaluationPos = -1;
             int evaluationValue = 0;
@@ -611,17 +584,23 @@ namespace XVNML.Core.Parser
 
         public void ChangeDialogueParserMode(DialogueParserMode mode) => CurrentMode = mode;
 
+        private static void ConsumeCastSignatureData(List<SyntaxToken>? castSignatureCollection, SyntaxToken? token)
+        {
+            castSignatureCollection?.Add(token ?? default!);
+        }
 
         private static SyntaxToken? Peek(int offset, bool includeSpaces = false)
         {
-            if (Tokenizer == null) return null;
+            var tokenCache = Instance!.TokenCache;
+            var count = tokenCache.Length - 1;
+
             try
             {
-                var token = Tokenizer[_position + offset];
+                var token = tokenCache[_position + offset];
 
                 while (true)
                 {
-                    token = Tokenizer[_position + offset];
+                    token = tokenCache[_position + offset];
 
                     if ((token?.Type == TokenType.WhiteSpace && includeSpaces == false) ||
                         token?.Type == TokenType.SingleLineComment ||
@@ -637,14 +616,8 @@ namespace XVNML.Core.Parser
             }
             catch
             {
-                return Tokenizer[Tokenizer.Length];
+                return tokenCache[count];
             }
-        }
-
-        private static SyntaxToken? Next()
-        {
-            _position++;
-            return Current;
         }
     }
 }
