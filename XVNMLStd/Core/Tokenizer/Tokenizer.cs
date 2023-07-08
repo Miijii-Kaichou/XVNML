@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -31,6 +32,7 @@ namespace XVNML.Core.Lexer
             }
         }
 
+        public bool AllowForComplexStructure { get; }
         public string? SourceText { get; private set; }
 
         public SyntaxToken? this[int index]
@@ -64,13 +66,15 @@ namespace XVNML.Core.Lexer
 
         internal List<SyntaxToken> definedTokens = new List<SyntaxToken>(0xFFFF);
 
-        public Tokenizer(string sourceText, TokenizerReadState state)
+        public Tokenizer(string sourceText, TokenizerReadState state, bool complicate = false)
         {
+            AllowForComplexStructure = complicate;
             SourceText = sourceText;
             switch (state)
             {
                 case TokenizerReadState.Local:
                     TokenizeLocally();
+                    
                     return;
 
                 case TokenizerReadState.IO:
@@ -98,13 +102,18 @@ namespace XVNML.Core.Lexer
                 SourceText = sb.ToString();
 
                 TokenizeLocally();
-
-                // Batch removal of specific tokens
-                var tokensToRemove = definedTokens
-                    .Where(t => t.Type == TokenType.EOF && t != definedTokens[^1])
-                    .ToList();
-                definedTokens.RemoveAll(tokensToRemove.Contains);
             }
+        }
+
+        internal Tokenizer RemoveRedundantTokens()
+        {
+            var tokensToRemove = definedTokens
+                .Where(t => t.Type == TokenType.EOF ||
+                t.Type == TokenType.MultilineComment ||
+                t.Type == TokenType.SingleLineComment && t != definedTokens[^1])
+                .ToList();
+            definedTokens.RemoveAll(tokensToRemove.Contains);
+            return this;
         }
 
         internal void TokenizeLocally()
@@ -330,6 +339,98 @@ namespace XVNML.Core.Lexer
                 return new SyntaxToken(TokenType.String, _Line, _position++, text, text);
             }
 
+            #region Unique Tokens
+            if (_Current == '<' && AllowForComplexStructure == false)
+            {
+                var isSelfClosing = false;
+
+                Next();
+
+                var isClosingTag = _Current == '/';
+
+                var start = _position;
+                var end = start;
+                while (end == 0 || _Current != '>')
+                {
+                    Next();
+                    if (_Current == '/') isSelfClosing = true;
+                    end++;
+                }
+
+                Next();
+
+                var text = SourceText?[start..end];
+
+                if (isClosingTag)
+                    return new SyntaxToken(TokenType.CloseTag, _Line, _position, text, null);
+
+                if (isSelfClosing)
+                    return new SyntaxToken(TokenType.SelfTag, _Line, _position, text, null);
+
+                return new SyntaxToken(TokenType.OpenTag, _Line, _position++, text, null);
+            }
+
+            if (_Current == '@' && AllowForComplexStructure == false)
+            {
+                StringBuilder sb = new StringBuilder();
+                string endingCharacter = "<";
+
+                sb.Append(_Current);
+
+                Next();
+
+                var start = _position;
+                var end = start;
+                while (end == 0 || (_Current != '<' && !Peek(_position, "<<")))
+                {
+                    Next();
+                    end++;
+                }
+
+                if (Peek(_position, "<<"))
+                {
+                    endingCharacter = "<<";
+                    Next();
+                };
+
+                Next();
+
+                var text = SourceText?[start..end];
+
+                sb.Append(text);
+                sb.Append(endingCharacter);
+
+                return new SyntaxToken(TokenType.SkriptrDeclarativeLine, _Line, _position++, sb.ToString(),null);
+            }
+
+            if (_Current == '?' && AllowForComplexStructure == false)
+            {
+                StringBuilder sb = new StringBuilder();
+                string endingCharacter = ">>";
+
+                sb.Append(_Current);
+
+                Next();
+
+                var start = _position;
+                var end = start;
+                while (end == 0 || !Peek(_position, ">>"))
+                {
+                    Next();
+                    end++;
+                }
+
+                Next();
+
+                var text = SourceText?[start..end];
+
+                sb.Append(text);
+                sb.Append(endingCharacter);
+
+                return new SyntaxToken(TokenType.SkriptrInterrogativeLine, _Line, _position++, sb.ToString(), null);
+            }
+            #endregion
+
             // Any Punctuations
             if (_Current == '\'' || _Current == '’') return new SyntaxToken(TokenType.Apostraphe, _Line, _position++, "'", null);
             if (_Current == '<' || _Current == '＜') return new SyntaxToken(TokenType.OpenBracket, _Line, _position++, "<", null);
@@ -376,7 +477,9 @@ namespace XVNML.Core.Lexer
 
             var start = position;
             var length = stringSet.Length;
-            var proceedingString = SourceText?[start..(start + length)];
+            var end = start + length;
+
+            var proceedingString = SourceText?[start..end];
             return proceedingString!.Equals(stringSet);
         }
 

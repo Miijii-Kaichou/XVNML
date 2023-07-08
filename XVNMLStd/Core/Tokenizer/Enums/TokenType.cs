@@ -51,6 +51,11 @@ namespace XVNML.Core.Enums
         DoubleOpenBracket = 1L << 42,
         AnonymousCastSymbol = 1L << 43,
         Underscore = 1L << 44,
-        ScopeBlock = 1L << 45
+        ScopeBlock = 1L << 45,
+        OpenTag = 1L << 46,
+        CloseTag = 1L << 47,
+        SelfTag = 1L << 48,
+        SkriptrDeclarativeLine = 1L << 49,
+        SkriptrInterrogativeLine = 1L << 50
     }
 }

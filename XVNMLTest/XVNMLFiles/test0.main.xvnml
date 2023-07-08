@@ -37,19 +37,19 @@
 
 	<dialogue name::"Hello World">
         @ {set_text_speed::40}Welcome to XVNML2U!<
-        @ This package demonstrates the capabilities in which the XVNML{space}
+        @Hana This package demonstrates the capabilities in which the XVNML{space}
         Class Library is capable of{delay::500|clr}when used with the Unity Game Engine.<
-        @ What you see here{delay::750} is a normal dialogue.<
-        @ And {insert::"THIS"|delay::1000} is a dialogue with{set_text_speed::100} a 
+        @Hana>Happy What you see here{delay::750} is a normal dialogue.<
+        @Hana>Happy>Wow And {insert::"THIS"|delay::1000} is a dialogue with{set_text_speed::100} a 
         looooooooooooooooooooooooooooooooooooooooooooooooooooot of {set_text_speed::30}charisma!!!!<
         @ {set_text_speed::40}And with a normal XVNML Dialogue Control component, you can run whatever 
         dialogue you want.<
-        @ This is just a sample of what XVNML can do.<
-        @ XVNML is a powerful tool with an EMPHASIS in story telling.<
-        @ And we're starting our journey off by integrating XVNML to Unity 
+        @Hana>V::Wow This is just a sample of what XVNML can do.<
+        @Hana>E::Happy XVNML is a powerful tool with an EMPHASIS in story telling.<
+        @Hana>V::Wow>E::Happy And we're starting our journey off by integrating XVNML to Unity 
         {paren}hence "XVNML2U"{paren_end}.<
-        @ We're very excited to see how you'll put this tool to the ultimate test.<
-        ?  What's boning on?>>
+        @* We're very excited to see how you'll put this tool to the ultimate test.<
+        ????  What's boning on?>>
         (
             ("Nothing")>
                 @  I see.<<

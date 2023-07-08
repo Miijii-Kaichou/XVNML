@@ -8,6 +8,7 @@ using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
 using XVNML.Core.Tags;
 using XVNML.Core.Enums;
+using System.Text;
 
 internal delegate void ReferenceLinkerHandler(TagBase? sender, TagBase? referencingTag, Type type);
 
@@ -17,7 +18,7 @@ namespace XVNML.Core.Parser
     {
         private static SkriptrParser? Instance;
 
-        public SyntaxToken?[] TokenCache { get; }
+        public SyntaxToken?[] TokenCache { get; private set; }
 
         private DialogueParserMode CurrentMode;
 
@@ -42,6 +43,8 @@ namespace XVNML.Core.Parser
         private static Stack<SkripterLine> ResolveStack = new Stack<SkripterLine>();
         private static bool ResolvePending;
 
+        private const int ChuckSize = 1024;
+
         public SkriptrParser(SyntaxToken?[] dialogueTokenCache, out DialogueScript? output)
         {
             Instance = this;
@@ -52,9 +55,43 @@ namespace XVNML.Core.Parser
             FindFirstLine = false;
             _evaluatingCast = false;
             CurrentMode = DialogueParserMode.Dialogue;
-            TokenCache = dialogueTokenCache;
+
+            Complicate(dialogueTokenCache);
 
             output = CreateDialogueOutput();
+        }
+
+        private void Complicate(SyntaxToken?[] dialogueTokenCache)
+        {
+            List<SyntaxToken> lowerSyntaxToken = new List<SyntaxToken>(0xFFFF);
+
+            foreach (var st in dialogueTokenCache)
+            {
+                BreakDownUniqueToken(lowerSyntaxToken, st);
+            }
+
+            TokenCache = lowerSyntaxToken.ToArray();
+        }
+
+        private static void BreakDownUniqueToken(List<SyntaxToken> lowerSyntaxToken, SyntaxToken? st)
+        {
+            // Setting "complicate" to "true" will disregard unique tokens
+            // Like OpenTag, CloseTag, SelfTag, SkriptrDeclarative, and SkriptrInterrogative,
+            // assuring it tokenizes to the smallest structure possible.
+            StringBuilder sb = new StringBuilder();
+            if (st.Type == TokenType.String)
+            {
+                sb.Append("\"");
+                sb.Append(st.Text!);
+                sb.Append("\"");
+            }
+
+            SyntaxToken[] tokens = new Tokenizer(st.Type == TokenType.String ? sb.ToString() : st.Text!, TokenizerReadState.Local, true)
+                .definedTokens
+                .ToArray();
+
+            if (tokens.Length == 0) return;
+            foreach (var lst in tokens) lowerSyntaxToken.Add(lst);
         }
 
         private DialogueScript? CreateDialogueOutput()
@@ -242,7 +279,8 @@ namespace XVNML.Core.Parser
                     case TokenType.OpenParentheses:
                         if (!_evaluatingCast)
                         {
-                            if (Peek(1)?.Type == TokenType.OpenParentheses)
+                            var nextType = Peek(1)?.Type;
+                            if (nextType == TokenType.OpenParentheses)
                             {
                                 continue;
                             }
@@ -306,6 +344,7 @@ namespace XVNML.Core.Parser
                         continue;
 
                     case TokenType.WhiteSpace:
+                    case TokenType.EOF:
                         if (_evaluatingCast)
                         {
                             ConsumeCastSignatureData(castSignatureCollection, token);
@@ -437,8 +476,9 @@ namespace XVNML.Core.Parser
 
             // Based on what's given, decide if it's a Normal, Narrative, Anonymous, or Persistent
             signature.IsPrimitive = characterSymbol.Type == TokenType.Identifier;
-            signature.IsNarrative = characterSymbol.Type == TokenType.WhiteSpace ||
-                                      characterSymbol.Type == TokenType.CloseBracket;
+            signature.IsNarrative = characterSymbol.Type == TokenType.EOF ||
+                                    characterSymbol.Type == TokenType.WhiteSpace ||
+                                    characterSymbol.Type == TokenType.CloseBracket;
             signature.IsAnonymous = characterSymbol.Type == TokenType.AnonymousCastSymbol;
             signature.IsPersistent = characterSymbol.Type == TokenType.Star;
 
@@ -452,7 +492,7 @@ namespace XVNML.Core.Parser
                 //We expect a voice on this one.
                 //It's okay to have nothing, but whatever is there is always a voice.
                 // For this, signatures are always partial
-                signature.IsPartial = characterSymbol.Type == TokenType.WhiteSpace;
+                signature.IsPartial = (characterSymbol.Type == TokenType.WhiteSpace || characterSymbol.Type == TokenType.EOF);
                 signature.IsFull = characterSymbol.Type == TokenType.CloseBracket;
 
                 if (signature.IsPartial == true)
@@ -486,7 +526,8 @@ namespace XVNML.Core.Parser
             // Check if there is a whitespace ahead. If there is. No need to evaluate further
             Next();
 
-            if (queue[evaluationPos].Type == TokenType.WhiteSpace)
+            if (queue[evaluationPos].Type == TokenType.EOF ||
+                queue[evaluationPos].Type == TokenType.WhiteSpace)
             {
                 output.Character = signature.IsPersistent == true ? (_PreviousCast ?? _DefaultCast).Character : characterSymbol.Text; ;
                 signature.IsPartial = true;
@@ -494,7 +535,8 @@ namespace XVNML.Core.Parser
                 return;
             }
 
-            while (queue[evaluationPos].Type != TokenType.WhiteSpace)
+            while (queue[evaluationPos].Type != TokenType.EOF &&
+                queue[evaluationPos].Type != TokenType.WhiteSpace)
             {
                 if (queue[evaluationPos].Type == TokenType.DoubleColon)
                 {
@@ -602,9 +644,10 @@ namespace XVNML.Core.Parser
                 {
                     token = tokenCache[_position + offset];
 
-                    if ((token?.Type == TokenType.WhiteSpace && includeSpaces == false) ||
+                    if (((token?.Type == TokenType.WhiteSpace ||
+                        token?.Type == TokenType.EOF) && includeSpaces == false) ||
                         token?.Type == TokenType.SingleLineComment ||
-                        token?.Type == TokenType.MultilineComment)
+                        token?.Type == TokenType.MultilineComment )
                     {
                         _position++;
                         continue;

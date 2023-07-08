@@ -21,7 +21,10 @@ namespace XVNML.Core.Macros
 
             Type[] libraryTypes;
 
-            libraryTypes = DomainAssemblyState.DefinedTypes.Where(c => c.IsClass && c.GetCustomAttribute<MacroLibraryAttribute>() != null).ToArray();
+            libraryTypes = DomainAssemblyState
+                .DefinedTypes
+                .Where(c => c.IsClass && c.GetCustomAttribute<MacroLibraryAttribute>() != null).ToArray();
+
             EstablishLibraries(libraryTypes);
 
             IsInitialized = true;

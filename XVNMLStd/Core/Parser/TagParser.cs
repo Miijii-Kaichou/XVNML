@@ -8,6 +8,7 @@ using XVNML.Core.Parser.Enums;
 using XVNML.Core.Tags;
 using XVNML.Core.Enums;
 using XVNML.Utility.Diagnostics;
+using System.Numerics;
 
 namespace XVNML.Core.Parser
 {
@@ -29,7 +30,7 @@ namespace XVNML.Core.Parser
         private SyntaxToken? _Current => Peek(0, true);
         private Tokenizer? _tokenizer = null;
         private TagParameterInfo? _cachedTagParameterInfo;
-        
+        private string? _cacheTagTypeName;
         private readonly Queue<Action> _solvingQueue = new Queue<Action>(1024);
         private readonly Stack<TagBase> _tagStackFrame = new Stack<TagBase>(128);
 
@@ -44,7 +45,7 @@ namespace XVNML.Core.Parser
         #endregion
 
         public void SetTarget(string fileTarget) => this.fileTarget = fileTarget.ToString();
-        
+
         public void Parse(Action? onComplete)
         {
             _onParserCompleted = onComplete;
@@ -55,7 +56,7 @@ namespace XVNML.Core.Parser
             _cachedTagName = null;
             _cachedTagParameterInfo = null;
             _tagValueStringBuilder = new StringBuilder(1024);
-            
+
             if (fileTarget == null)
             {
                 Abort("FileTarget cannot be null when parsing.");
@@ -141,65 +142,227 @@ namespace XVNML.Core.Parser
                     continue;
                 }
 
+                bool areTags = _Current.Type == TokenType.OpenTag ||
+                    _Current.Type == TokenType.CloseTag ||
+                    _Current.Type == TokenType.SelfTag;
 
-                if (_evaluationState == ParserEvaluationState.Tag)
+                if (areTags) EvaluateTags(ref token);
+                continue;
+            }
+
+            XVNMLLogger.Log($"Parsing of XVNML Document now complete.: {fileTarget}", this);
+            RunReferenceSolveProcedure();
+            return;
+        }
+
+
+        private void EvaluateTagsProperties(SyntaxToken? token, out bool complete)
+        {
+            complete = false;
+
+            var tokens = new Tokenizer(token.Text!, TokenizerReadState.Local).definedTokens;
+
+            SyntaxToken? current;
+            int i;
+
+            void Next()
+            {
+                i++;
+                current = tokens[i];
+            }
+
+            SyntaxToken? Peek(int offset, bool includeSpaces = false)
+            {
+                if (_tokenizer == null)
+                    return null;
+
+                var length = tokens.Count;
+                var index = i + offset;
+
+                while (index < length)
                 {
-                    EvaluateTags(ref token, out bool complete);
-                    if (complete) return;
-                    continue;
+                    var currentToken = tokens[index];
+
+                    if (currentToken == null)
+                    {
+                        Abort("Token was null");
+                        return currentToken;
+                    }
+
+                    if ((currentToken.Type == TokenType.WhiteSpace && !includeSpaces) ||
+                        currentToken.Type == TokenType.SingleLineComment ||
+                        currentToken.Type == TokenType.MultilineComment)
+                    {
+                        index++;
+                        continue;
+                    }
+
+                    return currentToken;
+                }
+
+                return tokens[length];
+            }
+
+            //proxy name::"XVNMLEssentials.Main.XVNML" lang::"CSharp" engine::"Unity"
+            for (i = 0; i < tokens.Count; i++)
+            {
+                current = tokens[i];
+                TokenType? tokenType = current?.Type;
+
+                switch (tokenType)
+                {
+                    case TokenType.Invalid:
+                        Abort($"Invalid token: \"{token.Type}\" at Line {token.Line} Position {token.Position}");
+                        complete = !complete;
+                        return;
+
+                    case TokenType.Pound:
+                        if (TopOfStack!.tagState != TagEvaluationState.OnParameters) continue;
+                        TopOfStack.isSettingFlag = true;
+                        continue;
+
+                    case TokenType.Identifier:
+                        if (_cacheTagTypeName == null)
+                        {
+                            //This means that we are creating a tag
+                            var newTag = TagConverter.ConvertToTagInstance(current.Text!);
+                            newTag!.tagTypeName = current.Text;
+                            _cacheTagTypeName = current.Text;
+
+                            //If top is still open, it means we're nesting
+                            if (TopOfStack != null &&
+                                TopOfStack.tagState == TagEvaluationState.Open)
+                            {
+                                TopOfStack.elements = TopOfStack.elements ?? new List<TagBase>();
+                                TopOfStack.elements.Add(newTag);
+                                newTag.parentTag = TopOfStack;
+                            }
+
+                            _tagStackFrame.Push(newTag);
+                            continue;
+                        }
+
+                        if (TopOfStack!.tagState != TagEvaluationState.OnParameters) continue;
+
+                        _cachedTagParameterInfo ??= new TagParameterInfo();
+
+                        if (TopOfStack!.isSettingFlag == true)
+                        {
+                            if (Peek(1, true)?.Type != TokenType.DoubleColon)
+                            {
+                                //This means this is a Flag for the tag
+                                _cachedTagParameterInfo.flagParameters.Add(current?.Text!);
+                                TopOfStack!.isSettingFlag = false;
+                                continue;
+                            }
+
+                            Abort($"A flag should not expect the token {Peek(1)?.Text}");
+                            return;
+                        }
+
+                        TagParameter newParameter = new TagParameter()
+                        {
+                            name = current?.Value?.ToString()
+                        };
+
+                        _cachedTagName = newParameter?.name;
+
+                        _cachedTagParameterInfo.paramters.Add(_cachedTagName!, newParameter!);
+                        continue;
+
+                    case TokenType.EOF:
+                        _cacheTagTypeName = null;
+                        return;
+
+                    case TokenType.DoubleColon:
+                        var parameterName = _cachedTagParameterInfo!.paramters[_cachedTagName!].name;
+                        var expected = Peek(1);
+
+                        if (expected?.Type! == TokenType.Char ||
+                            expected?.Type! == TokenType.String ||
+                            expected?.Type! == TokenType.Number ||
+                            expected?.Type! == TokenType.EmptyString ||
+                            expected?.Type! == TokenType.Identifier)
+                        {
+                            Next();
+                            _cachedTagParameterInfo.paramters[_cachedTagName!].value = current?.Value;
+                            continue;
+                        }
+
+                        if (expected?.Type == TokenType.DollarSign)
+                        {
+                            Next();
+
+                            expected = Peek(1);
+
+                            if (expected?.Type != TokenType.Identifier)
+                            {
+                                Abort($"Reference Error at Line {current?.Line} Position {current?.Position}: Expected Identifier: {fileTarget}");
+                                return;
+                            }
+
+                            Next();
+
+                            _cachedTagParameterInfo.paramters[_cachedTagName!].value = current?.Value;
+                            _cachedTagParameterInfo.paramters[_cachedTagName!].isReferencing = true;
+
+                            continue;
+                        }
+
+                        Abort($"Invalid assignment to parameter: {parameterName} at Line {current?.Line} Position {current?.Position}: {fileTarget}");
+                        return;
+
+                    case TokenType.String:
+                        if (TopOfStack?.tagState != TagEvaluationState.Open) return;
+                        TopOfStack.value = current?.Value;
+                        continue;
+
+                    default:
+                        break;
                 }
             }
         }
 
-
-        private void EvaluateTags(ref SyntaxToken? token, out bool complete)
+        private void EvaluateTags(ref SyntaxToken? token)
         {
-            complete = false;
             TokenType? tokenType = token?.Type;
 
             switch (tokenType)
             {
                 case TokenType.Invalid:
                     Abort($"Invalid token: \"{token.Type}\" at Line {token.Line} Position {token.Position}");
-                    complete = !complete;
                     return;
 
-                case TokenType.OpenBracket:
-                    HandleOpenBracket();
+                case TokenType.OpenTag:
+                    EvaluateTagsProperties(token, out _);
+
+                    TopOfStack.tagState = TagEvaluationState.Open;
+                    TopOfStack._parameterInfo = _cachedTagParameterInfo;
+                    _cachedTagParameterInfo = null;
+
+                    var nextToken = this.Peek(1);
+                    var nextTokenType = nextToken?.Type;
+
+                    if (nextTokenType == TokenType.OpenTag ||
+                        nextTokenType == TokenType.SelfTag) return;
+                    if (nextTokenType == TokenType.SkriptrDeclarativeLine ||
+                        nextTokenType == TokenType.SkriptrInterrogativeLine)
+                    {
+                        ChangeEvaluationState(ParserEvaluationState.Dialogue);
+                        return;
+                    }
+                    ChangeEvaluationState(ParserEvaluationState.TagValue);
                     return;
 
-                case TokenType.CloseBracket:
-                    HandleCloseBracket();
+                case TokenType.SelfTag:
+                    EvaluateTagsProperties(token, out _);
+                    TopOfStack!.isSelfClosing = token?.Type == TokenType.SelfTag;
+                    CloseCurrentTag();
                     return;
 
-                case TokenType.ForwardSlash:
-                    HandleForwardSlash();
+                case TokenType.CloseTag:
+                    CloseCurrentTag();
                     return;
-
-                case TokenType.Pound:
-                    HandlePound();
-                    return;
-
-                case TokenType.Identifier:
-                    HandleIdentifier();
-                    return;
-
-                case TokenType.EOF:
-                    XVNMLLogger.Log($"Parsing of XVNML Document now complete.: {fileTarget}", this);
-                    RunReferenceSolveProcedure();
-                    complete = !complete;
-                    return;
-
-                case TokenType.DoubleColon:
-                    HandleDoubleColon();
-                    return;
-
-                case TokenType.String:
-                    HandleString();
-                    return;
-
-                default:
-                    break;
             }
         }
 
@@ -257,6 +420,7 @@ namespace XVNML.Core.Parser
             top.OnResolve(fileOrigin);
 
             root = _tagStackFrame.Pop();
+            _cacheTagTypeName = null;
         }
 
         private void ChangeEvaluationState(ParserEvaluationState state)
@@ -333,7 +497,7 @@ namespace XVNML.Core.Parser
                 }
             }
         }
-        
+
         private void HandleCloseBracket()
         {
             if (TopOfStack!.isSelfClosing)
@@ -441,9 +605,10 @@ namespace XVNML.Core.Parser
 
         private void HandleString()
         {
-            if (TopOfStack?.tagState != TagEvaluationState.Open) return;
-            TopOfStack.value = _Current?.Value;
+
         }
+
+        #endregion
 
         private void HandleTagValue()
         {
@@ -457,13 +622,13 @@ namespace XVNML.Core.Parser
         private void HandleDialogueValue()
         {
             if (CurrentlyAtEndOfValueScope()) return;
-
+            if (_Current.Type == TokenType.WhiteSpace) return;
             _dialogueValueTokenCache.Add(_Current);
         }
 
         private bool CurrentlyAtEndOfValueScope()
         {
-            if (_Current?.Type == TokenType.OpenBracket && Peek(1, true)?.Type == TokenType.ForwardSlash)
+            if (_Current?.Type == TokenType.CloseTag)
             {
                 ChangeEvaluationState(ParserEvaluationState.Tag);
                 _position--;
@@ -471,6 +636,5 @@ namespace XVNML.Core.Parser
             }
             return false;
         }
-        #endregion
     }
 }
