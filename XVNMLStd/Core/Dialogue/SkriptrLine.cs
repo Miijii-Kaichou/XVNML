@@ -9,6 +9,7 @@ using XVNML.Core.Lexer;
 using XVNML.Core.Macros;
 using XVNML.Core.Enums;
 using XVNML.Utility.Macros;
+using XVNML.Core.Extensions;
 
 namespace XVNML.Core.Dialogue
 {
@@ -101,7 +102,8 @@ namespace XVNML.Core.Dialogue
             // Get rid of excess white spaces
             CleanOutExcessWhiteSpaces();
             RemoveReturnCarriages();
-           ExtractMacroBlocks();
+            NormalizeMacroBlocks();
+            ExtractMacroBlocks();
         }
 
         private void ParsePauseControlCharacter(int startIndex)
@@ -244,13 +246,56 @@ namespace XVNML.Core.Dialogue
         {
             if (_tokenCache == null) return;
 
+            StringBuilder lineToReplace = new StringBuilder();
+            var start = 0;
             for (int i = 0; i < _tokenCache.Length; i++)
             {
                 var currentCharacter = _tokenCache[i];
+
                 if (currentCharacter.Type == TokenType.OpenCurlyBracket)
                 {
-                    EvaluateBlock(i, out string outputString);
-                    Content = Content!.Replace(outputString, string.Empty);
+                    string outputString;
+                    EvaluateBlock(i, out outputString);
+                    Content = Content?.RemoveFirstOccuranceOf(outputString);
+                    continue;
+                }
+            }
+        }
+
+        private void NormalizeMacroBlocks()
+        {
+            var content = Content;
+            var beginNormalization = false;
+            StringBuilder stringBuilder = new StringBuilder(2048);
+            foreach(var character in content!)
+            {
+                if (character == '{')
+                {
+                    // Start normalizing
+                    stringBuilder.Append(character);
+                    beginNormalization = true;
+                    continue;
+                }
+
+                if (character == '}')
+                {
+                    stringBuilder.Append(character);
+                    beginNormalization = false;
+
+                    var resultingString = stringBuilder.ToString();
+                    var normalizedResultingString = resultingString.Replace("\t", string.Empty)
+                                                            .Replace("\r", string.Empty)
+                                                            .Replace("\n", string.Empty)
+                                                            .Replace(" ", string.Empty); 
+
+                    Content = Content!.Replace(resultingString, normalizedResultingString);
+                    stringBuilder.Clear();
+                    continue;
+                }
+
+                if (beginNormalization)
+                {
+                    stringBuilder.Append(character);
                 }
             }
         }
@@ -272,11 +317,10 @@ namespace XVNML.Core.Dialogue
             List<SyntaxToken?> tokenList = new List<SyntaxToken?>();
             StringBuilder sb = new StringBuilder(2048);
 
-            var token = (SyntaxToken?)null;
-
             while (!finished)
             {
-                token = _tokenCache[position + length];
+                SyntaxToken? token = _tokenCache[position + length];
+
                 var tokenType = token.Type;
 
 
@@ -293,13 +337,13 @@ namespace XVNML.Core.Dialogue
                 tokenList.Add(token);
                 macrosTotal += (tokenType == TokenType.Line ? 1 : 0);
                 finished = tokenType == TokenType.CloseCurlyBracket;
-                length++;
+                    length++;
             }
 
             outputString = sb.ToString();
             macrosTotal += 1;
             
-            int tokenInvocationPosition = Content!.IndexOf(outputString);
+            int tokenInvocationPosition = Content!.IndexOf(outputString, position);
 
             finished = false;
             newBlock.Initialize(macrosTotal);
