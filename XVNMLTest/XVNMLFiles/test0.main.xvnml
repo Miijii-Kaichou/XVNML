@@ -36,7 +36,11 @@
      </keycodeDefinitions>
 
 	<dialogue name::"Hello World">
-        @ {set_text_speed::40}Welcome to XVNML2U!<
+        @ {
+            set_text_speed::40|
+            insert::"Wahoo!!!"|
+            delay::500
+        } Welcome to XVNML2U!<
         @Hana This package demonstrates the capabilities in which the XVNML{space}
         Class Library is capable of{delay::500|clr}when used with the Unity Game Engine.<
         @Hana>Happy What you see here{delay::750} is a normal dialogue.<

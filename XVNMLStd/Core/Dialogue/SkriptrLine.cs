@@ -101,7 +101,7 @@ namespace XVNML.Core.Dialogue
             // Get rid of excess white spaces
             CleanOutExcessWhiteSpaces();
             RemoveReturnCarriages();
-            ExtractMacroBlocks();
+           ExtractMacroBlocks();
         }
 
         private void ParsePauseControlCharacter(int startIndex)
@@ -272,10 +272,19 @@ namespace XVNML.Core.Dialogue
             List<SyntaxToken?> tokenList = new List<SyntaxToken?>();
             StringBuilder sb = new StringBuilder(2048);
 
+            var token = (SyntaxToken?)null;
+
             while (!finished)
             {
-                var token = _tokenCache[position + length];
+                token = _tokenCache[position + length];
                 var tokenType = token.Type;
+
+
+                if (tokenType == TokenType.WhiteSpace)
+                {
+                    length++;
+                    continue;
+                }
 
                 if (tokenType == TokenType.String) sb.Append('\"');
                 sb.Append(token.Text);
