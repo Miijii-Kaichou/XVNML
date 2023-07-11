@@ -9,11 +9,13 @@ using XVNML.Core.Tags;
 using XVNML.Core.Enums;
 using XVNML.Utility.Diagnostics;
 using System.Numerics;
+using XVNML.XVNMLUtility.Tags;
 
 namespace XVNML.Core.Parser
 {
     public sealed class TagParser
     {
+        private const string DialogueTagName = "dialogue";
         #region Fields and Properties
 
         internal string? fileTarget;
@@ -203,7 +205,6 @@ namespace XVNML.Core.Parser
                 return tokens[length];
             }
 
-            //proxy name::"XVNMLEssentials.Main.XVNML" lang::"CSharp" engine::"Unity"
             for (i = 0; i < tokens.Count; i++)
             {
                 current = tokens[i];
@@ -343,10 +344,13 @@ namespace XVNML.Core.Parser
                     var nextToken = this.Peek(1);
                     var nextTokenType = nextToken?.Type;
 
+                    var rootName = TopOfStack.tagTypeName;
+
                     if (nextTokenType == TokenType.OpenTag ||
                         nextTokenType == TokenType.SelfTag) return;
                     if (nextTokenType == TokenType.SkriptrDeclarativeLine ||
-                        nextTokenType == TokenType.SkriptrInterrogativeLine)
+                        nextTokenType == TokenType.SkriptrInterrogativeLine||
+                        rootName == DialogueTagName)
                     {
                         ChangeEvaluationState(ParserEvaluationState.Dialogue);
                         return;

@@ -57,6 +57,7 @@
     </macroCache>
 
 	<dialogue name::"Hello World">
+        ["Main"]
         @ {$_3sec|insert::"Wowwie"|$_defaultTextSpeed|pass}<
         @ "Quotations"{$_3sec} test<
     </dialogue>
