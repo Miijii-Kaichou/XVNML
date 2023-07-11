@@ -13,7 +13,21 @@ namespace XVNML.XVNMLUtility.Tags
     public sealed class MacroCache : TagBase
     {
         [JsonProperty] private Macro[]? _macros;
-        public Macro[]? Macros => _macros;
+        public Macro[]? Macros
+        {
+            get
+            {
+                if (DefinedMacrosCollection.CachedMacros.Count == 0)
+                {
+                    foreach(var macro in _macros)
+                    {
+                        DefinedMacrosCollection.AddToMacroCache(macro.TagName!, macro.symbol!, macro.arg, macro.type);
+                    }
+                }
+                return _macros;
+            }
+        }
+
         public override void OnResolve(string? fileOrigin)
         {
             base.OnResolve(fileOrigin);
