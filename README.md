@@ -43,6 +43,8 @@ By default, you have a total of 28 pre-built tags that can be parsed by the XVNM
   * ImageDefinitions
   * Keycode
   * KeycodeDefinitions
+  * MacroCache
+  * Macro
   * Metadata
   * Portrait
   * PortraitDefinitions
