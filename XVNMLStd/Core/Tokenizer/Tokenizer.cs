@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,51 +7,28 @@ using XVNML.Core.Enums;
 
 namespace XVNML.Core.Lexer
 {
-    public sealed class Tokenizer
+    public static class Tokenizer
     {
-        private readonly int bufferSize = 8192;
+        private static readonly int bufferSize = 8192;
 
-        private int _position = 0;
+        private static int _position = 0;
 
-        public int Length
+        private static char _Current
         {
             get
             {
-                return definedTokens.Count;
-            }
-        }
-
-        private char _Current
-        {
-            get
-            {
-                if (_position >= SourceText?.Length)
+                if (_position < 0 || _position >= SourceText?.Length)
                     return '\0';
                 return SourceText![_position];
             }
         }
 
-        public bool AllowForComplexStructure { get; }
-        public string? SourceText { get; private set; }
+        public static bool AllowForComplexStructure { get; private set; }
+        public static string? SourceText { get; private set; }
 
-        public SyntaxToken? this[int index]
-        {
-            get
-            {
-                try
-                {
-                    var token = definedTokens[index];
-                    return token;
-                }
-                catch
-                {
-                    var eof = definedTokens[Length - 1];
-                    return eof;
-                }
-            }
-        }
+        private const int DefaultCapacity = 0xFFFF;
 
-        private int _Line
+        private static int _Line
         {
             get
             {
@@ -62,31 +38,29 @@ namespace XVNML.Core.Lexer
             }
         }
 
-        private bool WasThereConflict = false;
+        private static bool WasThereConflict = false;
 
-        internal List<SyntaxToken> definedTokens = new List<SyntaxToken>(0xFFFF);
-
-        public Tokenizer(string sourceText, TokenizerReadState state, bool complicate = false)
+        public static List<SyntaxToken?>? Tokenize(string sourceText, TokenizerReadState state, bool complicate = false, int capacity = DefaultCapacity)
         {
             AllowForComplexStructure = complicate;
             SourceText = sourceText;
             switch (state)
             {
                 case TokenizerReadState.Local:
-                    TokenizeLocally();
-                    
-                    return;
+                    return TokenizeLocally(capacity);
 
                 case TokenizerReadState.IO:
-                    ReadAndTokenize();
-                    return;
+                    return ReadAndTokenize(capacity);
             }
+
+            return null;
         }
 
-        internal void ReadAndTokenize()
+        internal static List<SyntaxToken?> ReadAndTokenize(int capacity)
         {
             var sourceText = SourceText;
             SourceText = string.Empty;
+
             using (StreamReader sr = new StreamReader(sourceText))
             {
                 long fileSize = new FileInfo(sourceText).Length;
@@ -101,23 +75,26 @@ namespace XVNML.Core.Lexer
                 }
                 SourceText = sb.ToString();
 
-                TokenizeLocally();
+                return TokenizeLocally(capacity);
             }
         }
 
-        internal Tokenizer RemoveRedundantTokens()
+        internal static List<SyntaxToken?> RemoveRedundantTokens(List<SyntaxToken?> list)
         {
+            var definedTokens = list;
             var tokensToRemove = definedTokens
                 .Where(t => t.Type == TokenType.EOF ||
                 t.Type == TokenType.MultilineComment ||
                 t.Type == TokenType.SingleLineComment && t != definedTokens[^1])
                 .ToList();
             definedTokens.RemoveAll(tokensToRemove.Contains);
-            return this;
+            return definedTokens;
         }
 
-        internal void TokenizeLocally()
+        internal static List<SyntaxToken?> TokenizeLocally(int capacity)
         {
+            var definedTokens = new  List<SyntaxToken?>(capacity);
+
             // Tokenize the entire markup text
             _position = 0;
 
@@ -127,46 +104,37 @@ namespace XVNML.Core.Lexer
                 token = NextToken();
                 definedTokens.Add(token);
             }
+
+            return definedTokens;
         }
 
-        public bool GetConflictState() => WasThereConflict;
+        public static bool GetConflictState() => WasThereConflict;
 
-        public void Next()
+        internal static void Next()
         {
             JumpPosition(1);
         }
 
-        public SyntaxToken NextToken()
+        internal static SyntaxToken NextToken()
         {
             if (_position >= SourceText?.Length)
             {
-                return new SyntaxToken(TokenType.EOF, _Line, _position, "\0", 0x0);
+                return new SyntaxToken(TokenType.EOF, _Line, _position, null, null);
             }
 
             if ((_Current == '-' && char.IsDigit(SourceText![_position + 1])) || char.IsDigit(_Current))
             {
                 var start = _position;
 
-                bool continueLoop = true;
-                while (continueLoop)
-                {
-                    switch (_Current)
-                    {
-                        case char c when char.IsDigit(c):
-                        case '.':
-                        case '-':
-                        case 'F':
-                        case 'D':
-                        case 'L':
-                        case 'I':
-                            Next();
-                            break;
+                while (char.IsDigit(_Current) ||
+                      _Current == '.' ||
+                      _Current == '-' ||
+                      char.ToUpper(_Current) == 'F' ||
+                      char.ToUpper(_Current) == 'D' ||
+                      char.ToUpper(_Current) == 'L' ||
+                      char.ToUpper(_Current) == 'I')
+                    Next();
 
-                        default:
-                            continueLoop = false;
-                            break;
-                    }
-                }
 
                 var text = SourceText?[start.._position];
                 var suffix = text![^1];
@@ -468,7 +436,7 @@ namespace XVNML.Core.Lexer
             return new SyntaxToken(TokenType.Invalid, _Line, _position++, SourceText?.Substring(_position - 1, 1), null);
         }
 
-        bool Peek(int position, string stringSet)
+        private static bool Peek(int position, string stringSet)
         {
             if (SourceText == null || position < 0 || position + stringSet.Length > SourceText.Length)
             {
@@ -483,11 +451,11 @@ namespace XVNML.Core.Lexer
             return proceedingString!.Equals(stringSet);
         }
 
-        void JumpPosition(int distance)
+        private static void JumpPosition(int distance)
         {
             _position += distance;
         }
 
-        internal void SetSourceText(string inputString) => SourceText = inputString;
+        internal static void SetSourceText(string inputString) => SourceText = inputString;
     }
 }

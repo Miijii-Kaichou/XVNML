@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using XVNML.Core.Dialogue.Structs;
+using XVNML.Core.Macros;
 using XVNML.Utility.Diagnostics;
 using XVNML.Utility.Macros;
 
@@ -393,6 +395,13 @@ internal sealed class StandardMacroLibrary
     }
 
     [Macro("lindex")]
+    internal static void GetLineIndexMacro(MacroCallInfo info)
+    {
+        var print = false;
+        GetLineIndexMacro(info, print);
+    }
+
+    [Macro("lindex")]
     internal static void GetLineIndexMacro(MacroCallInfo info, bool print)
     {
         var lineIndex = info.process.lineIndex;
@@ -466,7 +475,7 @@ internal sealed class StandardMacroLibrary
     [Macro("var")]
     internal static void InitializeVariableMacro(MacroCallInfo info, string identifier, object initialValue)
     {
-
+        Console.WriteLine($"Variable {identifier} initiated with {initialValue}");
     }
 
     [Macro("set")]

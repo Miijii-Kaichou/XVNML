@@ -10,6 +10,7 @@ using XVNML.Core.Macros;
 using XVNML.Core.Enums;
 using XVNML.Utility.Macros;
 using XVNML.Core.Extensions;
+using System.Linq.Expressions;
 
 namespace XVNML.Core.Dialogue
 {
@@ -20,14 +21,14 @@ namespace XVNML.Core.Dialogue
         internal Action? onReturnPointCorrection;
 
         private SyntaxToken[]? _tokenCache;
-        
+
         private static SkripterLine? Instance;
         private readonly StringBuilder _ContentStringBuilder = new StringBuilder();
 
         [JsonProperty] public string? Content { get; private set; }
         [JsonProperty] public Dictionary<string, (int sp, int rp)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
         [JsonProperty] public DialogueLineMode Mode => data.Mode;
-        
+
         [JsonProperty] internal LineDataInfo data;
         [JsonProperty] internal string? Name = string.Empty;
         [JsonProperty] internal SceneInfo? SceneLoadInfo { get; set; }
@@ -42,7 +43,7 @@ namespace XVNML.Core.Dialogue
                 macroInvocationList
                 .Where(macro => macro.blockPosition.Equals(process.cursorIndex))
                 .ToList()
-                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.cursorIndex }));
+                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.cursorIndex}));
             }
         }
 
@@ -99,22 +100,23 @@ namespace XVNML.Core.Dialogue
                 ParsePauseControlCharacter(i);
             }
 
+            _tokenCache = Tokenizer.Tokenize(Content, TokenizerReadState.Local, true)?.ToArray()!;
+
             // Get rid of excess white spaces
             CleanOutExcessWhiteSpaces();
             RemoveReturnCarriages();
-            NormalizeMacroBlocks();
             ExtractMacroBlocks();
         }
 
         private void ParsePauseControlCharacter(int startIndex)
         {
             List<SyntaxToken?> tokenList = new List<SyntaxToken?>(128);
-            for (int i = startIndex; i < _tokenCache.Length; i++)
+            for (int i = startIndex; i < _tokenCache?.Length; i++)
             {
                 var token = _tokenCache[i];
                 var tokenType = token.Type;
 
-                if (tokenType == TokenType.WhiteSpace )
+                if (tokenType == TokenType.WhiteSpace)
                 {
                     ConvertToCallBlock(tokenList);
                     break;
@@ -133,9 +135,14 @@ namespace XVNML.Core.Dialogue
             string? expression = null;
             string? voice = null;
 
+            var tokens = tokenList;
+
             int count = tokenList.Count;
 
             CastEvaluationMode mode = CastEvaluationMode.Expression;
+
+            StringBuilder sb = new StringBuilder();
+            List<SyntaxToken> pauseSyntaxTokens = new List<SyntaxToken>();
 
             for (int i = 0; i < count; i++)
             {
@@ -143,10 +150,17 @@ namespace XVNML.Core.Dialogue
 
                 SyntaxToken? token = Peek(0, true);
 
+                sb.Append(token.Text);
+                pauseSyntaxTokens.Add(token);
+
                 if (token?.Type == TokenType.CloseBracket)
                 {
                     Next();
+
                     token = Peek(0, true);
+                    sb.Append(token.Text);
+                    pauseSyntaxTokens.Add(token);
+
                     if (token?.Type == TokenType.DoubleColon)
                     {
                         continue;
@@ -202,7 +216,7 @@ namespace XVNML.Core.Dialogue
 
             if (expression != null)
             {
-                blockStringBuilder.Append("|expression::");
+                blockStringBuilder.Append("|exp::");
                 blockStringBuilder.Append("\"");
                 blockStringBuilder.Append(expression.ToString());
                 blockStringBuilder.Append("\"");
@@ -210,7 +224,7 @@ namespace XVNML.Core.Dialogue
 
             if (voice != null)
             {
-                blockStringBuilder.Append("|voice::");
+                blockStringBuilder.Append("|vo::");
                 blockStringBuilder.Append("\"");
                 blockStringBuilder.Append(voice.ToString());
                 blockStringBuilder.Append("\"");
@@ -218,20 +232,20 @@ namespace XVNML.Core.Dialogue
 
             blockStringBuilder.Append("}");
 
-            Content = blockStringBuilder.ToString();
+            Content = Content?.ReplaceFirstOccuranceOf(sb.ToString(), blockStringBuilder.ToString());
 
             SyntaxToken? Peek(int offset, bool includeSpaces = false)
             {
-                if (_tokenCache == null) return null;
+                if (tokens == null) return null;
                 var index = _position + offset;
 
-                var filteredTokens = _tokenCache.Skip(index)
+                var filteredTokens = tokens.Skip(index)
                     .Where(token =>
                         (includeSpaces || token?.Type != TokenType.WhiteSpace) &&
                         token?.Type != TokenType.SingleLineComment &&
                         token?.Type != TokenType.MultilineComment);
 
-                return filteredTokens.FirstOrDefault();
+                return filteredTokens.FirstOrDefault() ?? new SyntaxToken(TokenType.EOF, -1, -1, null, null);
             }
 
 
@@ -245,63 +259,44 @@ namespace XVNML.Core.Dialogue
         private void ExtractMacroBlocks()
         {
             if (_tokenCache == null) return;
+            if (Content == null) return;
+            //TODO: Find Macro Data and extract
+            //We're going to replace each block with a control
+            //character of /0 to denote a macro is in that position
+            var lastTokenPosition = 0;
 
-            StringBuilder lineToReplace = new StringBuilder();
-            var start = 0;
-            for (int i = 0; i < _tokenCache.Length; i++)
+            for (int i = 0; i < Content.Length; i++)
             {
-                var currentCharacter = _tokenCache[i];
-
-                if (currentCharacter.Type == TokenType.OpenCurlyBracket)
-                {
-                    string outputString;
-                    EvaluateBlock(i, out outputString);
-                    Content = Content?.RemoveFirstOccuranceOf(outputString);
-                    continue;
-                }
+                var currentCharacter = Content[i];
+                if (currentCharacter != '{') continue;
+                i = AnalysisMacroStructure(i, lastTokenPosition, out lastTokenPosition);
             }
         }
 
-        private void NormalizeMacroBlocks()
+        private int AnalysisMacroStructure(int position, int tokenPosition, out int lastTokenPosition)
         {
-            var content = Content;
-            var beginNormalization = false;
-            StringBuilder stringBuilder = new StringBuilder(2048);
-            foreach(var character in content!)
+            lastTokenPosition = tokenPosition;
+
+            for (int i = lastTokenPosition; i < _tokenCache?.Length; i++)
             {
-                if (character == '{')
+                var currentToken = _tokenCache[i];
+
+                if (currentToken.Type == TokenType.OpenCurlyBracket)
                 {
-                    // Start normalizing
-                    stringBuilder.Append(character);
-                    beginNormalization = true;
-                    continue;
-                }
-
-                if (character == '}')
-                {
-                    stringBuilder.Append(character);
-                    beginNormalization = false;
-
-                    var resultingString = stringBuilder.ToString();
-                    var normalizedResultingString = resultingString.Replace("\t", string.Empty)
-                                                            .Replace("\r", string.Empty)
-                                                            .Replace("\n", string.Empty)
-                                                            .Replace(" ", string.Empty); 
-
-                    Content = Content!.Replace(resultingString, normalizedResultingString);
-                    stringBuilder.Clear();
-                    continue;
-                }
-
-                if (beginNormalization)
-                {
-                    stringBuilder.Append(character);
+                    EvaluateBlock(i, position, out string outputString, out lastTokenPosition);
+                    Content = Content?.ReplaceBlockFromPosition(position, outputString);
+                    Content = Content?.Remove(position, outputString.Length);
+                    position--;
+                    return position;
                 }
             }
+            lastTokenPosition = _tokenCache!.Length - 1;
+            return position;
         }
 
-        private void EvaluateBlock(int position, out string outputString)
+        private void EvaluateBlock(int position, int invocationPosition, out string outputString, out int lastTokenPosition)
         {
+            lastTokenPosition = 0;
             outputString = string.Empty;
             if (_tokenCache == null) return;
 
@@ -333,27 +328,28 @@ namespace XVNML.Core.Dialogue
                 if (tokenType == TokenType.String) sb.Append('\"');
                 sb.Append(token.Text);
                 if (tokenType == TokenType.String) sb.Append('\"');
-                
+
                 tokenList.Add(token);
                 macrosTotal += (tokenType == TokenType.Line ? 1 : 0);
                 finished = tokenType == TokenType.CloseCurlyBracket;
-                    length++;
+                length++;
             }
+
+            lastTokenPosition = position + length;
 
             outputString = sb.ToString();
             macrosTotal += 1;
-            
-            int tokenInvocationPosition = Content!.IndexOf(outputString, position);
+
 
             finished = false;
             newBlock.Initialize(macrosTotal);
-            newBlock.SetPosition(tokenInvocationPosition);
+            newBlock.SetPosition(invocationPosition);
 
             bool multiArgs = false;
             string? macroName = null;
 
             List<(object value, Type type)> macroArgs = new List<(object, Type)>(2048);
-            TokenType? expectingType = TokenType.Identifier;
+            TokenType? expectingType = TokenType.Identifier | TokenType.DollarSign;
 
             while (!finished)
             {
@@ -364,7 +360,10 @@ namespace XVNML.Core.Dialogue
                     continue;
 
                 if (!expectingType.Value.HasFlag(currentToken?.Type))
+                {
+                    Console.WriteLine("Doesn't Contain Flags...");
                     return;
+                }
 
                 switch (currentToken?.Type)
                 {
@@ -423,11 +422,25 @@ namespace XVNML.Core.Dialogue
                                         TokenType.Identifier;
                         continue;
 
+                    case TokenType.CloseParentheses:
+                        if (macroName == null)
+                            return;
+
+                        expectingType = TokenType.Line | TokenType.CloseCurlyBracket;
+                        continue;
+
+                    case TokenType.DollarSign:
+                        if (macroName != null)
+                            return;
+                        SetAsReference(newBlock, macroCount);
+                        expectingType = TokenType.Identifier;
+                        continue;
+
                     case TokenType.Line:
                         if (macroName == null)
                             return;
 
-                        expectingType = TokenType.Identifier;
+                        expectingType = TokenType.Identifier | TokenType.DollarSign;
                         PopulateBlock(newBlock, macroCount, macroName, macroArgs);
                         macroArgs.Clear();
                         macroName = null;
@@ -496,7 +509,7 @@ namespace XVNML.Core.Dialogue
                 throw new ArgumentNullException(nameof(macroSymbol), "There was no macro symbol present.");
             }
 
-            if (!DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == true)
+            if (!DefinedMacrosCollection.ValidMacros?.ContainsKey(macroSymbol) == true && newBlock!.macroCalls![macroCount].isReference == false)
             {
                 throw new InvalidMacroException($"The macro \"{macroSymbol}\" is undefined.", macroSymbol, Instance!);
             }
@@ -505,28 +518,33 @@ namespace XVNML.Core.Dialogue
             newBlock.macroCalls[macroCount].args = macroArgs.ToArray();
         }
 
+        private void SetAsReference(MacroBlockInfo newBlock, int macroCount)
+        {
+            newBlock.macroCalls[macroCount].isReference = true;
+        }
+
         private void CleanOutExcessWhiteSpaces()
         {
             if (Content == null) return;
             int i = 0;
             while (i < Content.Length)
             {
-                if (Content[i] == '\n')
-                {
-                    int peek = 0;
-                    bool cleared = false;
-                    while (!cleared)
-                    {
-                        peek++;
-                        cleared = !(Content[i + peek] == ' ');
-                    }
-                    i++;
-                    Content = Content.Remove(i, peek - 1);
-                }
-                else
+                if (Content[i] != '\n')
                 {
                     i++;
+                    continue;
                 }
+
+                int peek = 0;
+                bool cleared = false;
+
+                while (!cleared)
+                {
+                    peek++;
+                    cleared = !(Content[i + peek] == ' ');
+                }
+                i++;
+                Content = Content.Remove(i, peek - 1);
             }
         }
 

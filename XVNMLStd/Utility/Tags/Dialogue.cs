@@ -19,6 +19,7 @@ namespace XVNML.XVNMLUtility.Tags
         [JsonProperty] public SyntaxToken?[]? Script { get; private set; }
         [JsonProperty] public string? Name { get; private set; }
         [JsonProperty] public bool DoNotDetain { get; private set; } = false;
+        [JsonProperty] public bool TextSpeedControlledExternally { get; private set; } = false;
 
         [JsonProperty] public Cast[]? includedCasts;
         [JsonProperty] public DialogueScript? dialogueOutput;
@@ -27,7 +28,6 @@ namespace XVNML.XVNMLUtility.Tags
 
         public override void OnResolve(string? fileOrigin)
         {
-
             AllowedParameters = new[]
             {
                 PathRelativityParameterString,
@@ -37,7 +37,6 @@ namespace XVNML.XVNMLUtility.Tags
             AllowedFlags = new[]
             {
                 DontDetainFlagString,
-                AllowOverrideFlagString,
                 TextSpeedControlledExternallyFlagString
             };
 
@@ -70,11 +69,13 @@ namespace XVNML.XVNMLUtility.Tags
 
         private void Configure()
         {
+            if (value == null) return;
             Script = (SyntaxToken[])value!;
             Name = TagName;
 
             // Flags
             DoNotDetain = HasFlag(DontDetainFlagString);
+            TextSpeedControlledExternally = HasFlag(TextSpeedControlledExternallyFlagString);
 
             AnalyzeDialogue();
         }

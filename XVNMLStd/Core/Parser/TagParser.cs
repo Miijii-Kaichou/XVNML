@@ -20,6 +20,7 @@ namespace XVNML.Core.Parser
         internal TagBase? root;
         internal Action? _onParserCompleted;
 
+        private List<SyntaxToken> _tokensCache = new List<SyntaxToken>();
         private bool _conflict;
         private int _position = -1;
         private string? _cachedTagName;
@@ -28,7 +29,6 @@ namespace XVNML.Core.Parser
         private ParserEvaluationState _evaluationState = ParserEvaluationState.Tag;
         private StringBuilder _tagValueStringBuilder = new StringBuilder(0xFFFF);
         private SyntaxToken? _Current => Peek(0, true);
-        private Tokenizer? _tokenizer = null;
         private TagParameterInfo? _cachedTagParameterInfo;
         private string? _cacheTagTypeName;
         private readonly Queue<Action> _solvingQueue = new Queue<Action>(1024);
@@ -63,8 +63,8 @@ namespace XVNML.Core.Parser
                 return;
             }
 
-            _tokenizer = new Tokenizer(fileTarget, TokenizerReadState.IO);
-            _conflict = _tokenizer.GetConflictState();
+            _tokensCache = Tokenizer.Tokenize(fileTarget, TokenizerReadState.IO);
+            _conflict = Tokenizer.GetConflictState();
 
             if (_conflict)
             {
@@ -78,15 +78,15 @@ namespace XVNML.Core.Parser
 
         private SyntaxToken? Peek(int offset, bool includeSpaces = false)
         {
-            if (_tokenizer == null)
+            if (_tokensCache == null)
                 return null;
 
-            var length = _tokenizer.Length;
+            var length = _tokensCache.Count;
             var index = _position + offset;
 
             while (index < length)
             {
-                var token = _tokenizer[index];
+                var token = _tokensCache[index];
 
                 if (token == null)
                 {
@@ -105,7 +105,7 @@ namespace XVNML.Core.Parser
                 return token;
             }
 
-            return _tokenizer[length];
+            return _tokensCache[^1];
         }
 
         private SyntaxToken? Next()
@@ -119,9 +119,9 @@ namespace XVNML.Core.Parser
             //Find starting of tags. With each tag found,
             //evaluate the Parameters/Flags, if it's self closing or not
             //it's children elements, and its values
-            if (_tokenizer == null) return;
+            if (_tokensCache == null) return;
 
-            for (int i = 0; i < _tokenizer.Length; i++)
+            while(_position < _tokensCache.Count)
             {
                 //If there was a conflict in resolving types, stop parsing;
                 if (_conflict) return;
@@ -160,7 +160,7 @@ namespace XVNML.Core.Parser
         {
             complete = false;
 
-            var tokens = new Tokenizer(token.Text!, TokenizerReadState.Local).definedTokens;
+            var tokens = Tokenizer.Tokenize(token.Text!, TokenizerReadState.Local);
 
             SyntaxToken? current;
             int i;
@@ -173,7 +173,7 @@ namespace XVNML.Core.Parser
 
             SyntaxToken? Peek(int offset, bool includeSpaces = false)
             {
-                if (_tokenizer == null)
+                if (tokens == null)
                     return null;
 
                 var length = tokens.Count;

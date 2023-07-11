@@ -43,8 +43,6 @@ namespace XVNML.Core.Parser
         private static Stack<SkripterLine> ResolveStack = new Stack<SkripterLine>();
         private static bool ResolvePending;
 
-        private const int ChuckSize = 1024;
-
         public SkriptrParser(SyntaxToken?[] dialogueTokenCache, out DialogueScript? output)
         {
             Instance = this;
@@ -70,25 +68,31 @@ namespace XVNML.Core.Parser
                 BreakDownUniqueToken(lowerSyntaxToken, st);
             }
 
+            lowerSyntaxToken.TrimExcess();
             TokenCache = lowerSyntaxToken.ToArray();
         }
 
         private static void BreakDownUniqueToken(List<SyntaxToken> lowerSyntaxToken, SyntaxToken? st)
         {
+            if (st == null) return;
+            
             // Setting "complicate" to "true" will disregard unique tokens
             // Like OpenTag, CloseTag, SelfTag, SkriptrDeclarative, and SkriptrInterrogative,
             // assuring it tokenizes to the smallest structure possible.
             StringBuilder sb = new StringBuilder();
             if (st.Type == TokenType.String)
             {
-                sb.Append("\"");
-                sb.Append(st.Text!);
-                sb.Append("\"");
+                sb.Append("\"")
+                  .Append(st.Text!)
+                  .Append("\"");
             }
 
-            SyntaxToken[] tokens = new Tokenizer(st.Type == TokenType.String ? sb.ToString() : st.Text!, TokenizerReadState.Local, true)
-                .definedTokens
-                .ToArray();
+            var list = Tokenizer
+                .Tokenize(st.Type == TokenType.String ? sb.ToString() : st.Text!, TokenizerReadState.Local, true);
+            
+            list?.TrimExcess();
+
+            SyntaxToken[] tokens = list?.ToArray()!;
 
             if (tokens.Length == 0) return;
             foreach (var lst in tokens) lowerSyntaxToken.Add(lst);
@@ -127,7 +131,7 @@ namespace XVNML.Core.Parser
                 {
                     ReadyToBuild = false;
                     line?.AppendContent(token?.Type == TokenType.String ? $"\"{token?.Text!}\"" : token?.Text!);
-                    skriptLineTokenCache.Add(token);
+                    skriptLineTokenCache?.Add(token);
                     IsReadingLineContent = token?.Type != TokenType.DoubleOpenBracket &&
                     token?.Type != TokenType.OpenBracket;
                     ReadyToBuild = !IsReadingLineContent.Value;
@@ -140,7 +144,7 @@ namespace XVNML.Core.Parser
                 {
                     ReadyToBuild = false;
                     line?.AppendContent(token?.Type == TokenType.String ? $"\"{token?.Text!}\"" : token?.Text!);
-                    skriptLineTokenCache.Add(token);
+                    skriptLineTokenCache?.Add(token);
                     IsReadingLineContent = token?.Type != TokenType.DoubleCloseBracket;
                     ReadyToBuild = !IsReadingLineContent.Value;
                     if (IsReadingLineContent.Value)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using XVNML.Utility.Diagnostics;
 
 namespace XVNML.Core.Assemblies
 {
@@ -17,7 +18,7 @@ namespace XVNML.Core.Assemblies
         private static void Initialize()
         {
             DomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-            DefinedTypes = new List<Type>(4064);
+            DefinedTypes = new List<Type>();
             foreach (var asm in DomainAssemblies)
             {
                 PopulateDefinedTypes(asm);
@@ -29,7 +30,7 @@ namespace XVNML.Core.Assemblies
             var definedTypes = asm.GetTypes();
             foreach (var type in definedTypes)
             {
-                DefinedTypes.Add(type);
+                DefinedTypes?.Add(type);
             }
         }
     }

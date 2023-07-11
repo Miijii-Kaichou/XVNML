@@ -45,7 +45,7 @@ namespace XVNML.Core.Enums
         InverseComma = 1L << 36,
         Percent = 1L << 37,
         Peak = 1L << 38,
-        Plus = 1L << 49,
+        Plus = 1L << 39,
         Dialogue = 1L << 40,
         DoubleCloseBracket = 1L << 41,
         DoubleOpenBracket = 1L << 42,

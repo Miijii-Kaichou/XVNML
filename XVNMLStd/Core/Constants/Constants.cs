@@ -20,12 +20,22 @@
         internal const string OwnerParameterString = "owner";
         internal const string YearParameterString = "year";
         internal const string ContentParameterString = "content";
+        internal const string ArgParameterString = "arg";
+        internal const string ArgsParameterString = "args";
+        internal const string SymbolParameterString = "symbol";
 
 
         internal const string ActAsSceneControllerFlagString = "actAsSceneController";
         internal const string AllowOverrideFlagString = "allowOverride";
         internal const string TextSpeedControlledExternallyFlagString = "textSpeedControlledExternally";
         internal const string DontDetainFlagString = "dontDetain";
+        internal const string UIntFlagString= "uint";
+        internal const string IntFlagString = "int";
+        internal const string FloatFlagString = "float";
+        internal const string StringFlagString = "string";
+        internal const string BoolFlagString = "bool";
+        internal const string LongFlagString = "long";
+        internal const string ObjectFlagString = "obj";
 
         internal const string DefaultCastDirectory = @"\Casts\";
         internal const string DefaultDialogueDirectory = @"\Dialogue\";

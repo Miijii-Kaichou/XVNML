@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Dialogue.Structs;
+using XVNML.Utility.Diagnostics;
 using XVNML.Utility.Dialogue;
 using XVNML.Utility.Macros;
+using XVNML.XVNMLUtility.Tags;
 
 namespace XVNML.Core.Macros
 {
@@ -13,7 +15,7 @@ namespace XVNML.Core.Macros
     {
         internal static bool[] RetriesQueued = new bool[0];
 
-        private static ConcurrentQueue<(string, (object, Type)[], MacroCallInfo)>[]? RetryQueues;
+        private static ConcurrentQueue<(string, (object, Type)[], MacroCallInfo, bool)>[]? RetryQueues;
 
         private static bool[] IsBlocked = new bool[0];
 
@@ -21,39 +23,46 @@ namespace XVNML.Core.Macros
         {
             RetriesQueued = new bool[DialogueWriter.TotalProcesses];
             IsBlocked = new bool[DialogueWriter.TotalProcesses];
-            RetryQueues = new ConcurrentQueue<(string, (object, Type)[], MacroCallInfo)>[DialogueWriter.TotalProcesses];
+            RetryQueues = new ConcurrentQueue<(string, (object, Type)[], MacroCallInfo, bool)>[DialogueWriter.TotalProcesses];
         }
 
-        internal static void Call(string macroSymbol, (object, Type)[] args, MacroCallInfo info)
+        internal static void Call(string macroSymbol, (object, Type)[] args, MacroCallInfo info, bool isRef = false)
         {
             lock (info.process.processLock)
             {
                 if (IsBlocked[info.process.ID])
                 {
-                    SendForRetry((macroSymbol, args, info));
+                    SendForRetry((macroSymbol, args, info, isRef));
+                    return;
+                }
+
+                MacroAttribute? correctMacro;
+
+                if (isRef)
+                {
+                    Call(macroSymbol, info);
                     return;
                 }
 
                 var targetMacros = DefinedMacrosCollection.ValidMacros?[macroSymbol];
 
-                args = ResolveMacroArgumentTypes(targetMacros!, args, out MacroAttribute? correctMacro);
+                args = ResolveMacroArgumentTypes(targetMacros!, args, out correctMacro);
 
                 object[] finalArgs = FinalizeArgumentData(args, info);
-
                 correctMacro?.method?.Invoke(info, finalArgs);
             }
         }
 
-        private static void SendForRetry((string macroSymbol, (object, Type)[] args, MacroCallInfo info) value)
+        private static void SendForRetry((string macroSymbol, (object, Type)[] args, MacroCallInfo info, bool isRef) retryInfo)
         {
-            lock (value.info.process.processLock)
+            lock (retryInfo.info.process.processLock)
             {
                 if (RetryQueues == null) return;
 
-                RetryQueues[value.info.process.ID] ??= new ConcurrentQueue<(string, (object, Type)[], MacroCallInfo)>();
-                RetryQueues[value.info.process.ID].Enqueue(value);
+                RetryQueues[retryInfo.info.process.ID] ??= new ConcurrentQueue<(string, (object, Type)[], MacroCallInfo, bool)>();
+                RetryQueues[retryInfo.info.process.ID].Enqueue(retryInfo);
 
-                UpdateRetryQueuedFlags(value.info.process);
+                UpdateRetryQueuedFlags(retryInfo.info.process);
             }
         }
 
@@ -92,8 +101,12 @@ namespace XVNML.Core.Macros
             if (args == null || args.Length == 0) return Array.Empty<(object, Type)>();
 
             var argTypes = args.Select(a => a.Item2).ToArray();
-            var targetMacro = targetMacros.Count < 2 ? targetMacros[0] : targetMacros.Where(m =>
+            var targetMacro = targetMacros.Count < 2 ? 
+                targetMacros[0] : 
+                targetMacros.Where(m =>
             {
+                if (m!.argumentTypes.Length == 0 && argTypes.Length != 0) return false;
+
                 for (int i = 0; i < m!.argumentTypes?.Length; i++)
                 {
                     var type = m.argumentTypes[i];
@@ -140,12 +153,22 @@ namespace XVNML.Core.Macros
             {
                 for (int i = 0; i < blockInfo.macroCalls.Length;)
                 {
-                    var (macroSymbol, args) = blockInfo.macroCalls[i];
-                    Call(macroSymbol, args, callInfo);
+                    var (macroSymbol, args, isRef) = blockInfo.macroCalls[i];
+                    Call(macroSymbol, args, callInfo, isRef);
                     i++;
                 }
             }
         }
+
+        internal static void Call(string macroName, MacroCallInfo info)
+        {
+            var data = DefinedMacrosCollection.CachedMacros[macroName];
+            var callIndex = info.process.cursorIndex;
+            var callInfo = new MacroCallInfo() { callIndex = callIndex, process = info.process };
+            (string macroSymbol, (object, Type)[], bool isRef) call = (data.symbol, new[] { (data.arg, data.type) }, false);
+            Call(new MacroBlockInfo() { blockPosition = callIndex, macroCalls = new[] { call } }, callInfo);
+        }
+
 
         internal static void AttemptRetries(DialogueWriterProcessor process)
         {
@@ -155,7 +178,7 @@ namespace XVNML.Core.Macros
                 if (RetryQueues[process.ID] == null) return;
                 if (RetryQueues[process.ID].IsEmpty) return;
                 RetryQueues[process.ID].TryDequeue(out var call);
-                Call(call.Item1, call.Item2, call.Item3);
+                Call(call.Item1, call.Item2, call.Item3, call.Item4);
                 UpdateRetryQueuedFlags(process);
             }
         }
