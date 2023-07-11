@@ -261,7 +261,7 @@ namespace XVNML.Core.Dialogue
 
         public void JumpTo(string lineTagName)
         {
-            _jumpIndexValue = Instance!.lineProcesses.Where(sl => sl.TaggedAs == lineTagName).Single().data.lineIndex;
+            _jumpIndexValue = Instance!.lineProcesses.Where(sl => sl.Name == lineTagName).Single().data.lineIndex;
         }
 
         public void JumpTo(int index)
@@ -273,7 +273,7 @@ namespace XVNML.Core.Dialogue
         {
             // Increment through line processes from current index
             // until you find the next tagged Tag Name
-            if (Instance!.lineProcesses.ElementAt(_jumpIndexValue++).TaggedAs!.Equals(lineTagName)) return;
+            if (Instance!.lineProcesses.ElementAt(_jumpIndexValue++).Name!.Equals(lineTagName)) return;
             LeadTo(lineTagName);
         }
 

@@ -14,6 +14,7 @@ namespace XVNML.XVNMLUtility
     public class XVNMLObj
     {
         public static XVNMLObj? Instance { get; private set; }
+        public FileInfo FileInfo { get; private set; }
 
         [JsonIgnore]
         public Action<XVNMLObj>? onDOMCreated;
@@ -73,14 +74,16 @@ namespace XVNML.XVNMLUtility
             DefinedTagsCollection.ManifestTagTypes();
             DefinedMacrosCollection.ManifestMacros();
 
-
             var xvnmlParser = new TagParser();
             xvnmlParser.SetTarget(fileTarget);
             xvnmlParser.Parse(() =>
             {
-                Instance = new XVNMLObj(xvnmlParser);
+                Instance = new XVNMLObj(xvnmlParser){FileInfo = new FileInfo(fileTarget)};
                 Instance!.onDOMCreated = onCreation;
+
                 if (generateCacheFile) GenerateCache(fileTarget);
+
+                XVNMLLogger.Log($"XVNMLObj [{Instance.FileInfo.Name}] successfully created...", Instance);
                 Instance.onDOMCreated?.Invoke(Instance);
             });
         }

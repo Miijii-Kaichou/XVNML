@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using XVNML.Core.Dialogue;
+using XVNML.Core.Lexer;
 using XVNML.Core.Parser;
 using XVNML.Core.Tags;
 using XVNML.Utility.Diagnostics;
@@ -14,9 +16,10 @@ namespace XVNML.XVNMLUtility.Tags
     {
         const string _DialogueDir = DefaultDialogueDirectory;
 
-        [JsonProperty] public string? Script { get; private set; }
+        [JsonProperty] public SyntaxToken?[]? Script { get; private set; }
         [JsonProperty] public string? Name { get; private set; }
         [JsonProperty] public bool DoNotDetain { get; private set; } = false;
+        [JsonProperty] public bool TextSpeedControlledExternally { get; private set; } = false;
 
         [JsonProperty] public Cast[]? includedCasts;
         [JsonProperty] public DialogueScript? dialogueOutput;
@@ -25,7 +28,6 @@ namespace XVNML.XVNMLUtility.Tags
 
         public override void OnResolve(string? fileOrigin)
         {
-
             AllowedParameters = new[]
             {
                 PathRelativityParameterString,
@@ -35,7 +37,6 @@ namespace XVNML.XVNMLUtility.Tags
             AllowedFlags = new[]
             {
                 DontDetainFlagString,
-                AllowOverrideFlagString,
                 TextSpeedControlledExternallyFlagString
             };
 
@@ -54,8 +55,7 @@ namespace XVNML.XVNMLUtility.Tags
                 XVNMLObj.Create(fileOrigin + _DialogueDir + source!.ToString(), dom =>
                 {
                     if (dom == null) return;
-                    var target = dom?.source?.GetElement<Dialogue>(TagName ?? string.Empty) ??
-                        dom?.source?.GetElement<Dialogue>();
+                    var target = dom?.source?.SearchElement<Dialogue>(TagName ?? string.Empty);
                     if (target == null) return;
                     value = target.value;
                     TagName = target.TagName;
@@ -69,11 +69,13 @@ namespace XVNML.XVNMLUtility.Tags
 
         private void Configure()
         {
-            Script = value?.ToString();
+            if (value == null) return;
+            Script = (SyntaxToken[])value!;
             Name = TagName;
 
             // Flags
             DoNotDetain = HasFlag(DontDetainFlagString);
+            TextSpeedControlledExternally = HasFlag(TextSpeedControlledExternallyFlagString);
 
             AnalyzeDialogue();
         }

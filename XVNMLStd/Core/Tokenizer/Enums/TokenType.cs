@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace XVNML.Core.Lexer
+namespace XVNML.Core.Enums
 {
     [Flags]
     public enum TokenType : long
@@ -45,21 +45,17 @@ namespace XVNML.Core.Lexer
         InverseComma = 1L << 36,
         Percent = 1L << 37,
         Peak = 1L << 38,
-        Plus = 1L << 49,
+        Plus = 1L << 39,
         Dialogue = 1L << 40,
         DoubleCloseBracket = 1L << 41,
         DoubleOpenBracket = 1L << 42,
         AnonymousCastSymbol = 1L << 43,
         Underscore = 1L << 44,
-
-        //
-        SkriptrString = 1L << 45,
-        DeclarativeSkriptrLine = 1L << 48,
-        InterrogativeSkriptrLine = 1L << 49,
-        TagParameter = 1L << 50,
-        TagFlag = 1L << 51,
-        MacroBlock = 1L << 52,
-        NamedTag = 1L << 53,
-        PromptBlock = 1L << 54
+        ScopeBlock = 1L << 45,
+        OpenTag = 1L << 46,
+        CloseTag = 1L << 47,
+        SelfTag = 1L << 48,
+        SkriptrDeclarativeLine = 1L << 49,
+        SkriptrInterrogativeLine = 1L << 50
     }
 }

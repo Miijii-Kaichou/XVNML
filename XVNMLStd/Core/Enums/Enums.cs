@@ -21,7 +21,7 @@
 
     public enum DirectoryRelativity
     {
-        Absolute,
-        Relative
+        Relative,
+        Absolute
     }
 }

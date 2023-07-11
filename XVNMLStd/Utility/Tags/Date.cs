@@ -23,7 +23,6 @@ namespace XVNML.XVNMLUtility.Tags
             if (valueParameter == null) return;
 
             date = DateTime.ParseExact(valueParameter, "MM/dd/yyyy", CultureInfo.InvariantCulture);
-            Console.WriteLine(date);
         }
     }
 }

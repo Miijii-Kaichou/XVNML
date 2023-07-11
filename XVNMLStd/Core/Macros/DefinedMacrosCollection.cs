@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Schema;
+using XVNML.Core.Assemblies;
+using XVNML.Utility.Diagnostics;
 using XVNML.Utility.Macros;
 
 namespace XVNML.Core.Macros
@@ -10,6 +13,8 @@ namespace XVNML.Core.Macros
     {
         public static SortedDictionary<string, List<MacroAttribute>>? ValidMacros { get; private set; }
 
+        public static SortedDictionary<string, (string symbol, object arg, Type type)> CachedMacros { get; private set; }
+
         public static bool IsInitialized { get; private set; }
 
         public static void ManifestMacros()
@@ -17,18 +22,22 @@ namespace XVNML.Core.Macros
             if (IsInitialized) return;
 
             ValidMacros = new SortedDictionary<string, List<MacroAttribute>>();
+            CachedMacros = new SortedDictionary<string, (string symbol, object arg, Type type)>();
 
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             Type[] libraryTypes;
 
-            for (int i = 0; i < assemblies.Length; i++)
-            {
-                Assembly assembly = assemblies[i];
-                libraryTypes = assembly.GetTypes().Where(c => c.IsClass && c.GetCustomAttribute<MacroLibraryAttribute>() != null).ToArray();
-                EstablishLibraries(libraryTypes);
-            }
+            libraryTypes = DomainAssemblyState
+                .DefinedTypes
+                .Where(c => c.IsClass && c.GetCustomAttribute<MacroLibraryAttribute>() != null).ToArray();
+
+            EstablishLibraries(libraryTypes);
 
             IsInitialized = true;
+        }
+
+        internal static void AddToMacroCache(string macroName, string validSymbol, object arg, Type type)
+        {
+            CachedMacros.Add(macroName, (validSymbol, arg, type));
         }
 
         private static void EstablishLibraries(Type[] libraryTypes)

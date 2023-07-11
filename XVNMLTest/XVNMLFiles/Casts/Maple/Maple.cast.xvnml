@@ -1,0 +1,13 @@
+<source name::"Maple.Cast.XVNML">
+    <imageDefinitions>
+        <image name::"Img1"/>
+        <image name::"Img2"/>
+        <image name::"Img3"/>
+        <image name::"Img4"/>
+        <image name::"Img5"/>
+    </imageDefinitions>
+    <cast name::"Maple">
+        <portraitDefinitions/>
+        <voiceDefinitions/>
+    </cast>
+</source>

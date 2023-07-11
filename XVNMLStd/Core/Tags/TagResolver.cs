@@ -4,20 +4,32 @@ namespace XVNML.Core.Tags
 {
     internal class TagConverter
     {
-        internal static TagBase? Convert(string text)
+        internal static TagBase? ConvertToTagInstance(string text)
         {
-            if (DefinedTagsCollection.ValidTagTypes?.ContainsKey(text) == false)
+            if (DefinedTagsCollection.ValidTagTypes == null) return null;
+
+            if (!DefinedTagsCollection.ValidTagTypes.ContainsKey(text))
             {
-                {
-                    var msg = $"Error in Tag Resolver: There is no association with tag {text}";
-                    Console.WriteLine(msg);
-                    Parser.TagParser.Abort(msg);
-                }
+                var msg = $"Error in Tag Resolver: There is no association with tag '{text}'";
+                throw new ArgumentException(msg);
             }
 
-            var tag = (TagBase?)Activator.CreateInstance(DefinedTagsCollection.ValidTagTypes?[text].Item1!);
+            var tagType = DefinedTagsCollection.ValidTagTypes[text].Item1;
+            if (tagType == null)
+            {
+                var msg = $"Error in Tag Resolver: Invalid tag type association for tag '{text}'";
+                throw new InvalidOperationException(msg);
+            }
 
-            return tag;
+            var constructor = tagType.GetConstructor(Type.EmptyTypes);
+            if (constructor == null)
+            {
+                var msg = $"Error in Tag Resolver: No parameterless constructor found for tag type '{tagType.FullName}'";
+                throw new InvalidOperationException(msg);
+            }
+
+            var tagInstance = (TagBase)constructor.Invoke(null);
+            return tagInstance;
         }
     }
 }

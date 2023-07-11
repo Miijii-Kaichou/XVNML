@@ -1,48 +1,64 @@
 ﻿<proxy name::"test0.main" screenWidth::1920 screenHeight::1080>
-     <keycodeDefinitions name::"_globalInputDef">
-          <keycode name::"_proceed0"     vkey::Mouse0        purpose::PROCEED/>
-          <keycode name::"_proceed1"     vkey::Return       purpose::PROCEED/>
-          <keycode name::"_navUp"       vkey::Up            purpose::NAVIGATE_UP/>
-          <keycode name::"_navDown"     vkey::Down          purpose::NAVIGATE_DOWN/>
-          <keycode name::"_navLeft"     vkey::Left          purpose::NAVIGATE_LEFT/>
-          <keycode name::"_navRight"    vkey::Right         purpose::NAVIGATE_RIGHT/>
-     </keycodeDefinitions>
+    <metadata name::"_metadata">
+        <title name::"XVNMLEssentials"/>
+        <date value::"06/25/2023"/>
+        <copyright year::2023 owner::"Enjyoii"/>
+    </metadata>
 
-     <castDefinitions>
-          <cast name::"Hana" src::"Hana\Hana.cast.xvnml"/>
-     </castDefinitions>
+    <castDefinitions>
+        <cast name::"Raven"     src::"Raven/Raven.cast.xvnml"       />
+        <cast name::"Maple"     src::"Maple/Maple.cast.xvnml"       />
+        <cast name::"Hanabi"    src::"Hanabi/Hanabi.cast.xvnml"     />
+        <cast name::"Devi"      src::"Devi/Devi.cast.xvnml"         />
+        <cast name::"Silka"     src::"Silka/Silka.cast.xvnml"       />
+        <cast name::"Hana"      src::"Hana/Hana.cast.xvnml"         />
+        <cast name::"Ageha"     src::"Ageha/Ageha.cast.xvnml"       />
+        <cast name::"Konoha"    src::"Konoha/Konoha.cast.xvnml"     />
+        <cast name::"Urara"     src::"Urara/Urara.cast.xvnml"       />
+        <cast name::"Anemelle"  src::"Anemelle/Anemelle.cast.xvnml" />
+        <cast name::"Saki"      src::"Saki/Saki.cast.xvnml"         /> 
+        <cast name::"Luu"       src::"Luu/Luu.cast.xvnml"           />
+        <cast name::"Mythril"   src::"Mythril/Mythril.cast.xvnml"   />
+        <cast name::"Adula"     src::"Adula/Adula.cast.xvnml"       />
+        <cast name::"Guste">
+            <portraitDefinitions/>
+            <voiceDefinitions/>
+        </cast>
+        <cast name::"Estanza">
+            <portraitDefinitions/>
+            <voiceDefinitions/>
+        </cast>
+        <cast name::"Dorothy">
+            <portraitDefinitions/>
+            <voiceDefinitions/>
+        </cast>
+        <cast name::"Jack">
+            <portraitDefinitions/>
+            <voiceDefinitions/>
+        </cast>
+    </castDefinitions>
+
+    <sceneDefinitions>
+        <scene name::"OutsideOfSchool" src::"School\OutsideOfSchool.scene.xvnml"/>
+    </sceneDefinitions>
+
+    <keycodeDefinitions name::"_globalInputDef">
+        <keycode name::"_proceedWithMouse"     vkey::LeftMouse      purpose::PROCEED/>
+        <keycode name::"_proceedWithEnter"     vkey::Return         purpose::PROCEED/>
+        <keycode name::"_navUp"                vkey::Up             purpose::NAVIGATION_UP/>
+        <keycode name::"_navDown"              vkey::Down           purpose::NAVIGATION_DOWN/>
+        <keycode name::"_navLeft"              vkey::Left           purpose::NAVIGATION_LEFT/>
+        <keycode name::"_navRight"             vkey::Right          purpose::NAVIGATION_RIGHT/>
+    </keycodeDefinitions>
+
+    <macroCache>
+        <macro #uint name::"_3sec" arg::3000 symbol::"delay"/>
+        <macro #uint name::"_defaultTextSpeed" arg::100 symbol::"set_text_speed"/>
+    </macroCache>
 
 	<dialogue name::"Hello World">
-        @ {sts::100}I honestly have no idea why I can't read my elements inside Unity.<
-        @ Today, our job is to figure that out.<
-        @ Because if I can get caching to work, then it's going to greatly improve 
-        perform, especially when you create a stand-alone build of the game.<
-        @ So without further ado, let's begin the test.<
-        @ {set_text_speed::40}Welcome to XVNML2U!<
-        @ This package demonstrates the capabilities in which the XVNML{space}
-        Class Library is capable of{delay::500|clr}when used with the Unity Game Engine.<
-        @ What you see here{delay::750} is a normal dialogue.<
-        @ And {insert::"THIS"|delay::1000} is a dialogue with {set_text_speed::60} a 
-        looooooooooooooooooooooooooooooooooooooooooooooooooooot of {set_text_speed::30}charisma!!!!<
-        @ {set_text_speed::40}And with a normal XVNML Dialogue Control component, you can run whatever 
-        dialogue you want.<
-        @ This is just a sample of what XVNML can do.<
-        @ XVNML is a powerful tool with an EMPHASIS in story telling.<
-        @ And we're starting our journey off by integrating XVNML to Unity 
-        {paren}hence "XVNML2U"{paren_end}.<
-        @ We're very excited to see how you'll put this tool to the ultimate test.<
-        ?  What's boning on?>>
-        (
-            ("Nothing")>
-                @  I see.<<
-        )
-		["CL"]
-        @ {sts::100|del::1000}We hope that you've enjoyed this demo.<
-        @ Please consider loading the other Unity Scenes to 
-        get a more in-depth explanation on the different tools and features
-        that XVNML and XVNML2U can provide.<
-        @ {lindex::false}With that said, logging out!<<
-	</dialogue>
-
-    <dialogue src::"Test/Test.dialogue.xvnml" pathMode::Relative/>
+        ["Main"]
+        @ {$_3sec|insert::"Wowwie"|$_defaultTextSpeed|pass}<
+        @ "Quotations"{$_3sec} test<
+    </dialogue>
 </proxy>

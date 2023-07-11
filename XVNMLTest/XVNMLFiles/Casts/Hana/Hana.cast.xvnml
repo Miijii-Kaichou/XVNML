@@ -1,26 +1,15 @@
-<source name::"Hana.Cast">
-	<imageDefinitions>
-		<image name::"HanaSmile"		src::"HanaSmile.png"	pathMode::Relative/>
-		<image name::"HanaHappy"		src::"HanaHappy.png"	pathMode::Relative/>
-		<image name::"HanaSad"			src::"HanaSad.png"	    pathMode::Relative/>
-		<image name::"HanaAngry"		src::"HanaAngry.png"	pathMode::Relative/>
-		<image name::"HanaNeutral"		src::"HanaNeutral.png" 	pathMode::Relative/>
-	</imageDefinitions>
-	<audioDefinitions>
-		<audio name::"HanaWow"			src::"HanaWow.mp3"		pathMode::Relative/>
-	</audioDefinitions>
-	<castDefinitions>
-		<cast name::"Hana">
-			<portraitDefinitions>
-				<portrait name::"Smile"		img::$HanaSmile/>
-				<portrait name::"Happy" 	img::$HanaHappy/>
-				<portrait name::"Sad" 		img::$HanaSad/>
-				<portrait name::"Angry" 	img::$HanaAngry/>
-				<portrait name::"Neutral" 	img::$HanaNeutral/>
-			</portraitDefinitions>
-			<voiceDefinitions>
-				<voice name::"Wow" 	audio::$HanaWow/>
-			</voiceDefinitions>
-		</cast>
-	</castDefinitions>
+<source name::"Hana.Cast.XVNML">
+    <imageDefinitions>
+        <image name::"Img1"/>
+        <image name::"Img2"/>
+        <image name::"Img3"/>
+        <image name::"Img4"/>
+        <image name::"Img5"/>
+    </imageDefinitions>
+    <castDefinitions>
+        <cast name::"Hana">
+            <portraitDefinitions/>
+            <voiceDefinitions/>
+        </cast>
+    </castDefinitions>
 </source>

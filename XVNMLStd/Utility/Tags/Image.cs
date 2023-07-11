@@ -37,6 +37,7 @@ namespace XVNML.XVNMLUtility.Tags
             relativity = rel;
 
             var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + "Images\\" + src : src;
+            if (pathFlow == null) return;
             if (pathFlow == string.Empty) return;
 
             imagePath = new DirectoryInfo(pathFlow).FullName;
