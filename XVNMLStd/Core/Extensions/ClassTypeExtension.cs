@@ -153,7 +153,8 @@ namespace XVNML.Core.Extensions
                 Type numberType = token.Value!.GetType();
                 return numberType;
             }
-            return null;
+            var type = target.GetType();
+            return type;
         }
     }
 }

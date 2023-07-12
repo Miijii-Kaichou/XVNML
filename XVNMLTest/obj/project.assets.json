@@ -15,7 +15,7 @@
           }
         }
       },
-      "XVNML/1.0.1.2-pre-release": {
+      "XVNML/1.0.1.21-pre-release": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.1",
         "dependencies": {
@@ -61,7 +61,7 @@
         "packageIcon.png"
       ]
     },
-    "XVNML/1.0.1.2-pre-release": {
+    "XVNML/1.0.1.21-pre-release": {
       "type": "project",
       "path": "../XVNMLStd/XVNMLStd.csproj",
       "msbuildProject": "../XVNMLStd/XVNMLStd.csproj"
@@ -69,7 +69,7 @@
   },
   "projectFileDependencyGroups": {
     "net7.0": [
-      "XVNML >= 1.0.1.2-pre-release"
+      "XVNML >= 1.0.1.21-pre-release"
     ]
   },
   "packageFolders": {

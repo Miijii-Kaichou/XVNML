@@ -43,19 +43,18 @@
         </keycodeDefinitions>
 
         <macroCache>
-                <macro name::"_defaultTextSpeed" arg::40 symbol::"set_text_speed"/>
-                <macro name::"_testMacro">
-                        <macro arg::500 symbol::"delay"/>
-                        <macro symbol::"clr"/>
-                </macro>
-                <macro name::"_pauseAndWait">
-                    <macro symbol::"pause"/>
-                    <macro arg::1000 symbol::"delay"/>
+                <macro name::"_think">
+                   <macro arg::500 symbol::"delay"/>
+                   <macro arg::"." symbol::"insert"/>
+                   <macro arg::500 symbol::"delay"/>
+                   <macro arg::"." symbol::"insert"/>
+                   <macro arg::500 symbol::"delay"/>
+                   <macro arg::"." symbol::"insert"/>
                 </macro>
         </macroCache>
 
         <dialogue name::"Hello World">
-        @ "Quotations"{$_pauseAndWait} test<
+        @ "Quotations"{$_think} test<
         @ {$_defaultTextSpeed}Welcome to XVNML2U!{jump_to::"Maple-Intro"}<
         @ This package demonstrates the capabilities in which the XVNML 
         Class Library is capable of{$_testMacro}when used with the Unity Game Engine.<
