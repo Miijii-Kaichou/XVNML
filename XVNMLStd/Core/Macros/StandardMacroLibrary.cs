@@ -79,7 +79,7 @@ internal sealed class StandardMacroLibrary
     [Macro("op")]
     internal static void OperationsVariableMacro(MacroCallInfo info, string expression)
     {
-
+        
     }
 
     [Macro("jump_to")]
@@ -460,15 +460,6 @@ internal sealed class StandardMacroLibrary
     {
         SetCastVoice(info, value.ToString());
     }
-    #endregion
-
-    #region Scene/Curtain Macros
-    [Macro("cue_scene")]
-    internal static void SetSceneMacro(MacroCallInfo info, string value)
-    {
-        info.process.CurrentSceneInfo = new SceneInfo() { name = value };
-    }
-
     #endregion
 
     #region Variable Control Macros

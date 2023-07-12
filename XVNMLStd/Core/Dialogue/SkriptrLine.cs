@@ -402,6 +402,7 @@ namespace XVNML.Core.Dialogue
                                         TokenType.String |
                                         TokenType.EmptyString |
                                         TokenType.Identifier |
+                                        TokenType.DollarSign |
                                         TokenType.OpenParentheses;
                         continue;
 
@@ -410,7 +411,8 @@ namespace XVNML.Core.Dialogue
                         expectingType = TokenType.Number |
                                         TokenType.String |
                                         TokenType.EmptyString |
-                                        TokenType.Identifier;
+                                        TokenType.Identifier |
+                                        TokenType.DollarSign;
                         continue;
 
                     case TokenType.Comma:
@@ -419,7 +421,8 @@ namespace XVNML.Core.Dialogue
                         expectingType = TokenType.Number |
                                         TokenType.String |
                                         TokenType.EmptyString |
-                                        TokenType.Identifier;
+                                        TokenType.Identifier |
+                                        TokenType.DollarSign;
                         continue;
 
                     case TokenType.CloseParentheses:
@@ -431,7 +434,10 @@ namespace XVNML.Core.Dialogue
 
                     case TokenType.DollarSign:
                         if (macroName != null)
-                            return;
+                        {
+                            expectingType = TokenType.Identifier;
+                            continue;
+                        }
                         SetAsReference(newBlock, macroCount);
                         expectingType = TokenType.Identifier;
                         continue;

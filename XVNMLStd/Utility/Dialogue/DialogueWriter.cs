@@ -26,9 +26,6 @@ namespace XVNML.Utility.Dialogue
         public static DialogueWriterCallback?[]? OnCastExpressionChange;
         public static DialogueWriterCallback?[]? OnCastVoiceChange;
 
-        // Scene-Specific Callbacks
-        public static DialogueWriterCallback?[]? OnSceneChange;
-
         // Prompt-Specific Callbacks
         public static DialogueWriterCallback?[]? OnPrompt;
         public static DialogueWriterCallback?[]? OnPromptResonse;
@@ -80,8 +77,6 @@ namespace XVNML.Utility.Dialogue
             OnCastChange = new DialogueWriterCallback[totalChannels];
             OnCastExpressionChange = new DialogueWriterCallback[totalChannels];
             OnCastVoiceChange = new DialogueWriterCallback[totalChannels];
-
-            OnSceneChange = new DialogueWriterCallback[totalChannels];
 
             OnPrompt = new DialogueWriterCallback[totalChannels];
             OnPromptResonse = new DialogueWriterCallback[totalChannels];
@@ -268,7 +263,6 @@ namespace XVNML.Utility.Dialogue
                 {
                     process.UpdateProcess();
                     process.CurrentCastInfo = process.currentLine?.InitialCastInfo;
-                    process.CurrentSceneInfo = process.currentLine?.SceneLoadInfo;
                     OnLineStart?[id]?.Invoke(process);
                 }
 

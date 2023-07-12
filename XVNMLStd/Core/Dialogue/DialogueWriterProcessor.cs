@@ -91,29 +91,6 @@ namespace XVNML.Core.Dialogue
             }
         }
 
-        // Scene Data
-        public SceneInfo? CurrentSceneInfo
-        {
-            get
-            {
-                return _currentSceneInfo;
-            }
-            set
-            {
-                var previous = _currentSceneInfo;
-
-                _currentSceneInfo = value;
-
-                if (_currentSceneInfo == null) return;
-                if (previous?.name == _currentSceneInfo?.name) return;
-
-                if (_currentSceneInfo!.Value.name?.Equals(previous?.name) == false)
-                {
-                    DialogueWriter.OnSceneChange?[ID]?.Invoke(this);
-                }
-            }
-        }
-
         internal char? CurrentLetter
         {
             get
