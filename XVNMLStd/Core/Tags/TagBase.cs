@@ -316,6 +316,7 @@ namespace XVNML.Core.Tags
             elements?.ForEach(item =>
             {
                 if (item == null) return;
+                if (item.GetType() != typeof(T)) return;
                 if (item.TagID == null)
                 {
                     item.TagID = id++;
@@ -325,7 +326,6 @@ namespace XVNML.Core.Tags
 
                 id = item.TagID.Value;
                 list.Add((T)Convert.ChangeType(item, typeof(T)));
-                id++;
             });
             return list.ToArray();
         }

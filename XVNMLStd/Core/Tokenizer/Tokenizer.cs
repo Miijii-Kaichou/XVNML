@@ -185,8 +185,7 @@ namespace XVNML.Core.Lexer
                 return new SyntaxToken(TokenType.WhiteSpace, _Line, start, text, null);
             }
 
-            if (char.IsLetter(_Current) ||
-                _Current == '_')
+            if (char.IsLetter(_Current))
             {
                 var start = _position;
                 while (char.IsLetter(_Current) ||
@@ -194,7 +193,20 @@ namespace XVNML.Core.Lexer
                     char.IsNumber(_Current))
                     Next();
 
-                var text = SourceText?[start.._position];
+                string text = SourceText?[start.._position];
+
+                return new SyntaxToken(TokenType.Identifier, _Line, start, text, text);
+            }
+
+            if (_Current == '_')
+            {
+                var start = _position;
+                while (char.IsLetter(_Current) ||
+                    _Current == '_' ||
+                    char.IsNumber(_Current))
+                    Next();
+
+                string text = SourceText?[start.._position];
 
                 return new SyntaxToken(TokenType.Identifier, _Line, start, text, text);
             }
@@ -213,6 +225,21 @@ namespace XVNML.Core.Lexer
                 text = text?.Trim(' ', '\n', '\r', '\t');
 
                 return new SyntaxToken(TokenType.SingleLineComment, _Line, start, text, text);
+            }
+
+            //Reference Identifier
+            if (_Current == '$' && AllowForComplexStructure == false)
+            {
+                Next();
+                var start = _position;
+                while (char.IsLetter(_Current) ||
+                    _Current == '_' ||
+                    char.IsNumber(_Current))
+                    Next();
+
+                string text = SourceText?[start.._position];
+
+                return new SyntaxToken(TokenType.ReferenceIdentifier, _Line, start, text, text);
             }
 
             //#Region
