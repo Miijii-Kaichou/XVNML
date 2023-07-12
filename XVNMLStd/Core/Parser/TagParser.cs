@@ -10,6 +10,9 @@ using XVNML.Core.Enums;
 using XVNML.Utility.Diagnostics;
 using System.Numerics;
 using XVNML.XVNMLUtility.Tags;
+using XVNML.Core.Macros;
+using System.Linq;
+using System.Diagnostics;
 
 namespace XVNML.Core.Parser
 {
@@ -290,20 +293,9 @@ namespace XVNML.Core.Parser
                             continue;
                         }
 
-                        if (expected?.Type == TokenType.DollarSign)
+                        if (expected?.Type == TokenType.ReferenceIdentifier)
                         {
                             Next();
-
-                            expected = Peek(1);
-
-                            if (expected?.Type != TokenType.Identifier)
-                            {
-                                Abort($"Reference Error at Line {current?.Line} Position {current?.Position}: Expected Identifier: {fileTarget}");
-                                return;
-                            }
-
-                            Next();
-
                             _cachedTagParameterInfo.paramters[_cachedTagName!].value = current?.Value;
                             _cachedTagParameterInfo.paramters[_cachedTagName!].isReferencing = true;
 

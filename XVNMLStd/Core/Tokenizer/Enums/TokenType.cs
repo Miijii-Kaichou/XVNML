@@ -56,6 +56,7 @@ namespace XVNML.Core.Enums
         CloseTag = 1L << 47,
         SelfTag = 1L << 48,
         SkriptrDeclarativeLine = 1L << 49,
-        SkriptrInterrogativeLine = 1L << 50
+        SkriptrInterrogativeLine = 1L << 50,
+        ReferenceIdentifier = 1L << 51
     }
 }

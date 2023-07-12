@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using XVNML.Core.Enums;
+using XVNML.Core.Lexer;
 
 namespace XVNML.Core.Extensions
 {
@@ -32,7 +34,7 @@ namespace XVNML.Core.Extensions
             var _string = target;
             var i = -1;
             int start = 0;
-            foreach(var character in _string)
+            foreach (var character in _string)
             {
                 i++;
 
@@ -70,9 +72,9 @@ namespace XVNML.Core.Extensions
                     start = i;
 
                     if (input.Count() > 1) continue;
-                    
+
                     string resultingString = ExtractResultingString(target, input, replaceWith, start);
-                    
+
                     return resultingString;
                 }
 
@@ -83,7 +85,7 @@ namespace XVNML.Core.Extensions
                     if (match != input) continue;
 
                     string resultingString = ExtractResultingString(target, input, replaceWith, start);
-                   
+
                     return resultingString;
                 }
             }
@@ -132,6 +134,26 @@ namespace XVNML.Core.Extensions
             }
 
             return input;
+        }
+
+        internal static Type? DetermineValueType(this object target)
+        {
+            if (target == null) return null;
+            var token = Tokenizer.Tokenize(target.ToString(), Enums.TokenizerReadState.Local)![0];
+
+            if (token == null) return target.GetType();
+
+            if (token.Type == TokenType.String || token.Type == TokenType.Identifier)
+            {
+                if (token.Text?.ToLower() == "true" || token.Text?.ToLower() == "false") return typeof(bool);
+                return typeof(string);
+            }
+                if (token.Type == TokenType.Number)
+            {
+                Type numberType = token.Value!.GetType();
+                return numberType;
+            }
+            return null;
         }
     }
 }

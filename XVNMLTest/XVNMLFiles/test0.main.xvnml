@@ -1,64 +1,968 @@
 ﻿<proxy name::"test0.main" screenWidth::1920 screenHeight::1080>
-    <metadata name::"_metadata">
-        <title name::"XVNMLEssentials"/>
-        <date value::"06/25/2023"/>
-        <copyright year::2023 owner::"Enjyoii"/>
-    </metadata>
+        <metadata name::"_metadata">
+                <title name::"XVNMLEssentials"/>
+                <date value::"06/25/2023"/>
+                <copyright year::2023 owner::"Enjyoii"/>
+                <tags #useChildren>
+                        <tag name::"XVNML"/>
+                        <tag name::"C#"/>
+                        <tag name::".NET"/>
+                        <tag name::"Unity"/>
+                        <tag name::"Educational"/>
+                </tags>
+        </metadata>
 
-    <castDefinitions>
-        <cast name::"Raven"     src::"Raven/Raven.cast.xvnml"       />
-        <cast name::"Maple"     src::"Maple/Maple.cast.xvnml"       />
-        <cast name::"Hanabi"    src::"Hanabi/Hanabi.cast.xvnml"     />
-        <cast name::"Devi"      src::"Devi/Devi.cast.xvnml"         />
-        <cast name::"Silka"     src::"Silka/Silka.cast.xvnml"       />
-        <cast name::"Hana"      src::"Hana/Hana.cast.xvnml"         />
-        <cast name::"Ageha"     src::"Ageha/Ageha.cast.xvnml"       />
-        <cast name::"Konoha"    src::"Konoha/Konoha.cast.xvnml"     />
-        <cast name::"Urara"     src::"Urara/Urara.cast.xvnml"       />
-        <cast name::"Anemelle"  src::"Anemelle/Anemelle.cast.xvnml" />
-        <cast name::"Saki"      src::"Saki/Saki.cast.xvnml"         /> 
-        <cast name::"Luu"       src::"Luu/Luu.cast.xvnml"           />
-        <cast name::"Mythril"   src::"Mythril/Mythril.cast.xvnml"   />
-        <cast name::"Adula"     src::"Adula/Adula.cast.xvnml"       />
-        <cast name::"Guste">
-            <portraitDefinitions/>
-            <voiceDefinitions/>
-        </cast>
-        <cast name::"Estanza">
-            <portraitDefinitions/>
-            <voiceDefinitions/>
-        </cast>
-        <cast name::"Dorothy">
-            <portraitDefinitions/>
-            <voiceDefinitions/>
-        </cast>
-        <cast name::"Jack">
-            <portraitDefinitions/>
-            <voiceDefinitions/>
-        </cast>
-    </castDefinitions>
+        <castDefinitions>
+                <cast name::"Raven"     src::"Raven/Raven.cast.xvnml"       />
+                <cast name::"Maple"     src::"Maple/Maple.cast.xvnml"       />
+                <cast name::"Hanabi"    src::"Hanabi/Hanabi.cast.xvnml"     />
+                <cast name::"Devi"      src::"Devi/Devi.cast.xvnml"         />
+                <cast name::"Silka"     src::"Silka/Silka.cast.xvnml"       />
+                <cast name::"Hana"      src::"Hana/Hana.cast.xvnml"         />
+                <cast name::"Ageha"     src::"Ageha/Ageha.cast.xvnml"       />
+                <cast name::"Konoha"    src::"Konoha/Konoha.cast.xvnml"     />
+                <cast name::"Urara"     src::"Urara/Urara.cast.xvnml"       />
+                <cast name::"Anemelle"  src::"Anemelle/Anemelle.cast.xvnml" />
+                <cast name::"Saki"      src::"Saki/Saki.cast.xvnml"         /> 
+                <cast name::"Luu"       src::"Luu/Luu.cast.xvnml"           />
+                <cast name::"Mythril"   src::"Mythril/Mythril.cast.xvnml"   />
+                <cast name::"Adula"     src::"Adula/Adula.cast.xvnml"       />
+        </castDefinitions>
 
-    <sceneDefinitions>
-        <scene name::"OutsideOfSchool" src::"School\OutsideOfSchool.scene.xvnml"/>
-    </sceneDefinitions>
+        <sceneDefinitions>
+                <scene name::"OutsideOfSchool" src::"School\OutsideOfSchool.scene.xvnml"/>
+        </sceneDefinitions>
 
-    <keycodeDefinitions name::"_globalInputDef">
-        <keycode name::"_proceedWithMouse"     vkey::LeftMouse      purpose::PROCEED/>
-        <keycode name::"_proceedWithEnter"     vkey::Return         purpose::PROCEED/>
-        <keycode name::"_navUp"                vkey::Up             purpose::NAVIGATION_UP/>
-        <keycode name::"_navDown"              vkey::Down           purpose::NAVIGATION_DOWN/>
-        <keycode name::"_navLeft"              vkey::Left           purpose::NAVIGATION_LEFT/>
-        <keycode name::"_navRight"             vkey::Right          purpose::NAVIGATION_RIGHT/>
-    </keycodeDefinitions>
+        <keycodeDefinitions name::"_globalInputDef">
+                <keycode name::"_proceedWithMouse"     vkey::LeftMouse      purpose::PROCEED/>
+                <keycode name::"_proceedWithEnter"     vkey::Return         purpose::PROCEED/>
+                <keycode name::"_navUp"                vkey::Up             purpose::NAVIGATION_UP/>
+                <keycode name::"_navDown"              vkey::Down           purpose::NAVIGATION_DOWN/>
+                <keycode name::"_navLeft"              vkey::Left           purpose::NAVIGATION_LEFT/>
+                <keycode name::"_navRight"             vkey::Right          purpose::NAVIGATION_RIGHT/>
+        </keycodeDefinitions>
 
-    <macroCache>
-        <macro #uint name::"_3sec" arg::3000 symbol::"delay"/>
-        <macro #uint name::"_defaultTextSpeed" arg::100 symbol::"set_text_speed"/>
-    </macroCache>
+        <macroCache>
+                <macro name::"_defaultTextSpeed" arg::40 symbol::"set_text_speed"/>
+                <macro name::"_testMacro">
+                        <macro arg::500 symbol::"delay"/>
+                        <macro symbol::"clr"/>
+                </macro>
+                <macro name::"_pauseAndWait">
+                    <macro symbol::"pause"/>
+                    <macro arg::1000 symbol::"delay"/>
+                </macro>
+        </macroCache>
 
-	<dialogue name::"Hello World">
-        ["Main"]
-        @ {$_3sec|insert::"Wowwie"|$_defaultTextSpeed|pass}<
-        @ "Quotations"{$_3sec} test<
-    </dialogue>
+        <dialogue name::"Hello World">
+        @ "Quotations"{$_pauseAndWait} test<
+        @ {$_defaultTextSpeed}Welcome to XVNML2U!{jump_to::"Maple-Intro"}<
+        @ This package demonstrates the capabilities in which the XVNML 
+        Class Library is capable of{$_testMacro}when used with the Unity Game Engine.<
+        @ What you see here{delay::750} is a normal dialogue.<
+        @ And {insert::"THIS"|delay::1000} is a dialogue with{set_text_speed::100} a 
+        looooooooooooooooooooooooooooooooooooooooooooooooooooot of {set_text_speed::30}charisma!!!!<
+        @ {$_defaultTextSpeed}And with a normal XVNML Dialogue Control component, you can run whatever 
+        dialogue you want.<
+        @ This is just a sample of what XVNML can do.<
+        @ XVNML is a powerful tool with an EMPHASIS in story telling.<
+        @ And we're starting our journey off by integrating XVNML to Unity 
+        {paren}hence "XVNML2U"{paren_end}.<
+        @ We're very excited to see how you'll put this tool to the ultimate test.<
+        ?  What's boning on?>>
+        (
+                ("Nothing")>
+                @  I see.<<
+        )
+                ["CL"]
+        @ {sts::100|del::1000}We hope that you've enjoyed this demo.<
+        @ Please consider loading the other Unity Scenes to 
+        get a more in-depth explanation on the different tools and features
+        that XVNML and XVNML2U can provide.<
+        ["P1"]
+        @ {$_defaultTextSpeed}XVNML stands for 
+        {quot}X-Tensible Visual Novel Mark-Up Language.{quot}<
+        @ It takes the usual format that people are used to when 
+        storing dialogue data, and caters it towards those making visual novels.<
+        @ Despite having {quot}Visual Novel{quot} in the name as well as stating 
+        that it caters towards those making them, you can use it outside the realm 
+        of an actual visual novel.<
+        @ All that it is used for is to create story-centric content a lot more 
+        intuitive.<
+        @ We've originally created a precursor to XVNML called DSL {paren}Dialogue Scripting Language{paren_end} 
+        and it's code-base was very fragile, inaccurate, slow, and unreliable.<
+        @ So we took the features from DSL, and made it better, making it more like HTML.<
+        ? It also provides a syntax language called Skriptr, which is how you'll mainly be 
+        typing out dialogue.>>
+        (
+                ("Skriptr? What is that?")>
+                @ {jump_to::"P1-Skriptr"|pass}<<
+        )
+
+        ["P1-Skriptr-Incorrect"]
+        @ {$_defaultTextSpeed}Unfortunately, that's not the correct answer...
+        {jump_to::"P1-Skriptr-CorrectAnswer"}<
+
+        ["P1-Skriptr"]
+        @ {$_defaultTextSpeed}Skriptr is the syntaxical language used in tandem with XVNML to...<
+        @ type out dialogue.<
+        @ Each Skriptr line must first be given a role to play.<
+        @ It can either take in a Declarative Role {paren}denoted by the {quot|at|quot} symbol{paren_end}...<
+        @ Or a Interrogative Role {paren}denoted by the {quot|qm|quot} symbol {paren_end}...<
+        @ When given a Declarative Role, it'll type out dialogue to the screen as normal...{delay::500|clr}
+        Just like what you are seeing now.<
+        @ However, if given a Interrogative Role...<
+        @ The dialogue acts as a Prompt in which the user must answer to.<
+        ? For example, how many states does the United States have?>>
+        (
+                ("50")>
+                        @ That is correct!<<
+                ("13")>
+                        @ {jump_to::"P1-Skriptr-Incorrect"|pass}<<
+                ("3")>
+                        @ {jump_to::"P1-Skriptr-Incorrect"|pass}<<
+                ("I honestly don't know...")>
+                        @ That's okay if you don't know.<<
+        )
+
+        ["P1-Skriptr-CorrectAnswer"]
+        @ {$_defaultTextSpeed}There are 50 states that makes up the United States of America.<
+        @ Awesome huh?<
+        @ Let's take a look at the file where we have all of this dialogue.<
+        @ And don't freak out when you look at it.<
+        @ I promise you, you'll understand it faster than I can finish this sentence.<
+        @ Search up and find a file called {quot}XVNMLEssentials.main.xvnml{quot}.<
+        @ Open that in VSCode and go to Line 61.<
+        @ You will see that that's the first thing that we started off with.<
+        @ And if you jump to Line 120, you'll exactly what I'm currently saying.<
+        @ You notice that it's just the {quot|at|quot} symbol when stating a 
+        Declarative Role on a Skriptr line.<
+        @ However, if you've defined Cast members within your XVNML project...<
+        @ You can set them as a speaker!<
+        ["P1-Skriptr-CastSignatures-Narrative"]
+        @ {$_defaultTextSpeed}A Narrative Cast Signature denote that the narrator is 
+        speaking.<
+        @ You can not set an expression for the narrative...<
+        @ But you can set a voice.<
+        @ We don't have a voice set up for the narrator though...<
+        @ But that is the only valid syntax that it has.<
+        @ There is a hidden benefit of just using a Narrative Cast Signature.<
+        @ And that is if you just want to execute macros alone.<
+        @ When doing so, a macro to keep in mind is the {quot}pass{quot} macro.<
+        @ This macro simpily bypasses user input, and will immediately go to the 
+        next SkriptrLine.<
+        @ So any macros that does some form of configuration or setup...<
+        @ You would use the Narrative Cast Signature, and create your Macro Invocation Block.<
+        @ To invoke more than one macro, you would seperate each invocation with {quot}{pipe}{quot}.<
+        @ It's a hidden benefit of the Narrative Cast Signature significant enough to be mentioned...<
+        @ Because even the XVNML file being used to display all of this uses this method from 
+        time to time.<
+        @ Never forget to add the {quot}pass{quot} macro after all prior macro invocations.<
+        @ Or you will be presented with a empty dialogue box, waiting for you to send an input.<
+        @ That is unless you have the {quot}#dontDetain{quot} flag set.{jump_to::"P1-Skriptr-CastSignatures-Main"}<
+        @ Such as "move_cast", "cue_cast", "cast_enters_from", "set_cast_motion", and "set_cast_motion_duration".<
+        @ In fact, we happened to use those macros just demonstrating how Normal Cast Definitions work.<
+        @ You'll soon realize that you can do a lot of cool stuff with XVNML2U.<
+        @ For example, Cast Reactions {paren}which we had used about 3 times so far{paren_end}.<
+        @ Last thing that is nice to know about Normal Cast Signatures is that by default...<
+        @ It follows the "Role{tag_end}Name{tag_end}Expression{tag_end}Voice" format.<
+        @ However, you can omit either an expression or a voice.<
+        @ To omit a voice, just name the cast expressions as normal.<
+        @ To omit an expression, use the "V::" prefix, followed by the voice name.<
+        @ You can even change the order from Expression{tag_end}Voice to Voice{tag_end}Expression!<
+        @ You just need to make sure that an Expression Prefix {paren}E::{paren_end} 
+        and a {paren}V::{paren_end} before the expression name and voice name 
+        respectively.
+        {jump_to::"P1-Skriptr-CastSignatures-Main"}<
+        ["P1-Skriptr-CastSignatures-Persistent"]
+        @ {$_defaultTextSpeed}A Persistent Cast Signature takes the last cast member to speak, and 
+        carries them over.<
+        @ The keywords here is {quot}last cast member{quot}.<
+        @ Persistent Casts doesn't work if the previous speaker was 
+        Narrative or Anonymous.<
+        @ So the last Normal Cast Signature specified prior to using a 
+        Persistent Cast Signature...<
+        @ Will denote that the cast is still speaking.<
+        @ And because of this, you can treat Persistent Cast Signatures as a 
+        short-cut to Normal Cast Signatures.<
+        @ You just don't have to type the name out {paren}which is the core reasoning 
+        for having a Persistent Cast Signature{paren_end}.<
+        @ You can set the Expressions and Voices of the previous mentioned cast 
+        as normal.
+        {jump_to::"P1-Skriptr-CastSignatures-Main"}<        
+        ["P1-Skriptr-CastSignatures-Anonymous"]
+        @ {$_defaultTextSpeed}An Anonymous Cast Signature denotes that the speaker is unknown.<
+        @ You really can't do much with an Anonymous Cast Signature.<
+        @ However, by combining macros, you can set a cast on to the screen 
+        and still change their expressions and voices.<
+        @ You would have to do that until you switch to the Normal Cast Signature 
+        on the next line.<
+        @  If you have checked out Persistent Cast Signatures, you've learned that 
+        an Anonymous Cast Signature has no persistency.<
+        @ So, you'll have to keep on typing {quot|qm|qm|qm|quot} until 
+        the speaker is known to the player.
+        {jump_to::"P1-Skriptr-CastSignatures-Main"}<
+                
+        ["P1-Skriptr-CastSignatures-Complete"]
+        @ {$_defaultTextSpeed}It's definitely a lot, huh?<
+        @ You can always look back into {quot}XVNMLEssentials.main.xvnml{quot} 
+        to get a feel of how Skriptr works.<
+        @ One last thing to cover before we conclude is that you can 
+        name a SkriptrLine.<
+        @ Named Skriptr Lines enables you to control the flow of dialogue.<
+        @ You might of seen it in the previously mentioned file.<
+        @ You may have also seen words in curly braces.<
+        @ That is what's known as a Macro Invocation Block.<
+        @ And words like {quot}quot{quot}, {quot}jump_to{quot}, {quot}space{quot}...<
+        @ Those are macros, and they have established an endpoint to a method call.<
+        @ You'll learn more about Macros once you've opened the {quot}MacroLibraries{quot} scene.<
+        @ But you can use the {quot}jump_to{quot} macro call and specify a name.<
+        @ Sadly, if you need to check a condition before making a jump, the macro would have to 
+        be created manually...<
+        @ Or you would have to use some code-behind to achieve that.<
+        @ For now, that's all we have to cover for Skriptr.<
+
+        ["P1-Tags"]    
+        @ {$_defaultTextSpeed}The last thing that we need to mention for XVNML is Tags.<
+        @ Since XVNML is a mark-up language, it'll be closely related 
+        to something like HTML or XML.<
+        @ However, there's a couple of features that every tag has.<
+        @ To address the elephant in the room...<
+        @ The {tag}dialogue{tag_end} tag is very unique.<
+        @ There are no tags that can make the {tag}dialogue{tag_end} as 
+        its parent tag.<
+        @ You can try, but the Skriptr Parser will mess up...<
+        @ Causing all sorts of havoc.<
+        @ And...
+        {delay::1000}
+        {insert::"Ha"|delay::500}
+        {insert::"ha"|delay::500}
+        {insert::"ha"|delay::500}
+        ...
+        {pause|clr}
+        We don't want that, now do we?<
+        @ With that said, every tag will have 3 default parameter...<
+        @ the {quot}name{quot} parameter...<
+        @ the {quot}id{quot} parameter...<
+        @ and the {quot}altName{quot} parameter.<
+        @ And there are also another type of parameter known as a Flag Parameter.<
+        @ You may encounter some as you learn XVNML...<
+        @ They will always have a # prior to a name.<
+        @ A very handy flag that you can use for dialogues is called {quot}#dontDetain{quot}<
+        @ This will automatically have all dialouge bypass human input...<
+        @ And will continue to the next line of dialogue.<
+        @ You can even set a {quot}detainPassDelay{quot} value, which will wait for 
+        a set amount of milliseconds before doing the bypass.<
+        @ And finally, with the {quot}#allowInputOnDetainPassDelay{quot} allows 
+        the player to send input until after the time set by the...<
+        @ {quot}detainPassDelay{quot} elapsed.<
+        @ Very handy stuff, huh?<
+        @ There will be a .pdf file in the {quot}documentations{quot} folder.<
+        @ In that will list all valid parameters and flags for each tag.<
+        @ You can also find a list of macros and their required arguments...<
+        @ learn how to create Custom Macros and attaching their endpoints...<
+        @ AND...{delay::1000} how to create Custom Tags!<
+        @ That's right, you can define your own tags.<
+        @ The documentation has all of that information checked.<
+        @ Be sure to read it thoroughly.<
+        @ You'll soon realize that you can do a whole lot with XVNML 
+        as you explore more into the XVNML2U package.
+        {jump_to::"Main"}<
+        ["P2"]
+        @ {$_defaultTextSpeed}{quot}Why{quot} is a very good question.<
+        @ Primarily because we already have certain tools and 
+        packages that makes creating dialogue and providing story-centric...< 
+        @ elements to your games very easily.<
+        @ However, with XVNML, we took the {quot}common{quot} way of storing 
+        dialogue data, and brought it to a level where you can treat an 
+        XVNML file like it was a Word document for a screenplay.<
+        @ We've also stack different tools and features that makes reading 
+        data from this as simple as working with HTML...<
+        @ And even if you haven't worked with HTML, it's a very small 
+        barrier-of-entry.<
+        @ That's why something like XVNML2U exists{semi} to 
+        teach you how to type XVNML files, and showcase how 
+        to use XVNML to power your dialogue systems.<
+        @ XVNML primarily uses Skriptr to type out all of the dialogue.<
+        @ Skriptr is made so that people such as those coming from Ren'Py can 
+        easily learn and use.<
+        @ Besides denoting who the {quot}speaker{quot} is, Skriptr is 
+        very different from Ren'Py.<
+        @ However in the future, Skriptr would have ungone a numerous 
+        amount of changes and updates...<
+        @ So perhaps it'll become a little more like Ren'Py later on.<
+        @ The benefit for using XVNML part of your game development workflow is 
+        the fact that all the content is right in front of you, and 
+        is seperate from the Unity Editor.<
+        @ No need to create a Scriptable Object that holds all of your 
+        dialogue data...<
+        @ You don't have to download a Node-Based Visual Language for arranging dialogues and 
+        handling events...<
+        @ And there's no need to parse a JSON or XML manually...<
+        @ And with XVNML2U, the integration has already been done for you, so you 
+        can start creating your dream game sooner than later.<
+        @ Of course, if anything, you can always get the binary for XVNML and do the integration yourself...<
+        @ Allowing you to reduce the amount of bloat that you get from XVNML2U.<
+        @ There will be a whole section on how to integrate XVNML into your own projects without 
+        the use of XVNML2U.
+        {jump_to::"Main"}<
+        ["P3"]
+        @ {$_defaultTextSpeed}XVNML2U...<
+        @ Why...{delay::1000|clr}It's this one of course!<
+        @ The Unity Package that you are using right now!<
+        @ Jokes aside, XVNML2U is a Unity Package that integrates 
+        XVNML to create an effective Dialogue System.<
+        @ That's about it really, other than with the power of XVNML...<
+        @ You can do a lot more with XVNML2U than you can with just reading 
+        data from an XVNML file.<
+        @ XVNML2U provides you with Unity-Exclusive Tags, Macros, and features 
+        outside of native usage of XVNML...<
+        @ Such as loading images, using Cast Data to display a character...<
+        @ Playing sound effects and background music, integrate a prompt system using 
+        SkriptrLine data...<
+        @ Just to name a few.<
+        @ XVNML2U provides you with basic gameObjects that you can use to your advantage.<
+        @ If you just want something basic, with no prompts, image loading or anything...<
+        @ Use the BasicModuleKit.<
+        @ If you want something more like a Visual Novel, you can use the VNModuleKit.<
+        @ There's other important components as well, such as the DialogueProcessAllocator 
+        which takes advantage of XVNML's feature of {quot}Concurrent Dialogue Processes{quot}.<
+        @ Concurrent Dialogue Processes {paren}or CDP{paren_end} is a fancy way of saying...<
+        @ {quot}You can render more than one dialogue on a screen.{quot}<
+        @ So, if you ever want to simulate a crowd of people taking in the middle of 
+        Town Square...<
+        @ You'd utilize CDPs to achieve that.<
+        @ However, it's required to have the DialogueProcessAllocator in your scene 
+        {paren}or if you are integrating XVNML on your own, something equivalent to it.{paren_end}<
+        @ Because it'll allow you to not only run multiple dialogue at once, 
+        you can use it to send actions to a target DialogueControl...<
+        @ {paren}which is another important component{paren_end}.<
+        @ The Dialogue Control {paren}and many other components like it{paren_end}...<
+        @ allows you to use UnityEvents to have certain objects to certain things...<
+        @ For example, if dialogue starts playing, have the dialogue box fade in...<
+        @ And when every line has been said, have the dialogue box fade out on the 
+        {quot}onFinish{quot} event.<
+        @ Another example is when you are using XVNMLTextRenderer component...<
+        @ With the OnTextChange event, you can have it make a noise, or use the callback to animate 
+        TextMeshPro {paren}with whatever TMP effects tool you are using{paren_end}.<
+        @ Utilizing these UnityEvents{delay::500}, you can truly give your dialogue personality and PAZZAZ!<
+        @ There are other important Unity components that you can benefit from with XVNML2U...<
+        @ Such as the XVNMLLogListener, XVNMLActionScheduler, and XVNMLInputManager.<
+        ? Would you like to learn more about these components?>>
+        (
+                ("Yes")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents"|pass}<<
+                ("No")>
+                        @ That is fine<
+                        @ You can always look at the documentation for later.<
+        )
+        ["P3-XVNML2U-UnityComponents-Main-FirstTime"]
+        ? {$_defaultTextSpeed}Which component are you interested in learning?>>
+        (
+                ("The LogListner Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-LogListener"|pass}<<
+                ("The ActionScheduler Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-ActionScheduler"|pass}<<
+                ("The InputManager Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-InputManager"|pass}<<
+                ("The Stage Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-Stage"|pass}<<
+                ("The SceneController Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-SceneController"|pass}<<
+                ("The CastController Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-CastController"|pass}<<
+                ("The XVNMLPromptControl Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-XVNMLPromptControl"|pass}<<
+                ("The XVNMLAudioController")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-XVNMLAudioController"|pass}<<
+                ("The ResponseControl Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-ResponseControl"|pass}<<
+                ("The Confirm Marker")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-ConfirmMarker"|pass}<<
+        )
+        ["P3-XVNML2U-UnityComponents-Main"]
+        ? {$_defaultTextSpeed}Are there any more components you would like to learn about?>>
+        (
+                ("The LogListner Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-LogListener"|pass}<<
+                ("The ActionScheduler Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-ActionScheduler"|pass}<<
+                ("The InputManager Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-InputManager"|pass}<<
+                ("The Stage Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-Stage"|pass}<<
+                ("The SceneController Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-SceneController"|pass}<<
+                ("The CastController Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-CastController"|pass}<<
+                ("The XVNMLPromptControl Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-XVNMLPromptControl"|pass}<<
+                ("The XVNMLAudioController")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-XVNMLAudioController"|pass}<<
+                ("The ResponseControl Component")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-ResponseControl"|pass}<<
+                ("The Confirm Marker")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-ConfirmMarker"|pass}<<
+                ("I have learned enough about XVNML2U components...")>
+                        @ {jump_to::"P3-XVNML2U-UnityComponents-Complete"|pass}<<
+        )
+        ["P3-XVNML2U-UnityComponents-LogListener"]
+        @ {$_defaultTextSpeed}The LogListener Component is a very handy component when it comes to receiving internal messages...<
+        @ from the XVNML binary.<
+        @ From running the tokenizer, to analyzing Tags and Skriptr Lines with the parser...<
+        @ to even tags being resolved to their respective types...<
+        @ the LogListner Component takes those messages, and allows them to be displayed 
+        on the Unity Console.<
+        @ You can toggle off if you want to receive any logs {paren}because we know 
+        how annoying it can be being bombarded with messages...{paren_end}<
+        @ You can even toggle on and off the different kinds of messages you receive.<
+        @ You'll receive either a Verbose message {paren}with not-so important pieces of information{paren_end}...<
+        @ Warning messages...<
+        @ And of course Error messages.<
+        @ If you wanted to, you could have the Editor's PlayMode status as {quot}paused{quot|space}
+        every time an error message is received from either...<
+        @ The Tokenizer...<
+        @ Parser...<
+        @ Tags...<
+        @ Macro Invocations...<
+        @ And much more.<
+        @ A really handy component to use, but definitely isn't need.<
+        @ It is recommended to have this component within your game scene so that you 
+        can undergo the proper debugging in your code.<
+        @ However, sometimes it could be an issue from our end.<
+        @ You can always report the issue on GitHub, stating what you are trying to accomplish...<
+        @ The message you are receiving...<
+        @ And if it's replicable or not.<
+        @ We will review and resolve the issue as promptly as possible...<
+        @ To assure that you are using XVNML2U to its fullest.<
+        @ Because no one likes to have to deal with errors slowing them down from their progress.<
+        @ We know we don't.<
+        @ And neither does Hana.
+        {jump_to::"P3-XVNML2U-UnityComponents-Main"}<
+        ["P3-XVNML2U-UnityComponents-ActionScheduler"]
+        @ {$_defaultTextSpeed}The ActionScheduler Component is one of the most important components to have 
+        within your project.<
+        @ It's responsibility is to add pending actions on a queue for it to be properly executed.<
+        @ Objects that do send an action to the ActionScheduler usually inherit from the 
+        MonoActionSender class.<
+        @ Without it, you can't extend any functionalities you want to include, since the backend of 
+        XVNML2U runs on a seperate thread...<
+        @ And can not be called on the Unity Thread.<
+        @ There are a few exceptions.<
+        @ However, if you are implementing your own Macros or Tags...<
+        @ And you receive an error message in Unity that you must modify something on the Main Thread{del::500|clr}
+        {paren}that being Unity's Thread{paren_end}...<
+        @ Try finding a way to incorporate your code using the MonoActionSender class.<
+        @ With it, you'll be given the {quot}SendNewAction{quot} method.<
+        @ It takes in an anonymous method where it must return a WCResult.<
+        @ You can either return an {quot}Ok{quot} {paren}a successful execution{paren_end}...<
+        @ an {quot}Unknown{quot} {paren}which it will retry the action{paren_end}...<
+        @ or an {quot}Error{quot} {paren}an unsuccessful execution{paren_end}...<
+        @ However, this must be noted...<
+        @ By return an {quot}Unknown{quot} WCResult, it'll repeat the action until you either receive...<
+        @ an {quot}Ok{quot} result, or an {quot}Error{quot} result.<
+        @ So use this sparingly{semi} keep it between an {quot}Ok{quot} result...<
+        @ and an {quot}Error{quot} result.<
+        @ That way, you'll never come across any issues down the line.<
+        @ XVNML2U uses the {quot}SendNewAction{quot} method for it's MacroLibrary and within the 
+        DialogueControl component.<
+        @ So having an ActionScheduler within your scene is crucial if you want Unity-Specific Macros 
+        and Tags to work inside your XVNML file.<
+        @ This can especially be said for your own Macros and Tags.<
+        @ In the future, we may have it where it's not required to add an ActionScheduler as a component.<
+        @ But for now, make it your mission to include this component inside your project.<
+        @ Otherwise, any XVNML files that uses those Macros will not invoke.<
+        @ The same thing goes with creating your own custom tags.<
+        @ However, since you are inheriting from UserDefinedTag, you won't be able to 
+        use MonoActionSender.<
+        @ The solution to that is using the static variant of SendNewAction via the ActionScheduler itself.<
+        @ Honestly, you don't have to inherit any of your classes with the MonoActionSender, and opt for 
+        using the static method variant instead...<
+        @ Allowing you to inherit you class a different way.<
+        @ Though it's best to use the static method if you really need to.<
+        @ If you know your class will be a Unity Component inside your gameObject...<
+        @ have it inherit from MonoActionSender.<
+        @ Otherwise, switch to using the static variant of that method.
+        {jump_to::"P3-XVNML2U-UnityComponents-Main"}<
+        ["P3-XVNML2U-UnityComponents-InputManager"]
+        @ {$_defaultTextSpeed}The InputManager Component utilized defined keycodes inside your XVNML file.<
+        @ This component is also an important one.<
+        @ In order to be able to do things like progressing the dialogue...<
+        @ you need this component in your Game Scene.<
+        @ The event that triggers from signaling an input from you defined keycodes...<
+        @ is know as that keycode's {quot}purpose{quot}.<
+        @ However, inside XVNML2U, it's called the {quot}InputEvent{quot}.<
+        @ Very inconsistent.{delay::750} I know...<
+        @ You don't have to rub it in.<
+        @ There are pre-defined Purposes or InputEvents that you can put inside your keycode definition...<
+        @ Those being PROCEED, SAVE, LOAD, QUICK_SAVE, QUICK_LOAD, PAUSE, RESUME, SHOW_LOG...<
+        @ MAIN_MENU, NAVIGATE_LEFT, NAVIGATE_DOWN, NAVIGATE_RIGHT, and NAVIGATE_UP.<
+        @ However, you can set up to 32 presets for you {quot}the creator{quot} to use.<
+        @ You decide what presets does what, and you can annotate that by using the {quot}description{quot|space}
+        tag parameter on the {tag}keycode{tag_end} tag.<
+        @ You could even be descriptive by simply using the tags name, making the {quot}description{quot|space}
+        parameter an option.<
+        @ You can even put more than 1 keycode with the same Purpose{slash}InputEvent...<
+        @ Allowing for XVNML2U to accept more than one input.<
+        @ So keep that in mind.{jump_to::"P3-XVNML2U-UnityComponents-Main"}<
+        ["P3-XVNML2U-UnityComponents-XVNMLPromptControl"]
+        @ The XVNMLPromptControl Componenet makes use of any lines with an Interrogative Role.<
+        @ For every text surrounded by parentheses and followed with a {tag_end}, it'll take the array 
+        of data, and turn them into buttons for the player to press on.<
+        @ When you selected a prompt, the response value is the index of that response.<
+        @ XVNML then knows the starting point after answering that prompt, as well as 
+        the ending point after answering the prompt.<
+        @ By default, you can have up to 12 prompts to be viewed simultaneously.<
+        @ I don't know why you would want that much, but it's there for you if you want to have that many.<
+        @ A nice trick to use with Prompts is combining Named Lines with the {paren}jump_to{paren_end} 
+        macro.<
+        @ Honestly, this will be a lot easier on the XVNML parser, because it reduces the amount of nesting.<
+        @ The bigger the nesting, the more XVNML will have to work to resolve the starting and ending points 
+        of those dialogue.<
+        @ The XVNMLEssentials.main.xvnml file exemplifies this greatly, showing how after selecting a 
+        choice, it jumps to whatever label you want that response to go to.<
+        @ It also makes your XVNML document a lot nicer.<
+        @ Of course, you can type out your document however you want.<
+        @ If it's easier branching prompts in, then you can do it.<
+        @ Otherwise, make use of Named Lines and the {paren}jump_to{paren_end} macro for 
+        nicer looking mark-up.{jump_to::"P3-XVNML2U-UnityComponents-Main"}<
+        ["P3-XVNML2U-UnityComponents-ResponseControl"]
+        @ The ResponseControl Component is a component that must be a child of the gameObject with the 
+        XVNMLPromptControl component.<
+        @ This component receives information grabbed from the XVNMLPromptControl component, and displays 
+        its content to the user.<
+        @ It also allows the user to response with the prompt given to them.<
+        @ There are 12 gameObjects with this components, and receiving all information from the 
+        XVNMLPromptControl componenent.<
+        @ That's about it really.{jump_to::"P3-XVNML2U-UnityComponents-Main"}<
+        @ {lindex::false}With that said, logging out!<
+        ["Maple-Intro"]
+        @Maple Hello everyone!<
+        @* And welcome to Maple's Academy!<
+        @* With I, Maple Mirrip Maplestar, as your instructor!<           
+        @* What is this white space yo may ask?<
+        @* Well, in order for me to show you the ropes, we're going to have to simulate all of these exercise inside a...<
+        @* Well...> special room.<
+        @* More like special plane of existance.<
+        @* I call it the Star Simulatre.<           
+        @* If I were to explain it in detail, I think you'd end up having a brain aneurysm.<
+        @* I will say thought, that this "pocket dimension" is able to simulate any past, present, or future events with apex-level precision.<
+        @* Which in my opinion makes for an excellent training hall!<           
+        @* Well, with that out of tway, let's bein the lecture!<
+        @* Today, I've brought a very special guest to act as a volunteer.<
+        @* Soooo special in fact that we're practically family!<
+        @* Please give a big, warm welcome to Raven Lilac!<        
+        @Raven What experiement are you having me do this time?<
+        @Maple No experiments this time!<
+        @* I just needed someone to act as a volunteer for our friend on the other side of the monitor.<
+        @Raven There you go spouting deranged jargon again...<
+        @Maple But it's not weird.> In this realm of existence, literally anything's possible.<
+        @* And I mean anything...<
+        @Raven Please, do tell me what a monitor even is...<
+        @Maple Don't worry about all the minor details!>
+                What's important is that you'll be showing us a couple of 
+                demonstrations on how this game functions.<
+        @Raven Again, what "game" are you even talking about?<
+        @* Are you perhaps implying that something omnipresent is currently watching us from the "other side"?<
+        @Maple No!> That's not it at all!<
+        @Raven You worry me sometimes Maple.<
+        @Maple If I were to explain it all, this would just turn into a hefty seminar.<
+        @Raven Sigh...> Well... Alright then...<
+        @* So I am to show this unknown entity... what exactly?<
+        @Maple The basics on how to play this game.<
+        @Raven Right.... right... Whatever this "game" is, I am supposed to be demonstrating, correct?<
+        @Maple That's correct! As I said, I won't be conducting any more experiments this time!<
+        @* Think of this as some sort of out-of-this-world magic-enhancment training.<
+        @Raven Makes sense, though I haven't done anything like that in awhile...<
+        @* In any case, this should not be so much of a nuisance.<
+        @Maple Thanks Sis!>
+                I can always count on you to assist me during a time of need!<
+        @* Shall we get started?<
+        @Raven This area's filled with countless familiars.<
+        @* The world is way out of hand right now.<
+        @* And that girl...<
+        @* I've seen that attire from somewhere...<
+        @* I feel her essence is in disarray.<
+        @* Unstable, not in an ideal state of mind...<
+        @* However...> I guess I know where she's coming from.<
+        @* I digress.{delay::500} I need to caught up to her with haste.<
+        @??? Uwah!<
+        @??? Another one?!<
+        @Raven Strange...<
+        @* What business does a devil have in Fauna's sacred lands?<
+        @??? Uwahhhhhh!<
+        @* Please don't hurt me!<
+        @* I'm just trying to find my master!<
+        @* I thought she was right now! Huggggggh! I'm so bad with direction.<
+        @Raven Perhaps the Magus Distrubance that hinder's the World's magus.<
+        @??? I already had one person bully me just a minute ago, but she said I wasn't even 
+        worth the trouble!<
+        @??? No compassion! Where's the love?!<
+        @Raven Perhaps it's that young maiden I say flying by...<
+        @Raven May I have a name, young devil?<
+        @??? It's Devi!<
+        @Devi If you're trying to banish me, I won't have it!<
+        @* I may not look like it, but I've very strong!<
+        @Raven Wait!{delay::500} I wish for no confrontation!<
+        @* She's on edge. Seems her mind must be eased.<
+        @* But from her forma, T'is evident that her remark is no bluff.<
+        @Devi N... No more bullying!<
+        @* There can only be love!<
+        @* I just want to find my master!<
+        @* Nothing more!{delay::3000}<<
+        @Devi Uwah!<
+        @* What good is it if I can never protect myself.<
+        @* I'll never find my master at this rate.<
+        @Raven You musn't falter.<
+        @* You in fact have a lot of potential.<
+        @* But your forma was very irregular.<
+        @Devi Where could she be?<
+        @* I can sense her all the way from here?<
+        @Raven Pardon?<
+        @Devi My master.<
+        @* I seen her magic everyone...<
+        @* Or at least reminiscient of that of my master...<
+        @Raven Could this magus disturbanced be the product of your master?<
+        @Devi I...> not sure on that...<
+        @* It feels like her...{delay::1000} but also...<
+        @* it doesn't.<
+        @Raven In any case, I'm making my way to the source promptly.<
+        @* Rather it's your master or not is unsure.<
+        @Devi Ah!<
+        @* Miss Witch?<
+        @Raven Name's Raven Lilac of the Lilac Cult.<
+        @Devi Okay, then... Raven...<
+        @* Please take me with you!<
+        @* If it's my master, I can stop it!<
+        @* However, she's never the kind to cause such grief and mishap amongst mortals...<
+        @* ...<
+        @* In any case...> I'm sorry for all the trouble that we may be causing.<
+        @* I have nothing but love for mortals.<
+        @Raven It's quite alright.<
+        @* As you speak of your master, I don't she's the cause of the magus disturbance.<
+        @* I'm doing the best I can to resolve this.<
+        @* And hopefully, this will validate my humanity.<
+        @Devi Ms. Raven!<
+        @* Please take me with you!<
+        @* I won't be a hinderance to you!<
+        @* You know my name...> So... you can summon me at any will.<
+        @Raven Is it not that a contract must be form between man and devil?<
+        @Devi Well...<
+        @* Uwahhhhh! You're right! You're absolutely right.<
+        @Raven Here...<
+        @Devi An pretty gem?!<
+        @* But I couldn't! We've just met after all.<
+        @Raven Precisely why I'm handing it to you.<
+        @* We can sustain all connections between each other.<
+        @* Treat it as a memento of our acquaintanceship.<
+        @Devi A...{delay::1000} whadda...{delay::250} ship.<
+        @* Ah!<
+        @* Does this means that we're friends?<
+        @Raven Suppose{delay::500} you may put it that way.<
+        @* Makes it less formal.<
+        @* If you wish it to be so.<
+        @Devi ...<
+        @* Finally, my first friend with a mortal!<
+        @* ...<
+        @Raven You must bare your memento on your person indefinitely for 
+        when I am of need of your assistance.<
+        @Devi I will treasure it!<
+        @* I can't want to tell my master about this.<<
+        @Raven This Nymph's Forest...<
+        @* It too is feeling the effects.<
+        @* Perhaps...<
+        @??? A human!<
+        @??? You're not allowed here!<
+        @Raven Who must you be?<
+        @Hana I'm Hana, Equinoxist of Spring.<
+        @* It's kind of rude that you'd asked that without giving your name.<
+        @Raven Raven Lilac of the Lilac Cult.<
+        @* It's evident that this forest is losing it's magus reserves.<
+        @Hana Which is why you're not allowed!< 
+        @Hana Hmph!<
+        @* You're such a dummy!<
+        @Raven ???<<
+        @??? A HUMAN!<
+        @??? Hello human!<
+        @Ageha I'm Ageha! Equinoxist of Summer!<
+        @* Welcome to our beloved home!<
+        @Raven Hello.<
+        @* I am Raven Lilac of the Lilac Cult.<
+        @* How long have the inhabitants been struggling from this endeavour?<
+        @Ageha I honestly have no idea!<
+        @* But the others told me that we were in serious trouble!<
+        @* If I were to see any humans, I were to drive them out!<
+        @Raven I can not blame you. Conduct your duties as promptly.<
+        @Ageha Wow! You're so strong!<
+        @Raven The situation must be more dire than I've preceived.<
+        @* I may be able to do something about it.<
+        @??? Sister, look!<
+        @??? Was this the human that Ageha was talking about?<
+        @??? She's absolutely elegant.<
+        @Raven More nymphs...<
+        @* Their sizes counts me as astonishing.<
+        @* Especially these two.<
+        @??? Ageha came running to us saying...{delay::500|clr|quot}I meet a human, and she was soooo strong!.
+        {space}You guys will definitely have a really hard time with her!{quot}<
+        @??? It seems she was right.<
+        @??? Unfortunately, as mush as we want you to stay, we have an obligation to drive any suspected bodies away from our home.<
+        @Konoha I'm Konoha, Equinoxist of Autumn.<
+        @Urara I'm Urara, Equinoxist of Winter, elegantly so.<
+        @Konoha Leave, or prepare to meet your end!<<
+        @Urara Ageha was right...<
+        @* She is quite elegantly formitable.<
+        @Konoha Seems there's no pursuading her.<
+        @* I wish to not fight her again to be honest.<
+        @Raven This forest is really on high alert.<
+        @* Not only that, but there's been 4 highly developed nymphs so far...<
+        @* There must be a very powerful influence.<
+        @Konoha Seems you've fail to heed our warning...<
+        @??? Hiiii!<
+        @??? No need for hostility.<
+        @??? It's very nice to meet you human.<
+        @Silka My name is Silka Mei, and I'm the protector of this forest.<
+        @* Tell me, what brings you here to our home?<
+        @Raven Simply passing by...<
+        @* Though I couldn't help seeing your home in a dire situation.<
+        @Silka Ever since the Magus Disturbance occured, our plants have simply wilted away.<
+        @* Leaves falling prematurally...<
+        @* It's a dire situation indeed.<
+        @* Who must you be?<
+        @Raven Name's Lilac, member of the Lilac Cult.<
+        @Silka As I expected!<
+        @* That would make you a witch.<
+        @* My sisters have told me a lot about you.<
+        @Ageha A Witch?!<
+        @* No wonder she was so strong!<
+        @Urara And elegant might I had.<
+        @Silka Yes. She is quite well dignified.<
+        @* I've definltey recognized your attire, but that was eons ago.<
+        @Hana I didn't know Witches were real...<
+        @* I've heard stories from Silka...<
+        @* But we've personally never encountered them before.<
+        @Silka Sorry for the chaos.<
+        @* Me and my sisters mean no ill will.<
+        @* I see all creatures as good.<
+        @* Though, I suppose Mother Nature would know best after all...<
+        @* These turn of events have really been Unfortunate.<
+        @* Since you're here, we should put together a welcome party.<
+        @* It's the least we can do since you'll be the last to be here.<
+        @Hana Please don't take this personally.<
+        @Konoha We'll be sure to have you fall as gracefully as the autumn leaves.<
+        @Urara Elegantly I might add!<
+        @Ageha Yay! We get to play with the Witch!<
+        @Hana I don't think now's the time for that...<<
+        @Silka It's as they say.<
+        @* Witches are indeed very powerful...<
+        @* Especially of the Lilac Cult.<
+        @Raven I wish to not continue this.<
+        @Silka I understand.<
+        @* Mother Nature knows best after all.<
+        @* But this place is very special.<
+        @* Saying that I'm it's protected is an understatement.<
+        @* That would simply do you an injustice.<
+        @* I'll rid of anything and everything...<
+        @* No matter the moral spectrum.<
+        @* This is something that has been entrusted by someone very important to me...<
+        @* And I can never break her promise.<
+        @Silka I suppose we can't best you at all.<
+        @Raven My apologizes.<
+        @* I didn't mean to cause any distubance.<
+        @Silka It's quite alright.<
+        @* Though, I don't know what to make of the situation.<
+        @* Was the Blessing of Mother Nature not enough...<
+        @* To protect our home?<
+        @Ageha Sis, please don't be sad.<
+        @Hana Silka.<
+        @Silka I'm alright.<
+        @* I can't not afford to be sad.<
+        @* We'll continue as we are to protect what was almost lost.<
+        @Urara A blessing we can never lose.<
+        @Konoha A paradise that can never fall.<
+        @Raven ...<
+        @* This forest...<
+        @* Is that precious to you...<
+        @Silka Centries ago, this forest was on the verge of collapse.<
+        @* Perhaps far worse than how it already is...<
+        @* But a young maiden quite like yourself came along.<
+        @* A dryad on the verge of death...<
+        @* I was so weak back them.<
+        @* Bless her kinded soul.<
+        @* She was the blessing that we needed most.<
+        @* A blessing Mother Nature knew was the answer.<
+        @* As she stayed, she cured me of my aliments...<
+        @* then bestowed me a name.<
+        @* She left a promise to me, which my gift shall I further protect our home.<
+        @* I can never forget that day.<
+        @* I've then give life to my sisters and bestowed them names as well.<          
+        @Raven I see.<
+        @* You were given so much from her...<
+        @* Enough to even part from your own tree.<
+        @* Enough to give strength to your sisters.<
+        @Silka You know of Dryads?<
+        @Raven Enough so.<
+        @* It presents me more the reason to assist.<
+        @* At least to give me enough time to resolve this matter.<
+        @Silka You say you will help us.<
+        @Raven I couldn't help but notice how much the magus distubance is drawing all the life from this forest.<
+        @* I should have enough to aid you and restore this forest to once it was.<
+        @* If that's alright with you.<
+        @Silka You mustn't.<
+        @Raven Leaving it be would be a grave disservice.<       
+        @Konoha So does that mean our home will last forevermore?<
+        @Urara Elegant as you are kind.<
+        @Hana Thank you, Miss. Raven!<
+        @Ageha Many, many thanks Big Sis!<
+        @Silka Hehe!<
+        @* ...<
+        @* When I look in to your eyes, you remind me a lot about her.<
+        @* Loving, compassionate, strong, beautiful.<
+        @* We are forever in your debt.< 
+        @* Please do come back once you've completed your task.<
+        @* We'll have a proper welcome party.<
+        @* But without the farewell.<
+        @Ageha Please come back, Big Sis!<   
+        @Hana Please come back... And be safe as well...<
+        @* Big sis...<
+        @Urara How extravagant! We have a new big Sister!< 
+        @Konoha It would seem.<
+        @* We wish you save travels.<
+        @Silka With Mother Nature's embrace, shall she aid in your endeavours.<
+        @Raven I can sense the Day of Renascence hastily approaching.<
+        @* I need to make it to the source, post haste.<
+        @* But this rubble...<
+        @* Was it once an ancient civilization brought to ruin?<<
+        @* ...<
+        @* Such a sad sight.<
+        @* It could be the last thing that I'll ever see.<
+        @??? Hold it there, suspection entity!<
+        @??? What are you doing in the Realm of Heroes?<
+        @??? State your business, and address yourself promptly.<
+        @Raven Name's Raven.<
+        @* I'm simply passing over your land to address an important matter.<
+        @??? You've got some vendeta against Orighd?<
+        @??? Might you be the cause of the atrocities happening across all over the Far Land of Magic?<
+        @Raven You must jest.<
+        @* I'm not the one causing this phenomenon.<
+        @* A witch is on the verge of rebirth.<
+        @* A very powerful one.<
+        @??? I, I see...<
+        @??? I thought as much.<
+        @??? My blade has told me that you're not the culprit.<
+        @??? I simply can't sense any malice in you.<  
+        @Anemelle My name is Anemelle Lumen, a bearer of Hyromagnda, the Holy Sword.<
+        @* A noble by serventhood of the Kingdom of Lorrim.<
+        @* And also among the strongest of soceress over the land.<
+        @Raven Hyromagnda...<
+        @* I've definitely heard the name in ancient scriptures.<   
+        @Anemelle I sense that your business that you have in the Realm of Heroes is valid, Witch of the Lilac Cult.<
+        @* Although you have no malice towards Orighd, as the highest order of the Holy Knights...<
+        @* I must uphold my duties as such.<
+        @* Though why have interest in this witch soon to reborn?<
+        @* Us Holy Knights have everything taken care of.<
+        @* There's no need for intervention.<
+        @Raven As a Witch myself, I have an obligation to settle this matter as a single body.<
+        @* The longer this proceeds, this land will face far worse atrocities.<
+        @* Worse than the ancient wars combined.<
+        @Anemelle It's as if you know so much about the situation.<
+        @* Were you perhaps allies with this person?<
+        @* An enemy perhaps?<
+        @* What unfound powers do they hold?<
+        @* How can the banished even be revived as such?<
+        @* You must tell me, at once!<
+        @Raven I bare no time for interrogations.<
+        @Anemelle ...<
+        @* I see...<
+        @* Well, my deepest apologies.<
+        @* But the time to reconsider is now!<
+        @* The path you are taking is sacred ground.<
+        @* As I've said, Mount Saintere is watch-guarded.<
+        @* Even if you pass me, it's deemed unreachable.<
+        @* Especially those deriving from the wicked.<
+        @* Such as the one before you.<
+        @* You'll most certainly die in vain, whatever your plans might of been.<
+        @Raven You seem very capable.<
+        @* Why did you not stop her?<
+        @* Cooperations seems imminate.<
+        @* Please, I ask you to go back from once you came.<
+        @* Or show your resolve, right here, and now!<<       
+        @Anemelle Astounding!<
+        @* Your Crystal magic is impeccible!<
+        @* Much expected for a member of the Lilac Cult.<
+        @* But you're so much different from any Witch I've encountered.<
+        @Raven ...<
+        @* You're acknowledgement is very much appreciated...<
+        @* However...> I wish to cast aside such notions.<
+        @Anemelle ...<
+        @* My apologizes, Raven Lilac.<
+        @* How inconsiderate of me to disregard your feelings.<
+        @* The blade speaks of your kindness...<
+        @* But bares no answers.<
+        @Raven My standing as a Witch was already determined at birth.<
+        @* The life in which I should live is not of my own.<
+        @* What I've done can't never be reconciled.<
+        @* Time only moves forward.<
+        @* So, whilest I still have my humanity, I wish to give and not take.<
+        @* For the sake of my humanity of which hangs by a thread.<
+        @* Resolve this issue will stand as my atonement.<
+        @Anemelle A selfish do-gooder.<
+        @* I suppose fate is your enemy?<
+        @* ...<
+        @* So strong... so admirable.<
+        @* This was bestowed upon me by the King's Advisor of Lorrim.<
+        @* The Hyromagnda knows, and so do I.<
+        @* And since that day, deep inside...<
+        @* I felt the need to protect this land.<
+        @* ...<
+        @* It pains me... so much so.<
+        @* This knowledge I bare should be sin.<
+        @* In honesty, I don't know what to make of this world.<
+        @* I know the feeling... of fate deeming antagonistic.<
+        @* Bearing the Hyromagnda means becoming the new heir of Bezzelet...<
+        @* The rubble that stands before us.<
+        @* Despite my status and sheer strange, I can't help but ponder...<
+        @* If I'm fit to liberate, rebuild, and become queen of once an ancient civilization.<
+        @* With this strength, who am I to fight for?<
+        @* The current King and his advisor have done so much for me.<
+        @* Would standing before you now and exchanging words of passion be an act of treason...<
+        @* Despite witnessing with the greatest of sight that your humanity is plattered in gold...<
+        @* A Cardinal Sin?<
+        @* I beared these insecurites for so long...<
+        @* However, how can fate be the enemy if it has gifted me the greatest thing in the world?<
+        @* With every ounce of our essence clashing...<
+        @* Comparing your troubles through my sword is immeasurable.<
+        @* The mainly young maiden that could frolic through these fields...<
+        @* Are instead stripe of their being... their humanity...<
+        @* Their freedom...<
+        @* I felt it from the young maiden before you.<
+        @* However, through my blade, I fear that her actions may lead to distruction.<
+        @Raven Indeed.<
+        @Anemelle Raven Lilac, as one who bares a marker of a Witch, you must assure that 
+        the young maiden strays from that aura.<
+        @* With your resolve and humanity proven...<
+        @* You are the only one to stop her.<
+        @Raven ...<
+        @Anemlle Over there... Is your next destination.<
+        @* Mount Saintere is a sacred place...<
+        @* It is said to be the Origin of all magic.<
+        @* It may take you several moons to reach...<
+        @* But as you know, it's not a place for the wicked.<
+        @* It's highly guarded by the Holy Knights, as natural.<
+        @* However, it's likely that They will be guarding it as well...<
+        @* Please, conduct your deed with the likelihood that paint will show.<
+        @Raven Understood.<
+        @Anemelle ...<
+        @* And please...<
+        @* Whenever you do return...<
+        @* And I am able to restore these ruins to its former glory and more...<
+        @* I would like you to be by my side.<
+        @Raven ...<
+        @Raven Thank you.<
+        @Raven Temporary Dialogue...{pause}<
+        @Raven Temporary Dialogue...{pause}<
+        @Raven Temporary Dialogue...{pause}<
+        @Raven Temporary Dialogue...{pause}<
+        @Raven Temporary Dialogue...{pause}<
+        @Raven Temporary Dialogue...{pause}<<
+    </dialogue>        
 </proxy>

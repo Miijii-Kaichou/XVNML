@@ -1,42 +1,57 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using XVNML.Core.Assemblies;
 using XVNML.Utility.Macros;
+using XVNML.XVNMLUtility.Tags;
 
 namespace XVNML.Core.Macros
 {
     public static class DefinedMacrosCollection
     {
-        public static SortedDictionary<string, List<MacroAttribute>>? ValidMacros { get; private set; }
-
-        public static SortedDictionary<string, (string symbol, object arg, Type type)> CachedMacros { get; private set; }
-
         public static bool IsInitialized { get; private set; }
+        
+        public static SortedDictionary<string, List<MacroAttribute>>? ValidMacros { get; private set; }
+        public static SortedDictionary<(string, string?), (string symbol, (object arg, Type type)[] argData, Macro[] children)>? CachedMacros { get; private set; }
 
         public static void ManifestMacros()
         {
             if (IsInitialized) return;
 
             ValidMacros = new SortedDictionary<string, List<MacroAttribute>>();
-            CachedMacros = new SortedDictionary<string, (string symbol, object arg, Type type)>();
+            CachedMacros = new SortedDictionary<(string, string?), (string symbol, (object arg, Type type)[] argData, Macro[] children)>();
 
             Type[] libraryTypes;
 
             libraryTypes = DomainAssemblyState
                 .DefinedTypes
-                .Where(c => c.IsClass && c.GetCustomAttribute<MacroLibraryAttribute>() != null).ToArray();
+                .Where(c => c.IsClass && c.GetCustomAttribute<MacroLibraryAttribute>() != null)
+                .ToArray();
 
             EstablishLibraries(libraryTypes);
 
             IsInitialized = true;
         }
 
-        internal static void AddToMacroCache(string macroName, string validSymbol, object arg, Type type)
+        internal static void AddToMacroCache((string macroName, string? macroParent) macroRef, string validSymbol, (object arg, Type type)[] argDataSet, Macro[]? children)
         {
-            CachedMacros.Add(macroName, (validSymbol, arg, type));
+            if (CachedMacros?.ContainsKey(macroRef) == true)
+            {
+                var countOfExistingMacro = CachedMacros.Where(t => t.Key.Item1.Contains(macroRef.macroName) && t.Key.Item1.Contains("[unnamed]") && t.Key.Item2 == macroRef.macroParent).Count();
+                macroRef.macroName = $"{macroRef.macroName}({countOfExistingMacro})[unnamed]";
+            };
+            CachedMacros!.Add(macroRef, (validSymbol, argDataSet, children)!);
+        }
+
+        internal static string? GetParentOf(string macroName)
+        {
+            return CachedMacros.Where(t => t.Key.Item1 == macroName).FirstOrDefault().Key.Item2;
+        }
+
+        internal static string GetRealNameFromParent(string macroParent, int index)
+        {
+            return CachedMacros.Where(t => t.Key.Item2 == macroParent).ToArray()[index].Key.Item1;
         }
 
         private static void EstablishLibraries(Type[] libraryTypes)

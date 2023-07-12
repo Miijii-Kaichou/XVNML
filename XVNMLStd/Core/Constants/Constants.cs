@@ -36,6 +36,7 @@
         internal const string BoolFlagString = "bool";
         internal const string LongFlagString = "long";
         internal const string ObjectFlagString = "obj";
+        internal const string UseChildrenFlagString = "useChildren";
 
         internal const string DefaultCastDirectory = @"\Casts\";
         internal const string DefaultDialogueDirectory = @"\Dialogue\";
