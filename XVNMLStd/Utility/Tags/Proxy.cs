@@ -28,6 +28,11 @@ namespace XVNML.XVNMLUtility.Tags
                 AspectRatioParameterString
             };
 
+            AllowedFlags = new[]
+            {
+                EnableFlatReferencingFlagString
+            };
+
             base.OnResolve(fileOrigin);
             engine = GetParameterValue<string>(EngineParameterString);
             target = GetParameterValue<string>(TargetParameterString);
