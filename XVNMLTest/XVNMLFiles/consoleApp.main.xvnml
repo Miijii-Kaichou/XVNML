@@ -1,0 +1,81 @@
+﻿<proxy name::"ConsoleApp.Main.XVNML" screenWidth::1920 screenHeight::1080>
+        <metadata name::"_metadata">
+                <title name::"XVNMLEssentials"/>
+                <date value::"06/25/2023"/>
+                <copyright year::2023 owner::"Enjyoii"/>
+                <tags #useChildren>
+                        <tag name::"XVNML"/>
+                        <tag name::"C#"/>
+                        <tag name::".NET"/>
+                        <tag name::"Unity"/>
+                        <tag name::"Educational"/>
+                </tags>
+        </metadata>
+
+        <castDefinitions>
+                <cast name::"Raven"     src::"Raven/Raven.cast.xvnml"       />
+                <cast name::"Maple"     src::"Maple/Maple.cast.xvnml"       />
+                <cast name::"Hanabi"    src::"Hanabi/Hanabi.cast.xvnml"     />
+                <cast name::"Devi"      src::"Devi/Devi.cast.xvnml"         />
+                <cast name::"Silka"     src::"Silka/Silka.cast.xvnml"       />
+                <cast name::"Hana"      src::"Hana/Hana.cast.xvnml"         />
+                <cast name::"Ageha"     src::"Ageha/Ageha.cast.xvnml"       />
+                <cast name::"Konoha"    src::"Konoha/Konoha.cast.xvnml"     />
+                <cast name::"Urara"     src::"Urara/Urara.cast.xvnml"       />
+                <cast name::"Anemelle"  src::"Anemelle/Anemelle.cast.xvnml" />
+                <cast name::"Saki"      src::"Saki/Saki.cast.xvnml"         /> 
+                <cast name::"Luu"       src::"Luu/Luu.cast.xvnml"           />
+                <cast name::"Mythril"   src::"Mythril/Mythril.cast.xvnml"   />
+                <cast name::"Adula"     src::"Adula/Adula.cast.xvnml"       />
+        </castDefinitions>
+
+        <sceneDefinitions>
+                <scene name::"OutsideOfSchool" src::"School\OutsideOfSchool.scene.xvnml"/>
+        </sceneDefinitions>
+
+        <keycodeDefinitions name::"_globalInputDef">
+                <keycode name::"_proceedWithMouse"     vkey::LeftMouse      purpose::PROCEED/>
+                <keycode name::"_proceedWithEnter"     vkey::Return         purpose::PROCEED/>
+                <keycode name::"_navUp"                vkey::Up             purpose::NAVIGATION_UP/>
+                <keycode name::"_navDown"              vkey::Down           purpose::NAVIGATION_DOWN/>
+                <keycode name::"_navLeft"              vkey::Left           purpose::NAVIGATION_LEFT/>
+                <keycode name::"_navRight"             vkey::Right          purpose::NAVIGATION_RIGHT/>
+        </keycodeDefinitions>
+
+        <macroCache>
+                <macro name::"_runTest" symbol::"var">
+                    <arg value::"love"/>
+                    <arg value::200/>
+                </macro>
+                <macro name::"_think">
+                   <macro arg::500 symbol::"delay"/>
+                   <macro arg::"." symbol::"insert"/>
+                   <macro arg::500 symbol::"delay"/>
+                   <macro arg::"." symbol::"insert"/>
+                   <macro arg::500 symbol::"delay"/>
+                   <macro arg::"." symbol::"insert"/>
+                </macro>
+                <macro name::"_awkwardPause">
+                    <macro arg::500 symbol::"delay"/>
+                    <macro arg::"." symbol::"insert"/>
+                    <macro arg::500 symbol::"delay"/>
+                    <macro arg::"." symbol::"insert"/>
+                    <macro arg::500 symbol::"delay"/>
+                    <macro arg::"." symbol::"insert"/>
+                    <macro arg::500 symbol::"delay"/>
+                    <macro arg::"." symbol::"insert"/>
+                    <macro arg::500 symbol::"delay"/>
+                    <macro arg::"." symbol::"insert"/>
+                    <macro arg::500 symbol::"delay"/>
+                    <macro arg::"." symbol::"insert"/>
+                    <macro arg::1000 symbol::"delay"/>
+                </macro>
+                <macro name::"_defaultTextSpeed">
+                    <macro arg::40 symbol::"set_text_speed"/>
+                    <macro symbol::"pass"/>
+                </macro>
+        </macroCache>
+
+        <dialogue name::"MainTest" src::"Test/test0.dialogue.xvnml"/>    
+        <dialogue name::"Osaka's Dream" src::"Test/test1.dialogue.xvnml"/>
+</proxy>

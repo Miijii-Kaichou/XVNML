@@ -1,0 +1,52 @@
+﻿<source name::"Test1.Dialogue.XVNML">
+	<dialogue name::"Osaka's Dream">
+		@ {$_defaultTextSpeed}<
+
+		? Do you wish to know about Osaka's Dream?>>
+		(
+			$> If yes, play Osaka's Dream Scene from Azumanga Daioh
+			("Yes")> @ {pass}<<
+
+			$> Otherwise, end the dialogue sequence.
+			("No")> @ Your lose, my dude...{end}<<
+		)
+
+		@ChiyosDad Herro Everynyan!<
+		@* How are you... Fine ssank you...<
+
+		@Osaka OH MAI GAAAAH!!!!<
+
+		@ChiyosDad I wish I were a bird.<
+
+		@Osaka なんであんた英語喋っとる？<
+
+		@ChiyosDad 娘がアメリカに行くのです。<
+
+		@Osaka 取り合ったら？<
+
+		@ChiyosDad 鳥でわない。わはいは猫である。<
+		@* 猫なければ、なんだと意味のだ？<
+
+		@Osaka あんたの顔なんか見に取るな。。。<
+
+		@ChiyosDad {$_awkwardPause}<
+
+		@Osaka 森、先首相。。。<
+
+		@ChiyosDad {aster|insert::"nuhuh"|aster}<
+
+		@Osaka I'mmu sorreeeee!<
+
+		@ {aster|insert::"Famous cat appears"|aster}<
+
+		@ChiyosDad Hmmmmm...<
+		@* お前が本当猫かね？<
+		@* 私は猫舌がどうだ。猫いよー！<
+
+		@Okasa ああ！あたしも猫舌。<
+
+		@ChiyosDad Then I shall pull out your tongue.<
+
+		@Osaka えええええええ?! なんでーーーーー？！<
+	</dialogue>
+</source>
