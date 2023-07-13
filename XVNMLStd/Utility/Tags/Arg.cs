@@ -24,7 +24,7 @@ namespace XVNML.Utility.Tags
 
             base.OnResolve(fileOrigin);
 
-            argData.value = GetParameter(ValueParameterString)!;
+            argData.value = GetParameterValue<object>(ValueParameterString)!;
             argData.type = argData.value.DetermineValueType()!;
         }
     }

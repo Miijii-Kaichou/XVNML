@@ -463,6 +463,12 @@ internal sealed class StandardMacroLibrary
     #endregion
 
     #region Variable Control Macros
+    [Macro("test")]
+    internal static void TestMacro(MacroCallInfo info, string value1, string value2)
+    {
+        Console.WriteLine($"Value 1: {value1}\nValue 2: {value2}");
+    }
+
     [Macro("var")]
     internal static void InitializeVariableMacro(MacroCallInfo info, string identifier, object initialValue)
     {
