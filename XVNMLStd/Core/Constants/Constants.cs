@@ -24,7 +24,7 @@
         internal const string ArgsParameterString = "args";
         internal const string SymbolParameterString = "symbol";
 
-
+        internal const string EnableFlatReferencingFlagString = "enableFlatReferencing";
         internal const string ActAsSceneControllerFlagString = "actAsSceneController";
         internal const string AllowOverrideFlagString = "allowOverride";
         internal const string TextSpeedControlledExternallyFlagString = "textSpeedControlledExternally";
