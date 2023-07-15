@@ -43,7 +43,6 @@ namespace XVNML.Utilities.Diagnostics
             LoggerQueue.Enqueue(message);
         }
 
-        [NativeInvocation(EntryPoint = "xl_collect", CallingConvention = CallingConvention.StdCall)]
         public static void CollectLog(out XVNMLLogMessage? message)
         {
             if (LoggerQueue.Count == 0)

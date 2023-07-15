@@ -63,7 +63,6 @@ namespace XVNML.Utilities.Dialogue
         /// write start up. Allocations are immutable once set.
         /// </summary>
         /// <param name="totalChannels"></param>
-        [NativeInvocation(EntryPoint = "alloc_channels", CallingConvention = CallingConvention.StdCall)]
         public static void AllocateChannels(int totalChannels = DefaultTotalChannelsAllocated)
         {
             if (IsInitialized) return;
@@ -94,7 +93,6 @@ namespace XVNML.Utilities.Dialogue
             IsChannelBlocked = new bool[totalChannels];
         }
 
-        [NativeInvocation(EntryPoint = "set_t_interval", CallingConvention = CallingConvention.StdCall)]
         public static void SetThreadInterval(int interval = DefaultInterval)
         {
             if (interval < DefaultInterval)
@@ -111,7 +109,6 @@ namespace XVNML.Utilities.Dialogue
         /// Begin the writing process of a dialogue.
         /// </summary>
         /// <param name="script"></param>
-        [NativeInvocation(EntryPoint = "dw_write", CallingConvention = CallingConvention.StdCall)]
         public static void Write(DialogueScript script)
         {
             if (WriterProcesses == null || WriterProcesses.Length == NoLength)
@@ -131,7 +128,6 @@ namespace XVNML.Utilities.Dialogue
         /// Begin the writing process of a dialogue.
         /// </summary>
         /// <param name="script"></param>
-        [NativeInvocation(EntryPoint = "dw_write", CallingConvention = CallingConvention.StdCall)]
         public static void Write(DialogueScript script, int channel)
         {
             if (WriterProcesses == null || WriterProcesses.Length == NoLength)
@@ -144,13 +140,11 @@ namespace XVNML.Utilities.Dialogue
             WriterProcesses![channel] = newProcess;
         }
 
-        [NativeInvocation(EntryPoint = "dw_shutdown", CallingConvention = CallingConvention.StdCall)]
         public static void ShutDown()
         {
             cancellationTokenSource.Cancel();
         }
 
-        [NativeInvocation(EntryPoint = "dw_nextline", CallingConvention = CallingConvention.StdCall)]
         public static void MoveNextLine(DialogueWriterProcessor process)
         {
             lock (process.processLock)
@@ -170,8 +164,7 @@ namespace XVNML.Utilities.Dialogue
                 Reset(process);
             }
         }
-
-        [NativeInvocation(EntryPoint = "dw_block", CallingConvention = CallingConvention.StdCall)]
+        
         public static void Block(DialogueWriterProcessor process)
         {
             lock (process.processLock)
@@ -181,7 +174,6 @@ namespace XVNML.Utilities.Dialogue
             }
         }
 
-        [NativeInvocation(EntryPoint = "dw_unblock", CallingConvention = CallingConvention.StdCall)]
         public static void UnBlock(DialogueWriterProcessor process)
         {
             lock (process.processLock)

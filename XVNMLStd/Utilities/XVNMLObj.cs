@@ -2,9 +2,7 @@
 using Newtonsoft.Json.Serialization;
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using XVNML.Core.Macros;
-using XVNML.Core.Native;
 using XVNML.Core.Parser;
 using XVNML.Core.Tags;
 using XVNML.Utilities.Diagnostics;
@@ -15,7 +13,7 @@ namespace XVNML.XVNMLUtility
     public class XVNMLObj
     {
         public static XVNMLObj? Instance { get; private set; }
-        public FileInfo FileInfo { get; private set; }
+        public FileInfo? FileInfo { get; private set; }
 
         [JsonIgnore]
         public Action<XVNMLObj>? onDOMCreated;
@@ -38,10 +36,10 @@ namespace XVNML.XVNMLUtility
         }
 
         [JsonProperty]
-        public bool IsBeingUsedAsSource => source != null;
+        public bool? IsBeingUsedAsSource => source != null;
 
         [JsonProperty]
-        internal TagParser xvnmlParser = new TagParser();
+        internal TagParser? xvnmlParser = new TagParser();
 
         private XVNMLObj()
         {
@@ -70,7 +68,6 @@ namespace XVNML.XVNMLUtility
             }
         }
 
-        [NativeInvocation(EntryPoint = "create_dom", CallingConvention = CallingConvention.StdCall)]
         public static void Create(string fileTarget, Action<XVNMLObj>? onCreation, bool generateCacheFile = false)
         {
             DefinedTagsCollection.ManifestTagTypes();
@@ -90,7 +87,6 @@ namespace XVNML.XVNMLUtility
             });
         }
 
-        [NativeInvocation(EntryPoint = "use_create_dom", CallingConvention = CallingConvention.StdCall)]
         public static void UseOrCreate(string fileTarget, Action<XVNMLObj?> onCreation)
         {
             if (CheckCacheData(fileTarget, out string cachePath))
