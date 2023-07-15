@@ -7,7 +7,7 @@ using XVNML.Core.Lexer;
 using XVNML.Core.Parser.Enums;
 using XVNML.Core.Tags;
 using XVNML.Core.Enums;
-using XVNML.Utility.Diagnostics;
+using XVNML.Utilities.Diagnostics;
 using System.Numerics;
 using XVNML.XVNMLUtility.Tags;
 using XVNML.Core.Macros;

@@ -6,8 +6,8 @@ using System.Text;
 using System.Timers;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Macros;
-using XVNML.Utility.Dialogue;
-using XVNML.Utility.Macros;
+using XVNML.Utilities.Dialogue;
+using XVNML.Utilities.Macros;
 
 namespace XVNML.Core.Dialogue
 {

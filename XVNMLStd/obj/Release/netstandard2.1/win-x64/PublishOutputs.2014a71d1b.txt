@@ -1,0 +1,4 @@
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\bin\release\netstandard2.1\win-x64\publish\XVNML.dll
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\bin\release\netstandard2.1\win-x64\publish\XVNML.deps.json
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\bin\release\netstandard2.1\win-x64\publish\XVNML.pdb
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\bin\release\netstandard2.1\win-x64\publish\Newtonsoft.Json.dll

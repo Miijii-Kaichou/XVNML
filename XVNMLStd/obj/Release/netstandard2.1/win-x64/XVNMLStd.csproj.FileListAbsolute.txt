@@ -1,0 +1,10 @@
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\bin\release\netstandard2.1\win-x64\XVNML.deps.json
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\bin\release\netstandard2.1\win-x64\XVNML.dll
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\bin\release\netstandard2.1\win-x64\XVNML.pdb
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\obj\release\netstandard2.1\win-x64\XVNMLStd.csproj.AssemblyReference.cache
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\obj\release\netstandard2.1\win-x64\XVNMLStd.GeneratedMSBuildEditorConfig.editorconfig
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\obj\release\netstandard2.1\win-x64\XVNMLStd.AssemblyInfoInputs.cache
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\obj\release\netstandard2.1\win-x64\XVNMLStd.AssemblyInfo.cs
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\obj\release\netstandard2.1\win-x64\XVNMLStd.csproj.CoreCompileInputs.cache
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\obj\release\netstandard2.1\win-x64\XVNML.dll
+E:\Documents\Repositories\C#\XVNML\XVNMLStd\obj\release\netstandard2.1\win-x64\XVNML.pdb

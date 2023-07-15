@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Dialogue.Structs;
-using XVNML.Utility.Diagnostics;
-using XVNML.Utility.Dialogue;
-using XVNML.Utility.Macros;
+using XVNML.Utilities.Diagnostics;
+using XVNML.Utilities.Dialogue;
+using XVNML.Utilities.Macros;
 using XVNML.XVNMLUtility.Tags;
 
 namespace XVNML.Core.Macros

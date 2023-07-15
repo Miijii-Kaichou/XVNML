@@ -8,7 +8,7 @@ using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
 using XVNML.Core.Macros;
 using XVNML.Core.Enums;
-using XVNML.Utility.Macros;
+using XVNML.Utilities.Macros;
 using XVNML.Core.Extensions;
 using System.Linq.Expressions;
 

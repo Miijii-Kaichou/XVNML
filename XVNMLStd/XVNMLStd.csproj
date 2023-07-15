@@ -1,50 +1,59 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <Nullable>enable</Nullable>
-    <OutputType>Library</OutputType>
-	<StartupObject></StartupObject>
-	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	<Title>XVNML</Title>
-	<Authors>Enjyoii</Authors>
-	<RootNamespace>XVNML</RootNamespace>
-	<AssemblyName>XVNML</AssemblyName>
-	<AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-	<SignAssembly>True</SignAssembly>
-	<RepositoryUrl>https://github.com/Miijii-Kaichou/XVNML</RepositoryUrl>
-	<Copyright>2019 Enjyoii</Copyright>
-	<Description>A utility tool to interact with XVNML files.</Description>
-	<IncludeSymbols>False</IncludeSymbols>
-	<AssemblyVersion>1.0.1.22</AssemblyVersion>
-	<PackageReadmeFile>README.md</PackageReadmeFile>
-	<FileVersion>1.0.1.22</FileVersion>
-	<PackAsTool>False</PackAsTool>
-	<Version>1.0.1.22-pre-release</Version>
-	<PackageLicenseFile>LICENSE.MD</PackageLicenseFile>
-	<AssemblyOriginatorKeyFile>C:\Users\tclte\Desktop\xvsnk.snk</AssemblyOriginatorKeyFile>
-	<GenerateDocumentationFile>False</GenerateDocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<Nullable>enable</Nullable>
+		<OutputType>Library</OutputType>
+		<StartupObject></StartupObject>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Title>XVNML</Title>
+		<Authors>Enjyoii</Authors>
+		<RootNamespace>XVNML</RootNamespace>
+		<AssemblyName>XVNML</AssemblyName>
+		<AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+		<SignAssembly>True</SignAssembly>
+		<RepositoryUrl>https://github.com/Miijii-Kaichou/XVNML</RepositoryUrl>
+		<Copyright>2019 Enjyoii</Copyright>
+		<Description>A utility tool to interact with XVNML files.</Description>
+		<IncludeSymbols>False</IncludeSymbols>
+		<AssemblyVersion>1.0.1.22</AssemblyVersion>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<FileVersion>1.0.1.22</FileVersion>
+		<PackAsTool>False</PackAsTool>
+		<Version>1.0.1.22-pre-release</Version>
+		<PackageLicenseFile>LICENSE.MD</PackageLicenseFile>
+		<AssemblyOriginatorKeyFile>C:\Users\tclte\Desktop\xvsnk.snk</AssemblyOriginatorKeyFile>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<IlcInvariantGlobalization>true</IlcInvariantGlobalization>
+		<IlcDisableReflection>true</IlcDisableReflection>
+		<IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
+		<IlcOptimizationPreference>Size</IlcOptimizationPreference>
+		<IlcGenerateCompleteTypeMetadata>false</IlcGenerateCompleteTypeMetadata>
+		<Platforms>AnyCPU;x64;x64</Platforms>
+		<RootAllApplicationAssemblies>true</RootAllApplicationAssemblies>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants)TRACE;ENABLE_LOGGING</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>$(DefineConstants)TRACE;ENABLE_LOGGING</DefineConstants>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>$(DefineConstants)TRACE;ENABLE_LOGGING</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DefineConstants>$(DefineConstants)TRACE;ENABLE_LOGGING</DefineConstants>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="C:\Users\tclte\Desktop\LICENSE.MD">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Include="C:\Users\tclte\Desktop\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="C:\Users\tclte\Desktop\LICENSE.MD">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="C:\Users\tclte\Desktop\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.DotNet.ILCompiler" Version="7.0.9" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Microsoft.DotNet.ILCompiler" Version="8.0.0-preview.6.23329.7" />
+	</ItemGroup>
 </Project>

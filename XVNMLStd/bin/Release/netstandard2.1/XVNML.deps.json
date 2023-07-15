@@ -9,12 +9,14 @@
     ".NETStandard,Version=v2.1/": {
       "XVNML/1.0.1.22-pre-release": {
         "dependencies": {
+          "Microsoft.DotNet.ILCompiler": "8.0.0-preview.6.23329.7",
           "Newtonsoft.Json": "13.0.3"
         },
         "runtime": {
           "XVNML.dll": {}
         }
       },
+      "Microsoft.DotNet.ILCompiler/8.0.0-preview.6.23329.7": {},
       "Newtonsoft.Json/13.0.3": {
         "runtime": {
           "lib/netstandard2.0/Newtonsoft.Json.dll": {
@@ -30,6 +32,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "Microsoft.DotNet.ILCompiler/8.0.0-preview.6.23329.7": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-9zQ9zIAROmaOxHdddVIVM8ZpNDZ4NVeMj5cSorwPLYDFiOSA29bKOTEoYr1AvCgDeU+h4C8UDz44fZouBpPy9g==",
+      "path": "microsoft.dotnet.ilcompiler/8.0.0-preview.6.23329.7",
+      "hashPath": "microsoft.dotnet.ilcompiler.8.0.0-preview.6.23329.7.nupkg.sha512"
     },
     "Newtonsoft.Json/13.0.3": {
       "type": "package",

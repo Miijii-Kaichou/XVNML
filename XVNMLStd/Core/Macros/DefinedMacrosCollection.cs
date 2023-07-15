@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using XVNML.Core.Assemblies;
-using XVNML.Utility.Macros;
+using XVNML.Utilities.Macros;
 using XVNML.XVNMLUtility.Tags;
 
 namespace XVNML.Core.Macros

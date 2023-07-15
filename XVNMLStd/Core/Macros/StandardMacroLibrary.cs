@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
-using XVNML.Core.Dialogue.Structs;
-using XVNML.Core.Macros;
-using XVNML.Utility.Diagnostics;
-using XVNML.Utility.Macros;
+using XVNML.Utilities.Diagnostics;
+using XVNML.Utilities.Macros;
 
 [MacroLibrary(typeof(StandardMacroLibrary))]
 internal sealed class StandardMacroLibrary
@@ -109,8 +106,49 @@ internal sealed class StandardMacroLibrary
     }
 
     #endregion
+    
+    #region Debug Macros
+    [Macro("pid")]
+    internal static void GetProcessIDMacroShortHand(MacroCallInfo info, bool print)
+    {
+        GetProcessIDMacro(info, print);
+    }
 
-    #region Character Insert Macros
+    [Macro("process_id")]
+    internal static void GetProcessIDMacro(MacroCallInfo info, bool print)
+    {
+        if (!print) return;
+        info.process.Append(info.process.ID.ToString());
+    }
+
+    [Macro("curdex")]
+    internal static void CursorIndexMacro(MacroCallInfo info, bool print)
+    {
+        var cursorIndex = info.process.cursorIndex;
+        XVNMLLogger.Log(cursorIndex.ToString(), info);
+        if (!print) return;
+        info.process.Append(cursorIndex.ToString());
+    }
+
+    [Macro("lindex")]
+    internal static void GetLineIndexMacro(MacroCallInfo info)
+    {
+        var print = false;
+        GetLineIndexMacro(info, print);
+    }
+
+    [Macro("lindex")]
+    internal static void GetLineIndexMacro(MacroCallInfo info, bool print)
+    {
+        var lineIndex = info.process.lineIndex;
+        XVNMLLogger.Log(lineIndex.ToString(), info);
+        if (!print) return;
+        info.process.Append(lineIndex.ToString());
+    }
+
+    #endregion
+
+    #region Character Insert (Print) Macros
     [Macro("n")]
     internal static void NewLineMacroShortHand1(MacroCallInfo info)
     {
@@ -363,51 +401,16 @@ internal sealed class StandardMacroLibrary
         info.process.Append('\u00b1');
     }
 
-    [Macro("speaker")]
-    internal static void InsertSpeakerNameMacro(MacroCallInfo info)
+    [Macro("sp")]
+    internal static void InsertSpeakerNameMacroShortHand(MacroCallInfo info)
     {
         info.process.Append(info.process.CurrentCastInfo?.name!);
     }
 
-    #endregion
-
-    #region Debug Macros
-    [Macro("pid")]
-    internal static void GetProcessIDMacroShortHand(MacroCallInfo info, bool print)
+    [Macro("speaker")]
+    internal static void InsertSpeakerNameMacro(MacroCallInfo info)
     {
-        GetProcessIDMacro(info, print);
-    }
-
-    [Macro("process_id")]
-    internal static void GetProcessIDMacro(MacroCallInfo info, bool print)
-    {
-        if (!print) return;
-        info.process.Append(info.process.ID.ToString());
-    }
-
-    [Macro("curdex")]
-    internal static void CursorIndexMacro(MacroCallInfo info, bool print)
-    {
-        var cursorIndex = info.process.cursorIndex;
-        XVNMLLogger.Log(cursorIndex.ToString(), info);
-        if (!print) return;
-        info.process.Append(cursorIndex.ToString());
-    }
-
-    [Macro("lindex")]
-    internal static void GetLineIndexMacro(MacroCallInfo info)
-    {
-        var print = false;
-        GetLineIndexMacro(info, print);
-    }
-
-    [Macro("lindex")]
-    internal static void GetLineIndexMacro(MacroCallInfo info, bool print)
-    {
-        var lineIndex = info.process.lineIndex;
-        XVNMLLogger.Log(lineIndex.ToString(), info);
-        if (!print) return;
-        info.process.Append(lineIndex.ToString());
+        info.process.Append(info.process.CurrentCastInfo?.name!);
     }
 
     #endregion
@@ -463,12 +466,6 @@ internal sealed class StandardMacroLibrary
     #endregion
 
     #region Variable Control Macros
-    [Macro("test")]
-    internal static void TestMacro(MacroCallInfo info, string value1, string value2)
-    {
-        Console.WriteLine($"Value 1: {value1}\nValue 2: {value2}");
-    }
-
     [Macro("var")]
     internal static void InitializeVariableMacro(MacroCallInfo info, string identifier, object initialValue)
     {
@@ -485,12 +482,6 @@ internal sealed class StandardMacroLibrary
     internal static void GetVariableMacro(MacroCallInfo info, string identifier)
     {
 
-    }
-
-    [Macro("test")]
-    internal static void TestMacro(MacroCallInfo info, int value)
-    {
-        Console.WriteLine($"Test Macro Successful: {value}");
     }
     #endregion
 }

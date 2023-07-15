@@ -75,7 +75,6 @@
                     <macro symbol::"pass"/>
                 </macro>
         </macroCache>
-
         <dialogue name::"MainTest" src::"Test/test0.dialogue.xvnml"/>    
         <dialogue name::"Osaka's Dream" src::"Test/test1.dialogue.xvnml"/>
 </proxy>
