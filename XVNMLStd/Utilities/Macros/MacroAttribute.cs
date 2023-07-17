@@ -4,7 +4,7 @@ using XVNML.Core.Macros;
 
 namespace XVNML.Utilities.Macros
 {
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public sealed class MacroAttribute : Attribute
     {
         public Type? macroLibraryType;

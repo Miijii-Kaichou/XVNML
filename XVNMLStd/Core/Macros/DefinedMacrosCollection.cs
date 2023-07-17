@@ -69,8 +69,16 @@ namespace XVNML.Core.Macros
         {
             foreach (MethodInfo method in methods)
             {
-                var attribute = (MacroAttribute)method.GetCustomAttribute(typeof(MacroAttribute));
+                var attributes = (MacroAttribute[])method.GetCustomAttributes(typeof(MacroAttribute));
 
+                RegisterAttributes(attributes, method, lib);         
+            }
+        }
+
+        private static void RegisterAttributes(MacroAttribute[] attributes, MethodInfo method, Type lib)
+        {
+            foreach(var attribute in attributes)
+            {
                 if (attribute != null)
                 {
                     attribute.macroLibraryType = lib;

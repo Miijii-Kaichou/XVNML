@@ -43,7 +43,7 @@
         </keycodeDefinitions>
 
         <macroCache>
-                <macro name::"_runTest" symbol::"var">
+                <macro name::"_runTest" symbol::"declare">
                     <arg value::"love"/>
                     <arg value::200/>
                 </macro>

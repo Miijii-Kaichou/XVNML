@@ -9,10 +9,6 @@ internal sealed class StandardMacroLibrary
 {
     #region Control Macros
     [Macro("del")]
-    internal static void DelayMacroShortHand(MacroCallInfo info, uint milliseconds)
-    {
-        DelayMacro(info, milliseconds);
-    }
     [Macro("delay")]
     internal static void DelayMacro(MacroCallInfo info, uint milliseconds)
     {
@@ -21,11 +17,6 @@ internal sealed class StandardMacroLibrary
     }
 
     [Macro("ins")]
-    internal static void InsertMacroShortHand(MacroCallInfo info, string text)
-    {
-        InsertMacro(info, text);
-    }
-
     [Macro("insert")]
     internal static void InsertMacro(MacroCallInfo info, string text)
     {
@@ -37,12 +28,6 @@ internal sealed class StandardMacroLibrary
     }
 
     [Macro("sts")]
-    internal static void SetTextSpeedShortHand(MacroCallInfo info, uint level)
-    {
-        // Speed macro logic here.
-        SetTextSpeed(info, level);
-    }
-
     [Macro("set_text_speed")]
     internal static void SetTextSpeed(MacroCallInfo info, uint level)
     {
@@ -51,10 +36,6 @@ internal sealed class StandardMacroLibrary
     }
 
     [Macro("clr")]
-    internal static void ClearTextShortHand(MacroCallInfo info)
-    {
-        ClearText(info);
-    }
     [Macro("clear")]
     internal static void ClearText(MacroCallInfo info)
     {
@@ -79,12 +60,14 @@ internal sealed class StandardMacroLibrary
         
     }
 
+    [Macro("jmpt")]
     [Macro("jump_to")]
     internal static void JumpToMacro(MacroCallInfo info, uint index)
     {
         info.process.JumpTo((int)index);
     }
 
+    [Macro("jmpt")]
     [Macro("jump_to")]
     internal static void JumpToMacro(MacroCallInfo info, string tagName)
     {
@@ -93,6 +76,7 @@ internal sealed class StandardMacroLibrary
         info.process.JumpTo(tagName.ToString());
     }
 
+    [Macro("ldt")]
     [Macro("lead_to")]
     internal static void LeadToLineMacro(MacroCallInfo info, int value)
     {
@@ -149,49 +133,25 @@ internal sealed class StandardMacroLibrary
     #endregion
 
     #region Character Insert (Print) Macros
-    [Macro("n")]
-    internal static void NewLineMacroShortHand1(MacroCallInfo info)
-    {
-        NewLineMacro(info);
-    }
-    [Macro("nl")]
-    internal static void NewLineMacroShortHand2(MacroCallInfo info)
-    {
-        NewLineMacro(info);
-    }
     [Macro("new_line")]
+    [Macro("nl")]
+    [Macro("n")]
     internal static void NewLineMacro(MacroCallInfo info)
     {
         info.process.Append('\n');
     }
 
-    [Macro("t")]
-    internal static void TabMacroShortHand1(MacroCallInfo info)
-    {
-        TabMacro(info);
-    }
-    [Macro("tb")]
-    internal static void TabMacroShortHand2(MacroCallInfo info)
-    {
-        TabMacro(info);
-    }
     [Macro("tab")]
+    [Macro("tb")]
+    [Macro("t")]
     internal static void TabMacro(MacroCallInfo info)
     {
         info.process.Append("\t");
     }
 
-    [Macro("w")]
-    internal static void WhiteSpaceMacroShortHand1(MacroCallInfo info)
-    {
-        WhiteSpaceMacro(info);
-    }
-    [Macro("ws")]
-    internal static void WhiteSpaceMacroShortHand2(MacroCallInfo info)
-    {
-        WhiteSpaceMacro(info);
-    }
     [Macro("space")]
+    [Macro("ws")]
+    [Macro("w")]
     internal static void WhiteSpaceMacro(MacroCallInfo info)
     {
         info.process.Append(" ");
@@ -203,12 +163,14 @@ internal sealed class StandardMacroLibrary
         info.process.Append("#");
     }
 
+    [Macro("p")]
     [Macro("paren")]
     internal static void ParenthesisMacro(MacroCallInfo info)
     {
         info.process.Append('(');
     }
 
+    [Macro("/p")]
     [Macro("paren_end")]
     internal static void EndParenthesisMacro(MacroCallInfo info)
     {
@@ -227,6 +189,7 @@ internal sealed class StandardMacroLibrary
         info.process.Append('{');
     }
 
+    [Macro("/curly")]
     [Macro("curly_end")]
     internal static void CurlyBracketEndMacro(MacroCallInfo info)
     {
@@ -239,6 +202,7 @@ internal sealed class StandardMacroLibrary
         info.process.Append('[');
     }
 
+    [Macro("/brack")]
     [Macro("brack_end")]
     internal static void SquareBracketEndMacro(MacroCallInfo info)
     {
@@ -251,12 +215,14 @@ internal sealed class StandardMacroLibrary
         info.process.Append('|');
     }
 
+    [Macro("asterisk")]
     [Macro("aster")]
     internal static void AsterisksMacro(MacroCallInfo info)
     {
         info.process.Append("*");
     }
 
+    [Macro("ampersand")]
     [Macro("amper")]
     internal static void AmpersandMacro(MacroCallInfo info)
     {
@@ -275,18 +241,21 @@ internal sealed class StandardMacroLibrary
         info.process.Append("~");
     }
 
+    [Macro("forward_slash")]
     [Macro("slash")]
     internal static void ForwardSlashMacro(MacroCallInfo info)
     {
         info.process.Append("/");
     }
 
+    [Macro("back_slash")]
     [Macro("blash")]
     internal static void BackslashMacro(MacroCallInfo info)
     {
         info.process.Append("\\");
     }
 
+    [Macro("semicolon")]
     [Macro("semi")]
     internal static void SemicolonMacro(MacroCallInfo info)
     {
@@ -305,12 +274,14 @@ internal sealed class StandardMacroLibrary
         info.process.Append("<");
     }
 
+    [Macro("/tag")]
     [Macro("tag_end")]
     internal static void TagEndMacro(MacroCallInfo info)
     {
         info.process.Append(">");
     }
 
+    [Macro("percent")]
     [Macro("per")]
     internal static void PercentMacro(MacroCallInfo info)
     {
@@ -335,79 +306,85 @@ internal sealed class StandardMacroLibrary
         info.process.Append('@');
     }
 
+    [Macro("question_mark")]
     [Macro("qm")]
     internal static void QuestionMarkMacro(MacroCallInfo info)
     {
         info.process.Append('?');
     }
 
+    [Macro("trademark")]
     [Macro("trade")]
     internal static void TrademarkMacro(MacroCallInfo info)
     {
         info.process.Append("\u2122");
     }
 
+    [Macro("copyright")]
     [Macro("copy")]
     internal static void CopyrightMacro(MacroCallInfo info)
     {
         info.process.Append("\u0040");
     }
 
+    [Macro("register_mark")]
     [Macro("reg")]
     internal static void RegisteredMacro(MacroCallInfo info)
     {
         info.process.Append("\u00ae");
     }
 
+    [Macro("bullet_style_1")]
     [Macro("bul1")]
     internal static void BulletMacro(MacroCallInfo info)
     {
         info.process.Append("\u2022");
     }
 
+    [Macro("bullet_style_2")]
     [Macro("bul2")]
     internal static void Bulle2tMacro(MacroCallInfo info)
     {
         info.process.Append("\u25e6");
     }
 
+    [Macro("bullet_style_3")]
     [Macro("bul3")]
     internal static void Bullet3Macro(MacroCallInfo info)
     {
         info.process.Append("\u2023");
     }
 
+    [Macro("ellipsis")]
     [Macro("ell")]
     internal static void EllipsisMacro(MacroCallInfo info)
     {
         info.process.Append("\u2026");
     }
 
+    [Macro("section")]
     [Macro("sec")]
     internal static void SectionMacro(MacroCallInfo info)
     {
         info.process.Append('\u00a7');
     }
 
+    [Macro("degree")]
     [Macro("deg")]
     internal static void DegreeMacro(MacroCallInfo info)
     {
         info.process.Append('\u00b0');
     }
 
+    [Macro("plus_minus")]
     [Macro("pm")]
     internal static void DegreePlusMinus(MacroCallInfo info)
     {
         info.process.Append('\u00b1');
     }
 
-    [Macro("sp")]
-    internal static void InsertSpeakerNameMacroShortHand(MacroCallInfo info)
-    {
-        info.process.Append(info.process.CurrentCastInfo?.name!);
-    }
-
     [Macro("speaker")]
+    [Macro("sp")]
     internal static void InsertSpeakerNameMacro(MacroCallInfo info)
     {
         info.process.Append(info.process.CurrentCastInfo?.name!);
@@ -416,49 +393,33 @@ internal sealed class StandardMacroLibrary
     #endregion
 
     #region Cast Macros
-    [Macro("exp")]
-    internal static void SetCastExpressionMacroShortHand(MacroCallInfo info, string value)
-    {
-        SetCastExpressionMacro(info, value);
-    }
-
-    [Macro("exp")]
-    internal static void SetCastExpressionMacroShortHand(MacroCallInfo info, int value)
-    {
-        SetCastExpressionMacro(info, value);
-    }
-
     [Macro("expression")]
+    [Macro("portrait")]
+    [Macro("exp")]
+    [Macro("port")]
     internal static void SetCastExpressionMacro(MacroCallInfo info, string value)
     {
         info.process.ChangeCastExpression(info, value);
     }
 
     [Macro("expression")]
+    [Macro("portrait")]
+    [Macro("exp")]
+    [Macro("port")]
     internal static void SetCastExpressionMacro(MacroCallInfo info, int value)
     {
         SetCastExpressionMacro(info, value.ToString());
     }
 
-    [Macro("vo")]
-    internal static void SetCastVoiceShortHand(MacroCallInfo info, string value)
-    {
-        SetCastVoice(info, value);
-    }
-
-    [Macro("vo")]
-    internal static void SetCastVoiceShortHand(MacroCallInfo info, int value)
-    {
-        SetCastVoice(info, value);
-    }
-
     [Macro("voice")]
+    [Macro("vo")]
     internal static void SetCastVoice(MacroCallInfo info, string value)
     {
         info.process.ChangeCastVoice(info, value);
     }
 
     [Macro("voice")]
+    [Macro("vo")]
     internal static void SetCastVoice(MacroCallInfo info, int value)
     {
         SetCastVoice(info, value.ToString());
@@ -466,7 +427,7 @@ internal sealed class StandardMacroLibrary
     #endregion
 
     #region Variable Control Macros
-    [Macro("var")]
+    [Macro("declare")]
     internal static void InitializeVariableMacro(MacroCallInfo info, string identifier, object initialValue)
     {
         Console.WriteLine($"Variable {identifier} initiated with {initialValue}");

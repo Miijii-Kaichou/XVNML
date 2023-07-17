@@ -1,6 +1,6 @@
 <source name::"Test0.Dialogue.XVNML">
 	<dialogue name::"MainTest">
-	    @ "Quotations"{$_runTest|$_think|op::"test"} test<
+	    @ "Quotations"{$_runTest|$_think|op::"test"} {ins::"test"}<
         @ {$_defaultTextSpeed}Welcome to XVNML2U!{jump_to::"Maple-Intro"}<
         @ This package demonstrates the capabilities in which the XVNML 
         Class Library is capable of{$_testMacro}when used with the Unity Game Engine.<

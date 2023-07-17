@@ -9,7 +9,7 @@ using XVNML.Core.Parser;
 
 namespace XVNML.Core.Tags
 {
-    public class TagBase : IResolvable
+    public abstract class TagBase : IResolvable
     {
         protected TagFormRestrictionMode TagFormRestrictionMode { get; } = TagFormRestrictionMode.None;
 
@@ -62,35 +62,11 @@ namespace XVNML.Core.Tags
             }
         }
 
-        internal string[]? _allowParameters;
         [JsonProperty]
-        public string[]? AllowedParameters
-        {
-            get
-            {
-                return _allowParameters;
-            }
-            set
-            {
-                _allowParameters = value;
-            }
-        }
-
-        internal string[]? _allowFlags;
-
+        protected virtual string[]? AllowedParameters { get; set; }
 
         [JsonProperty]
-        public string[]? AllowedFlags
-        {
-            get
-            {
-                return _allowFlags;
-            }
-            set
-            {
-                _allowFlags = value;
-            }
-        }
+        protected virtual string[]? AllowedFlags { get; set; }
 
         public List<TagBase>? elements = null;
         public TagBase? parentTag = null;
