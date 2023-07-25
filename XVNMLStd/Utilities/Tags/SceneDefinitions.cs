@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using XVNML.Core.Tags;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("sceneDefinitions", new Type[] { typeof(Proxy), typeof(Source) }, TagOccurance.PragmaOnce)]
     public sealed class SceneDefinitions : TagBase

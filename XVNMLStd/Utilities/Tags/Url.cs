@@ -1,6 +1,6 @@
 ﻿using XVNML.Core.Tags;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("url", typeof(Metadata), TagOccurance.PragmaOnce)]
     public sealed class Url : TagBase

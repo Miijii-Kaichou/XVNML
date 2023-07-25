@@ -6,7 +6,7 @@ using XVNML.Utilities.Diagnostics;
 
 using static XVNML.Constants;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("scene", typeof(SceneDefinitions), TagOccurance.Multiple)]
     public sealed class Scene : TagBase

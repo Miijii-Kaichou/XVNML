@@ -2,7 +2,7 @@
 using System.Linq;
 using XVNML.Core.Tags;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("portraitDefinitions", typeof(Cast), TagOccurance.PragmaLocalOnce)]
     public sealed class PortraitDefinitions : TagBase

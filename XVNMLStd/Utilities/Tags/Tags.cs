@@ -5,7 +5,7 @@ using XVNML.Core.Tags;
 
 using static XVNML.Constants;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("tags", typeof(Metadata), TagOccurance.PragmaOnce)]
     public sealed class Tags : TagBase

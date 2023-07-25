@@ -1,6 +1,6 @@
 ﻿using XVNML.Core.Tags;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     //The "..." for associating tag will be irrelevant
     //This is something that is abstract, and can't be used

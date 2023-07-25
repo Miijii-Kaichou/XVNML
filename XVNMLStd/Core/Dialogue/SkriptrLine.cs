@@ -550,7 +550,7 @@ namespace XVNML.Core.Dialogue
                     cleared = !(Content[i + peek] == ' ');
                 }
                 i++;
-                Content = Content.Remove(i, peek - 1);
+                Content = Content.Remove(i, peek - 2);
             }
         }
 

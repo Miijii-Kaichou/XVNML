@@ -8,7 +8,7 @@ using XVNML.Utilities.Diagnostics;
 using XVNML.Utilities.Tags;
 using static XVNML.Constants;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("macro", new[] { typeof(MacroCache), typeof(Macro) }, TagOccurance.Multiple)]
     public sealed class Macro : TagBase

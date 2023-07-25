@@ -6,9 +6,9 @@ using XVNML.Core.Macros;
 using XVNML.Core.Parser;
 using XVNML.Core.Tags;
 using XVNML.Utilities.Diagnostics;
-using XVNML.XVNMLUtility.Tags;
+using XVNML.Utilities.Tags;
 
-namespace XVNML.XVNMLUtility
+namespace XVNML.Utilities
 {
     public class XVNMLObj
     {

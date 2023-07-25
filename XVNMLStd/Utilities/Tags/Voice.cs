@@ -5,7 +5,7 @@ using XVNML.Utilities.Diagnostics;
 
 using static XVNML.Constants;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("voice", typeof(VoiceDefinitions), TagOccurance.Multiple)]
     public sealed class Voice : TagBase

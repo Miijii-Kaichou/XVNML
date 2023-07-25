@@ -3,7 +3,7 @@ using System.Linq;
 using XVNML.Core.Macros;
 using XVNML.Core.Tags;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("macroCache", new[] { typeof(Source), typeof(Proxy) }, TagOccurance.PragmaOnce )]
     public sealed class MacroCache : TagBase

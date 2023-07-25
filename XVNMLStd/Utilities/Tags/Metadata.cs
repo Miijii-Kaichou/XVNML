@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using XVNML.Core.Tags;
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("metadata", typeof(Proxy), TagOccurance.PragmaOnce)]
     public sealed class Metadata : TagBase

@@ -8,7 +8,7 @@ using XVNML.Core.Tags;
 using XVNML.Utilities.Diagnostics;
 using static XVNML.Constants;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("dialogue", new[] { typeof(Proxy), typeof(Source), typeof(DialogueGroup) }, TagOccurance.Multiple)]
     [Serializable()]

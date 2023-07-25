@@ -3,7 +3,7 @@ using XVNML.Core.Tags;
 
 using static XVNML.Constants;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("description", typeof(Metadata), TagOccurance.PragmaOnce)]
     public sealed class Description : TagBase
@@ -18,7 +18,7 @@ namespace XVNML.XVNMLUtility.Tags
 
             base.OnResolve(fileOrigin);
 
-            content = value?.ToString();
+            content = (value ?? GetParameterValue<string>(AllowedParameters[0])).ToString(); 
         }
     }
 }

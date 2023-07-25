@@ -1,6 +1,6 @@
 ﻿using XVNML.Core.Tags;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("dependency", typeof(DependencyDefinitions), TagOccurance.Multiple)]
     public sealed class Dependency : TagBase

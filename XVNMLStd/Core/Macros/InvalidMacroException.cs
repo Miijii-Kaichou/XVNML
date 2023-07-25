@@ -1,7 +1,7 @@
 ﻿using System;
 using XVNML.Core.Dialogue;
 using XVNML.Utilities.Diagnostics;
-using XVNML.XVNMLUtility;
+using XVNML.Utilities;
 
 namespace XVNML.Core.Macros
 {

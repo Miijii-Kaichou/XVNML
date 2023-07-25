@@ -6,7 +6,7 @@ using XVNML.Utilities.Diagnostics;
 
 using static XVNML.Constants;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("image", new[] { typeof(Source), typeof(ImageDefinitions) }, TagOccurance.Multiple)]
     public sealed class Image : TagBase

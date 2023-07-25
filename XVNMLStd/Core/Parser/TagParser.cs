@@ -9,7 +9,7 @@ using XVNML.Core.Tags;
 using XVNML.Core.Enums;
 using XVNML.Utilities.Diagnostics;
 using System.Numerics;
-using XVNML.XVNMLUtility.Tags;
+using XVNML.Utilities.Tags;
 using XVNML.Core.Macros;
 using System.Linq;
 using System.Diagnostics;

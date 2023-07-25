@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using XVNML.Core.Assemblies;
 using XVNML.Utilities.Macros;
-using XVNML.XVNMLUtility.Tags;
+using XVNML.Utilities.Tags;
 
 namespace XVNML.Core.Macros
 {

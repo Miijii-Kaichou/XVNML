@@ -1,5 +1,5 @@
 ﻿using XVNML.Core.Tags;
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("title", typeof(Metadata), TagOccurance.PragmaLocalOnce)]
     public sealed class Title : TagBase

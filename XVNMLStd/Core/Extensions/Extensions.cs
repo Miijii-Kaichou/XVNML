@@ -6,7 +6,7 @@ using XVNML.Core.Lexer;
 
 namespace XVNML.Core.Extensions
 {
-    internal static class ClassTypeExtension
+    public static class Extensions
     {
         public static string[]? Names(this Type[] types)
         {
@@ -136,10 +136,10 @@ namespace XVNML.Core.Extensions
             return input;
         }
 
-        internal static Type? DetermineValueType(this object target)
+        public static Type? DetermineValueType(this object target)
         {
             if (target == null) return null;
-            var token = Tokenizer.Tokenize(target.ToString(), Enums.TokenizerReadState.Local)![0];
+            var token = Tokenizer.Tokenize(target.ToString(), TokenizerReadState.Local)![0];
 
             if (token == null) return target.GetType();
 

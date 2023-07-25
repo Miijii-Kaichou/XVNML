@@ -5,7 +5,7 @@ using XVNML.Utilities.Diagnostics;
 
 using static XVNML.Constants;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("portrait", new[] { typeof(Source), typeof(PortraitDefinitions) }, TagOccurance.Multiple)]
     public sealed class Portrait : TagBase

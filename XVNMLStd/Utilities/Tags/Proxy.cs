@@ -4,7 +4,7 @@ using XVNML.Core.Tags;
 
 using static XVNML.Constants;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("proxy", TagOccurance.PragmaOnce)]
     public sealed class Proxy : TagBase

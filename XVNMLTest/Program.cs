@@ -2,8 +2,8 @@
 using System.Text;
 using XVNML.Core.Dialogue;
 using XVNML.Utilities.Dialogue;
-using XVNML.XVNMLUtility;
-using XVNML.XVNMLUtility.Tags;
+using XVNML.Utilities;
+using XVNML.Utilities.Tags;
 
 static class Program
 {

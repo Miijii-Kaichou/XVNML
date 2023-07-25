@@ -2,7 +2,7 @@
 using System.Linq;
 using XVNML.Core.Tags;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("keycodeDefinitions", new[] { typeof(Proxy), typeof(Source) }, TagOccurance.PragmaOnce)]
     public sealed class KeycodeDefinitions : TagBase

@@ -2,7 +2,7 @@
 
 using static XVNML.Constants;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("tag", typeof(Tags), TagOccurance.Multiple)]
     public sealed class Tag : TagBase

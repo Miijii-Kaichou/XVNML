@@ -4,7 +4,7 @@ using XVNML.Core.Tags;
 using XVNML.Input.Enums;
 using static XVNML.Constants;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("keycode", new[] { typeof(Source), typeof(KeycodeDefinitions) }, TagOccurance.Multiple)]
     public sealed class Keycode : TagBase

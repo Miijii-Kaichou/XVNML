@@ -4,7 +4,7 @@ using XVNML.Core.Tags;
 
 using static XVNML.Constants;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("dialogueGroup", new[] { typeof(Proxy), typeof(Source) }, TagOccurance.Multiple)]
     public sealed class DialogueGroup : TagBase

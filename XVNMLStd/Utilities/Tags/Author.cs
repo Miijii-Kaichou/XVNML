@@ -2,7 +2,7 @@
 
 using static XVNML.Constants;
 
-namespace XVNML.XVNMLUtility.Tags
+namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("author", typeof(Metadata), TagOccurance.PragmaOnce)]
     public sealed class Author : TagBase
