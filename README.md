@@ -1,5 +1,10 @@
 # XVNML
 
+![GitHub](https://img.shields.io/github/license/Miijii-Kaichou/XVNML) ![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/XVNML) ![GitHub tag (with filter)](https://img.shields.io/github/v/tag/Miijii-Kaichou/XVNML)
+ ![Nuget](https://img.shields.io/nuget/dt/XVNML)
+
+
+
 XVNML (formally known as X-tensible Visual Novel Markup Language), is an open-source mark-up language that can be easily paired with any game engine that requires a nice and structure way of storing Stored-Based information and dialogue. It puts together the normal mark up languages you may be used to, but adds a couple extra features (like Skriptr) to make it versitale in you game development work flow.
 
 ![Screenshot_20221205_234724](https://user-images.githubusercontent.com/46007223/217719313-597ad1ae-2ee0-4348-abe5-19ba43b8445f.png)
@@ -27,6 +32,7 @@ All of your XVNML content are represented by an object called XVNMLObj. You inst
 
 ### Pre-Built Tags
 By default, you have a total of 28 pre-built tags that can be parsed by the XVNML utility.
+  * Args
   * Audio
   * AudioDefinition
   * Author
