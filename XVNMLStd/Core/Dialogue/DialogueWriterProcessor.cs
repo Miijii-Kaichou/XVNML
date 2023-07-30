@@ -330,5 +330,10 @@ namespace XVNML.Core.Dialogue
             if (currentLine?.data.Mode == Enums.DialogueLineMode.Prompt) return;
             IsPass = true;
         }
+
+        internal void Wipe()
+        {
+            // Reset Process to default settings.
+        }
     }
 }

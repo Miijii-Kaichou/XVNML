@@ -66,7 +66,11 @@ namespace XVNML.Utilities.Dialogue
         public static void AllocateChannels(int totalChannels = DefaultTotalChannelsAllocated)
         {
             if (IsInitialized) return;
+            CreateAnew(totalChannels);
+        }
 
+        private static void  CreateAnew(int totalChannels)
+        {
             totalChannels = totalChannels < SingleChannel ? DefaultTotalChannelsAllocated : totalChannels;
 
             WriterProcesses = new DialogueWriterProcessor[totalChannels];
@@ -142,6 +146,7 @@ namespace XVNML.Utilities.Dialogue
 
         public static void ShutDown()
         {
+            IsInitialized = false;
             cancellationTokenSource.Cancel();
         }
 
@@ -253,8 +258,9 @@ namespace XVNML.Utilities.Dialogue
                 if (process.AtEnd && process.currentLine == null)
                 {
                     // That was the last dialogue
-                    OnDialogueFinish?[process!.ID]?.Invoke(process);
                     Reset(process);
+                    OnDialogueFinish?[process!.ID]?.Invoke(process);
+                    process.Wipe();
                     return;
                 }
 

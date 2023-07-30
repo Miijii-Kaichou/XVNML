@@ -4,10 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Dialogue.Structs;
-using XVNML.Utilities.Diagnostics;
 using XVNML.Utilities.Dialogue;
 using XVNML.Utilities.Macros;
-using XVNML.Utilities.Tags;
 
 namespace XVNML.Core.Macros
 {
@@ -18,9 +16,11 @@ namespace XVNML.Core.Macros
         private static ConcurrentQueue<(string, (object, Type)[], MacroCallInfo, bool, string?)>[]? RetryQueues;
 
         private static bool[] IsBlocked = new bool[0];
+        private static int _allocatedProcesses = -1;
 
         internal static void Init()
         {
+            if (DialogueWriter.TotalProcesses == _allocatedProcesses) return;
             RetriesQueued = new bool[DialogueWriter.TotalProcesses];
             IsBlocked = new bool[DialogueWriter.TotalProcesses];
             RetryQueues = new ConcurrentQueue<(string, (object, Type)[], MacroCallInfo, bool, string?)>[DialogueWriter.TotalProcesses];
