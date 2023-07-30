@@ -5,7 +5,7 @@
   },
   "projects": {
     "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\XVNMLStd.csproj": {
-      "version": "1.0.1.22-pre-release",
+      "version": "1.0.1.3-pre-release",
       "restore": {
         "projectUniqueName": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\XVNMLStd.csproj",
         "projectName": "XVNML",
@@ -45,10 +45,6 @@
         "netstandard2.1": {
           "targetAlias": "netstandard2.1",
           "dependencies": {
-            "Microsoft.DotNet.ILCompiler": {
-              "target": "Package",
-              "version": "[7.0.9, )"
-            },
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.3, )"

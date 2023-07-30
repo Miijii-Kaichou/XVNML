@@ -212,6 +212,7 @@ namespace XVNML.Core.Dialogue
                 CurrentLetter = null,
                 cursorIndex = -1,
                 IsPaused = false,
+                processLock = new object(),
             };
 
             var reversedList = input.Lines?.ToArray().Reverse();
@@ -333,7 +334,13 @@ namespace XVNML.Core.Dialogue
 
         internal void Wipe()
         {
-            // Reset Process to default settings.
+            _processBuilder.Clear();
+            IsPass = false;
+            currentLine = null;
+            cursorIndex = -1;
+            lineProcesses.Clear();
+            CurrentLetter = null;
+            IsPaused = false;
         }
     }
 }

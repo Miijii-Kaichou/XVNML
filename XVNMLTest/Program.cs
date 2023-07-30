@@ -4,10 +4,20 @@ using XVNML.Core.Dialogue;
 using XVNML.Utilities.Dialogue;
 using XVNML.Utilities;
 using XVNML.Utilities.Tags;
+using System.Text.RegularExpressions;
 
-static class Program
+static partial class Program
 {
     private static bool finished = false;
+
+    private static XVNMLObj MainDom = null;
+
+    private static string[] DialogueList = 
+    {
+        "MainTest",
+        "Osaka's Dream"
+    };
+
     static void Main(string[] args)
     {
         XVNMLObj.Create(@"../../../XVNMLFiles/consoleApp.main.xvnml", dom =>
@@ -15,23 +25,72 @@ static class Program
             if (dom == null) return;
             if (dom.Root == null) return;
 
+            MainDom = dom;
+
             Console.OutputEncoding = Encoding.UTF8;
-
-            DialogueScript script = dom.Root.GetElement<Dialogue>("MainTest")?.dialogueOutput!;
-
-            DialogueWriter.AllocateChannels(1);
-            DialogueWriter.OnPrompt![0] += DisplayPrompts;
-            DialogueWriter.OnPromptResonse![0] += RespondToPrompt;
-            DialogueWriter.OnLineSubstringChange![0] += UpdateConsole;
-            DialogueWriter.OnNextLine![0] += ClearConsole;
-            DialogueWriter.OnLinePause![0] += MoveNext;
-            DialogueWriter.OnDialogueFinish![0] += Finish;
-            DialogueWriter.Write(script);
-            Console.Clear();
+           
         });
+
+        PrintMainMenu();
 
         while (finished == false)
             continue;
+    }
+
+    private static void PrintMainMenu()
+    {
+        Console.Clear();
+        Console.WriteLine("Type in which dialogue you want to run...");
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < DialogueList.Length+1; i++)
+        {
+            var entryString = sb.Append(i)
+                .Append(')')
+                .Append(' ')
+                .Append(i > DialogueList.Length - 1 ? "Close Console Application..." : DialogueList[i]);
+            Console.WriteLine(entryString);
+            sb.Clear();
+        }
+
+        var selectedDialogue = Console.ReadLine();
+
+        RunDialogue(selectedDialogue);
+    }
+
+    private static void RunDialogue(string selectedDialogue)
+    {
+        var rule = MyRegex();
+        ValidateRule(selectedDialogue, rule, delegate() { ExecuteDialogue(Convert.ToInt32(selectedDialogue)); }, PrintMainMenu);
+    }
+
+    private static void ExecuteDialogue(int dialogueIndex)
+    {
+        if (dialogueIndex == 2)
+        {
+            finished = true;
+            return;
+        }
+
+        Console.Clear();
+
+        DialogueScript script = MainDom.Root?.GetElement<Dialogue>(DialogueList[dialogueIndex])?.dialogueOutput!;
+
+        DialogueWriter.AllocateChannels(1);
+        DialogueWriter.OnPrompt![0] += DisplayPrompts;
+        DialogueWriter.OnPromptResonse![0] += RespondToPrompt;
+        DialogueWriter.OnLineSubstringChange![0] += UpdateConsole;
+        DialogueWriter.OnNextLine![0] += ClearConsole;
+        DialogueWriter.OnLinePause![0] += MoveNext;
+        DialogueWriter.OnDialogueFinish![0] += Finish;
+        DialogueWriter.Write(script);
+    }
+
+    private static void ValidateRule(string input, Regex regexRule, Action success, Action failure)
+    {
+        Action determinedAction = regexRule.IsMatch(input) ? success : failure;
+        determinedAction?.Invoke();
     }
 
     private static void DisplayPrompts(DialogueWriterProcessor sender)
@@ -78,7 +137,15 @@ static class Program
     private static void Finish(DialogueWriterProcessor sender)
     {
         DialogueWriter.ShutDown();
-        finished = true;
+
+        DialogueWriter.OnPrompt![0] -= DisplayPrompts;
+        DialogueWriter.OnPromptResonse![0] -= RespondToPrompt;
+        DialogueWriter.OnLineSubstringChange![0] -= UpdateConsole;
+        DialogueWriter.OnNextLine![0] -= ClearConsole;
+        DialogueWriter.OnLinePause![0] -= MoveNext;
+        DialogueWriter.OnDialogueFinish![0] -= Finish;
+
+        PrintMainMenu();
         return;
     }
 
@@ -92,4 +159,7 @@ static class Program
         Console.SetCursorPosition(0, 0);
         Console.Write(sender.DisplayingContent);
     }
+
+    [GeneratedRegex("^[0-9]+?")]
+    private static partial Regex MyRegex();
 }

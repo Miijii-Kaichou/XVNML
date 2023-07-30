@@ -1,6 +1,13 @@
 <source name::"Test0.Dialogue.XVNML">
+	<macroCache>
+		<macro name::"_initTextSpeed" arg::100 symbol::"sts"/>
+		<macro name::"_pc">
+			<macro symbol::"pause"/>
+			<macro symbol::"clr"/>
+		</macro>
+	</macroCache>
+
 	<dialogue name::"MainTest">
-	    @ Welcome to
-        XVNML2U!<
+	    @ {$_initTextSpeed}Harvest Time!<<
 	</dialogue>
 </source>

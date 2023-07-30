@@ -550,7 +550,13 @@ namespace XVNML.Core.Dialogue
                     cleared = !(Content[i + peek] == ' ');
                 }
                 i++;
-                Content = Content.Remove(i, peek - 2);
+                var peekValue = peek - 2;
+                if (peekValue < 0)
+                {
+                    Content = Content.Remove(i, peek - 1);
+                    return;
+                }
+                Content = Content.Remove(i, peekValue);
             }
         }
 

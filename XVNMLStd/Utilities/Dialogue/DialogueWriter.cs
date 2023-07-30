@@ -147,6 +147,8 @@ namespace XVNML.Utilities.Dialogue
         public static void ShutDown()
         {
             IsInitialized = false;
+            WriterProcesses = null;
+            WriterProcessesCache = null;
             cancellationTokenSource.Cancel();
         }
 

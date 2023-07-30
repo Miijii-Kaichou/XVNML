@@ -15,7 +15,7 @@ namespace XVNML.Core.Dialogue
         public void ComposeNewLine(SkripterLine? line)
         {
             if (line == null) return;
-            Lines.Add(line);
+            Lines?.Add(line);
         }
     }
 }

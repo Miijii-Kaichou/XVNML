@@ -163,14 +163,12 @@ internal sealed class StandardMacroLibrary
         info.process.Append("#");
     }
 
-    [Macro("p")]
     [Macro("paren")]
     internal static void ParenthesisMacro(MacroCallInfo info)
     {
         info.process.Append('(');
     }
 
-    [Macro("/p")]
     [Macro("paren_end")]
     internal static void EndParenthesisMacro(MacroCallInfo info)
     {
@@ -189,7 +187,6 @@ internal sealed class StandardMacroLibrary
         info.process.Append('{');
     }
 
-    [Macro("/curly")]
     [Macro("curly_end")]
     internal static void CurlyBracketEndMacro(MacroCallInfo info)
     {
@@ -202,7 +199,6 @@ internal sealed class StandardMacroLibrary
         info.process.Append('[');
     }
 
-    [Macro("/brack")]
     [Macro("brack_end")]
     internal static void SquareBracketEndMacro(MacroCallInfo info)
     {
@@ -274,7 +270,6 @@ internal sealed class StandardMacroLibrary
         info.process.Append("<");
     }
 
-    [Macro("/tag")]
     [Macro("tag_end")]
     internal static void TagEndMacro(MacroCallInfo info)
     {
