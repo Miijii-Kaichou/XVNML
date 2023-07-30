@@ -67,9 +67,9 @@ By default, you have a total of 28 pre-built tags that can be parsed by the XVNM
 Out of all of these valid tags, Proxy and Source are Root Tags. This means whenever you type your XVNMLObj instance and access the root, it'll either be Proxy or Source, depending on how the file was structured.
 A Proxy file is always your main file, and is always read first. However, a Source is a file that can be used to introduce modularity into your projects. For example, the screenshot below shows that we’re creating a Cast element called Hana, and the source of that data is in “Hana\Hana.cast.xvnml”
 
-![Screenshot 2023-06-25 151133](https://github.com/Miijii-Kaichou/XVNML/assets/46007223/6dafc1c1-4072-4934-9d24-125372b8b734)
+![Screenshot 2023-06-25 151133](https://user-images.githubusercontent.com/46007223/249027161-6dafc1c1-4072-4934-9d24-125372b8b734.png)
 
-![Screenshot 2023-06-25 151258](https://github.com/Miijii-Kaichou/XVNML/assets/46007223/5a2f9c56-0191-4543-a827-64e6e5f50137)
+![Screenshot 2023-06-25 151258](https://user-images.githubusercontent.com/46007223/249027223-5a2f9c56-0191-4543-a827-64e6e5f50137.png)
 
 By utilizing Source files, you can reduce the number of lines in your proxy file. It’s one of the most important best practices of using XVNML in your development process.
 
