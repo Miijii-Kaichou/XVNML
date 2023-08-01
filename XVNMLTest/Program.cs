@@ -35,6 +35,8 @@ static partial class Program
 
         while (finished == false)
             continue;
+
+        DialogueWriter.ShutDown();
     }
 
     private static void PrintMainMenu()
@@ -78,13 +80,13 @@ static partial class Program
         DialogueScript script = MainDom.Root?.GetElement<Dialogue>(DialogueList[dialogueIndex])?.dialogueOutput!;
 
         DialogueWriter.AllocateChannels(1);
-        DialogueWriter.OnPrompt![0] += DisplayPrompts;
-        DialogueWriter.OnPromptResonse![0] += RespondToPrompt;
-        DialogueWriter.OnLineSubstringChange![0] += UpdateConsole;
-        DialogueWriter.OnNextLine![0] += ClearConsole;
-        DialogueWriter.OnLinePause![0] += MoveNext;
-        DialogueWriter.OnDialogueFinish![0] += Finish;
-        DialogueWriter.Write(script);
+        DialogueWriter.OnPrompt![0] = DisplayPrompts;
+        DialogueWriter.OnPromptResonse![0] = RespondToPrompt;
+        DialogueWriter.OnLineSubstringChange![0] = UpdateConsole;
+        DialogueWriter.OnNextLine![0] = ClearConsole;
+        DialogueWriter.OnLinePause![0] = MoveNext;
+        DialogueWriter.OnDialogueFinish![0] = Finish;
+        DialogueWriter.Write(script, 0);
     }
 
     private static void ValidateRule(string input, Regex regexRule, Action success, Action failure)
@@ -137,14 +139,6 @@ static partial class Program
     private static void Finish(DialogueWriterProcessor sender)
     {
         DialogueWriter.ShutDown();
-
-        DialogueWriter.OnPrompt![0] -= DisplayPrompts;
-        DialogueWriter.OnPromptResonse![0] -= RespondToPrompt;
-        DialogueWriter.OnLineSubstringChange![0] -= UpdateConsole;
-        DialogueWriter.OnNextLine![0] -= ClearConsole;
-        DialogueWriter.OnLinePause![0] -= MoveNext;
-        DialogueWriter.OnDialogueFinish![0] -= Finish;
-
         PrintMainMenu();
         return;
     }

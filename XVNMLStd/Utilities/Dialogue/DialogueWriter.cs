@@ -44,11 +44,11 @@ namespace XVNML.Utilities.Dialogue
         internal static int ThreadInterval { get; private set; }
         internal static bool[]? IsChannelBlocked { get; private set; }
 
+        private static bool IsInitialized = false;
+        private static bool[]? ProcessStalling;
         private static Thread? _writingThread;
         private static CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        private static bool IsInitialized = false;
         private static Timer[]? ProcessTimers;
-        private static bool[]? ProcessStalling;
         private static List<DialogueWriterProcessor?>? WriterProcessesCache;
 
         private const int DefaultTotalChannelsAllocated = 12;
@@ -74,6 +74,7 @@ namespace XVNML.Utilities.Dialogue
             totalChannels = totalChannels < SingleChannel ? DefaultTotalChannelsAllocated : totalChannels;
 
             WriterProcesses = new DialogueWriterProcessor[totalChannels];
+
             OnLineStart = new DialogueWriterCallback[totalChannels];
             OnLineSubstringChange = new DialogueWriterCallback[totalChannels];
             OnLinePause = new DialogueWriterCallback[totalChannels];
@@ -139,7 +140,7 @@ namespace XVNML.Utilities.Dialogue
 
             var newProcess = DialogueWriterProcessor.Initialize(script, channel);
             if (newProcess == null) { return; }
-
+            newProcess.processLock = new object();
             if (IsInitialized == false) Initialize();
             WriterProcesses![channel] = newProcess;
         }
@@ -168,7 +169,7 @@ namespace XVNML.Utilities.Dialogue
                 process.IsPaused = false;
 
                 OnNextLine?[process.ID]?.Invoke(process);
-                Reset(process);
+                ResetProcess(process);
             }
         }
         
@@ -260,9 +261,8 @@ namespace XVNML.Utilities.Dialogue
                 if (process.AtEnd && process.currentLine == null)
                 {
                     // That was the last dialogue
-                    Reset(process);
+                    ResetProcess(process);
                     OnDialogueFinish?[process!.ID]?.Invoke(process);
-                    process.Wipe();
                     return;
                 }
 
@@ -297,7 +297,7 @@ namespace XVNML.Utilities.Dialogue
                     {
                         ResponseStack?.Push(process.Response);
                         process.Response = null;
-                        Reset(process);
+                        ResetProcess(process);
                         OnPromptResonse?[id]?.Invoke(process);
                         process.inPrompt = false;
                         return;
@@ -391,7 +391,7 @@ namespace XVNML.Utilities.Dialogue
         }
 
 
-        private static void Reset(DialogueWriterProcessor process)
+        private static void ResetProcess(DialogueWriterProcessor process)
         {
             lock (process.processLock)
             {

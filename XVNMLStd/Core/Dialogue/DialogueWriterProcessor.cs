@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Timers;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Macros;
+using XVNML.Utilities.Diagnostics;
 using XVNML.Utilities.Dialogue;
 using XVNML.Utilities.Macros;
 
