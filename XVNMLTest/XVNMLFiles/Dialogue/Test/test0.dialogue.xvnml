@@ -2,7 +2,7 @@
 	<dialogue name::"MainTest">
 	    @ {$_initTextSpeed}Harvest Time!<
 	</dialogue>
-	<macroCache>
+	<macroCache rootScope::"Test0.Dialogue.XVNML">
 		<macro name::"_initTextSpeed" arg::100 symbol::"sts"/>
 		<macro name::"_pc">
 			<macro symbol::"pause"/>

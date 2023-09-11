@@ -10,6 +10,11 @@ namespace XVNML.Utilities.Tags
     [AssociateWithTag("macroCache", new[] { typeof(Source), typeof(Proxy) }, TagOccurance.PragmaOnce)]
     public sealed class MacroCache : TagBase
     {
+        protected override string[]? AllowedParameters { get; set; } =
+        {
+            RootScopeParameterString
+        };
+
         [JsonProperty] private Macro[]? _macros;
         public Macro[]? Macros
         {
@@ -31,13 +36,8 @@ namespace XVNML.Utilities.Tags
         }
 
         public override void OnResolve(string? fileOrigin)
-        {
+        {   
             base.OnResolve(fileOrigin);
-
-            AllowedParameters = new[]
-            {
-                ScopeParameterString
-            };
 
             _macros = Collect<Macro>();
         }

@@ -22,7 +22,7 @@
         public const string ContentParameterString = "content";
         public const string ArgParameterString = "arg";
         public const string SymbolParameterString = "symbol";
-        public const string ScopeParameterString = "scope";
+        public const string RootScopeParameterString = "rootScope";
 
         public static readonly char[] ListDelimiters =
         {
