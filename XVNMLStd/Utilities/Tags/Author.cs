@@ -1,6 +1,6 @@
 ﻿using XVNML.Core.Tags;
 
-using static XVNML.Constants;
+using static XVNML.ParameterConstants;
 
 namespace XVNML.Utilities.Tags
 {

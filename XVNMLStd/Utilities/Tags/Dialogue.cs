@@ -6,7 +6,10 @@ using XVNML.Core.Lexer;
 using XVNML.Core.Parser;
 using XVNML.Core.Tags;
 using XVNML.Utilities.Diagnostics;
-using static XVNML.Constants;
+
+using static XVNML.ParameterConstants;
+using static XVNML.FlagConstants;
+using static XVNML.DirectoryConstants;
 
 namespace XVNML.Utilities.Tags
 {
@@ -20,6 +23,8 @@ namespace XVNML.Utilities.Tags
         [JsonProperty] public string? Name { get; private set; }
         [JsonProperty] public bool DoNotDetain { get; private set; } = false;
         [JsonProperty] public bool TextSpeedControlledExternally { get; private set; } = false;
+        [JsonProperty] public bool EnableMigration { get; private set; } = false;
+        [JsonProperty] public bool EnableGroupMigration { get; private set; } = false;
 
         [JsonProperty] public Cast[]? includedCasts;
         [JsonProperty] public DialogueScript? dialogueOutput;
@@ -37,7 +42,9 @@ namespace XVNML.Utilities.Tags
             AllowedFlags = new[]
             {
                 DontDetainFlagString,
-                TextSpeedControlledExternallyFlagString
+                TextSpeedControlledExternallyFlagString,
+                EnableMigrationFlagString,
+                EnableGroupMigrationFlagString
             };
 
             base.OnResolve(fileOrigin);

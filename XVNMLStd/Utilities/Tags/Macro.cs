@@ -6,7 +6,7 @@ using XVNML.Core.Macros;
 using XVNML.Core.Tags;
 using XVNML.Utilities.Diagnostics;
 using XVNML.Utilities.Tags;
-using static XVNML.Constants;
+using static XVNML.ParameterConstants;
 
 namespace XVNML.Utilities.Tags
 {
@@ -16,6 +16,9 @@ namespace XVNML.Utilities.Tags
         [JsonProperty] public object? arg;
         [JsonProperty] public string? symbol;
         [JsonProperty] public Type? type;
+
+        [JsonProperty] private readonly string? _rootScope;
+        public string? RootScope => _rootScope;
 
         [JsonProperty] private Macro[]? _childMacros;
         public Macro[]? ChildMacros => _childMacros;
@@ -45,11 +48,11 @@ namespace XVNML.Utilities.Tags
                 // Create ArgDataSets
                 List<(object value, Type type)> argDataSet = new List<(object value, Type type)>();
                 foreach(var arg in _macroArguments) argDataSet.Add((arg.ArgData.Value, arg.ArgData.Type));
-                DefinedMacrosCollection.AddToMacroCache((TagName!,parentTag?.TagName), symbol, argDataSet.ToArray(), null);
+                DefinedMacrosCollection.AddToMacroCache((TagName!,parentTag?.TagName), symbol, argDataSet.ToArray(), null, _rootScope);
                 return;
             }
 
-            DefinedMacrosCollection.AddToMacroCache((TagName, parentTag?.TagName)!, symbol, new[] { (arg, arg.DetermineValueType()) }!, _childMacros);
+            DefinedMacrosCollection.AddToMacroCache((TagName, parentTag?.TagName)!, symbol, new[] { (arg, arg.DetermineValueType()) }!, _childMacros, _rootScope);
         }
     }
 }

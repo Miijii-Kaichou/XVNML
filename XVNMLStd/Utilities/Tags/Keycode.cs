@@ -2,7 +2,7 @@
 using System;
 using XVNML.Core.Tags;
 using XVNML.Input.Enums;
-using static XVNML.Constants;
+using static XVNML.ParameterConstants;
 
 namespace XVNML.Utilities.Tags
 {

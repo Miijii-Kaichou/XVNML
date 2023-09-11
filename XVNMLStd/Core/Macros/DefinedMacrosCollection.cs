@@ -13,14 +13,14 @@ namespace XVNML.Core.Macros
         public static bool IsInitialized { get; private set; }
         
         public static SortedDictionary<string, List<MacroAttribute>>? ValidMacros { get; private set; }
-        public static SortedDictionary<(string, string?), (string symbol, (object arg, Type type)[] argData, Macro[] children)>? CachedMacros { get; private set; }
+        public static SortedDictionary<(string, string?), (string symbol, (object arg, Type type)[] argData, Macro[] children, string? rootScope)>? CachedMacros { get; private set; }
 
         public static void ManifestMacros()
         {
             if (IsInitialized) return;
 
             ValidMacros = new SortedDictionary<string, List<MacroAttribute>>();
-            CachedMacros = new SortedDictionary<(string, string?), (string symbol, (object arg, Type type)[] argData, Macro[] children)>();
+            CachedMacros = new SortedDictionary<(string, string?), (string symbol, (object arg, Type type)[] argData, Macro[] children, string? rootScope)>();
 
             Type[] libraryTypes;
 
@@ -34,14 +34,14 @@ namespace XVNML.Core.Macros
             IsInitialized = true;
         }
 
-        internal static void AddToMacroCache((string macroName, string? macroParent) macroRef, string validSymbol, (object arg, Type type)[] argDataSet, Macro[]? children)
+        internal static void AddToMacroCache((string macroName, string? macroParent) macroRef, string validSymbol, (object arg, Type type)[] argDataSet, Macro[]? children, string? rootScope)
         {
             if (CachedMacros?.ContainsKey(macroRef) == true)
             {
                 var countOfExistingMacro = CachedMacros.Where(t => t.Key.Item1.Contains(macroRef.macroName) && t.Key.Item1.Contains("[unnamed]") && t.Key.Item2 == macroRef.macroParent).Count();
-                macroRef.macroName = $"{macroRef.macroName}({countOfExistingMacro})[unnamed]";
+                macroRef.macroName = $"{macroRef.macroName}({countOfExistingMacro})<{rootScope}>[unnamed]";
             };
-            CachedMacros!.Add(macroRef, (validSymbol, argDataSet, children)!);
+            CachedMacros!.Add(macroRef, (validSymbol, argDataSet, children, rootScope)!);
         }
 
         internal static string? GetParentOf(string macroName)

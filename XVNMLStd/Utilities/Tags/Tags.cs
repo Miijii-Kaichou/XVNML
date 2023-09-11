@@ -3,7 +3,8 @@ using System;
 using System.Linq;
 using XVNML.Core.Tags;
 
-using static XVNML.Constants;
+using static XVNML.ParameterConstants;
+using static XVNML.FlagConstants;
 
 namespace XVNML.Utilities.Tags
 {

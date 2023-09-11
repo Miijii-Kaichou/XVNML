@@ -28,7 +28,8 @@ static partial class Program
             MainDom = dom;
 
             Console.OutputEncoding = Encoding.UTF8;
-           
+            DialogueWriter.AllocateChannels(1);
+            AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
         });
 
         PrintMainMenu();
@@ -39,12 +40,18 @@ static partial class Program
         DialogueWriter.ShutDown();
     }
 
+    private static void CurrentDomain_ProcessExit(object? sender, EventArgs e)
+    {
+        finished = true;
+        DialogueWriter.ShutDown();
+    }
+
     private static void PrintMainMenu()
     {
         Console.Clear();
         Console.WriteLine("Type in which dialogue you want to run...");
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
 
         for (int i = 0; i < DialogueList.Length+1; i++)
         {
@@ -79,7 +86,6 @@ static partial class Program
 
         DialogueScript script = MainDom.Root?.GetElement<Dialogue>(DialogueList[dialogueIndex])?.dialogueOutput!;
 
-        DialogueWriter.AllocateChannels(1);
         DialogueWriter.OnPrompt![0] = DisplayPrompts;
         DialogueWriter.OnPromptResonse![0] = RespondToPrompt;
         DialogueWriter.OnLineSubstringChange![0] = UpdateConsole;
@@ -138,7 +144,6 @@ static partial class Program
 
     private static void Finish(DialogueWriterProcessor sender)
     {
-        DialogueWriter.ShutDown();
         PrintMainMenu();
         return;
     }

@@ -66,7 +66,7 @@ namespace XVNML.Utilities.Dialogue
         public static void AllocateChannels(int totalChannels = DefaultTotalChannelsAllocated)
         {
             if (IsInitialized) return;
-            CreateAnew(totalChannels);
+             CreateAnew(totalChannels);
         }
 
         private static void  CreateAnew(int totalChannels)
@@ -143,14 +143,15 @@ namespace XVNML.Utilities.Dialogue
             newProcess.processLock = new object();
             if (IsInitialized == false) Initialize();
             WriterProcesses![channel] = newProcess;
+            WriterProcessesCache = null;
         }
 
         public static void ShutDown()
         {
-            IsInitialized = false;
             WriterProcesses = null;
             WriterProcessesCache = null;
             cancellationTokenSource.Cancel();
+            IsInitialized = false;
         }
 
         public static void MoveNextLine(DialogueWriterProcessor process)
@@ -262,6 +263,7 @@ namespace XVNML.Utilities.Dialogue
                 {
                     // That was the last dialogue
                     ResetProcess(process);
+                    WriterProcesses![id] = null;
                     OnDialogueFinish?[process!.ID]?.Invoke(process);
                     return;
                 }

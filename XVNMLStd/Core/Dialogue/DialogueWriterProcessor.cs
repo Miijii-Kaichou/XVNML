@@ -57,7 +57,6 @@ namespace XVNML.Core.Dialogue
         private CastInfo? _currentCastInfo;
         private bool _lastProcessWasClosing;
 
-        private SceneInfo? _currentSceneInfo = null;
         private int _jumpIndexValue = -1;
 
         //Cast Data
@@ -176,6 +175,7 @@ namespace XVNML.Core.Dialogue
             delayTimer = null;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         internal void ChangeCastVoice(MacroCallInfo info, string voiceName)
         {
             CurrentCastInfo = new CastInfo()
@@ -186,6 +186,7 @@ namespace XVNML.Core.Dialogue
             };
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         internal void ChangeCastExpression(MacroCallInfo info, string expressionName)
         {
             CurrentCastInfo = new CastInfo()
@@ -269,8 +270,8 @@ namespace XVNML.Core.Dialogue
         {
             if (currentLine == null) return;
             inPrompt = false;
-            var prompt = currentLine.PromptContent[response];
-            lineIndex = prompt.sp - 1;
+            var (sp, _) = currentLine.PromptContent[response];
+            lineIndex = sp - 1;
             Response = response;
         }
 
