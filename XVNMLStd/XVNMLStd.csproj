@@ -15,11 +15,11 @@
 		<Copyright>2019 Enjyoii</Copyright>
 		<Description>A utility tool to interact with XVNML files.</Description>
 		<IncludeSymbols>False</IncludeSymbols>
-		<AssemblyVersion>1.0.2.1</AssemblyVersion>
+		<AssemblyVersion>1.0.2.11</AssemblyVersion>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<FileVersion>1.0.2.1-pre-release</FileVersion>
+		<FileVersion>1.0.2.11-pre-release</FileVersion>
 		<PackAsTool>False</PackAsTool>
-		<Version>1.0.2.1-pre-release</Version>
+		<Version>1.0.2.11-pre-release</Version>
 		<PackageLicenseFile>LICENSE.MD</PackageLicenseFile>
 		<AssemblyOriginatorKeyFile>C:\Users\tclte\Desktop\xvsnk.snk</AssemblyOriginatorKeyFile>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
@@ -32,40 +32,6 @@
 		<RootAllApplicationAssemblies>true</RootAllApplicationAssemblies>
 		<PackageIcon>xvnml_file_icon.png</PackageIcon>
 		<PackageTags>C#;.NET Standard 2.1;Utility;Mark-Up;Visual Novel;Dialogue System</PackageTags>
-		<PackageReleaseNotes>
-			Pre-Release Version 1.0.2.1 for XVNML is now available! (September 2023 Update)
-
-			Let's learn what's new, what's been patched, and everything in between.
-
-			September 13th, 2023
-
-			New
-			* You are allowed to extend the use of pre-built tags using the Override Feature.
-			* New Rich-Text Macro Controls. Those includes the following features:
-			- Bold Macro (bold)
-			- Bold End Macro (bold_end)
-			- Color Macro (color::{string})
-			- Color End Macro (color_end)
-			- Emphasis Macro (emphasis)
-			- Emphasis End Macro (emphasis_end)
-			- Font Macro (font::{string})
-			- Font End Macro (font_end)
-			- Font Size Macro (size::{int})
-			- Font Size End Macro (size_end)
-			- Sprite Macro (sprite::{name})
-			- StrikeThrough Macro (strikethrough)
-			- Strike Through End Macro (strikethrough_end)
-			- Style Macro (style::{string})
-			- Underline Macro (underline)
-			- Underline End Macro (underline_end)
-			* Those were particularly added to support Unity, but should be compatible for any text box in any C# project (WPF, WinForm, UWP, etc.)
-
-			Coming Soon
-			* A new parameter for MacroCaches that allows to restrict where they are called.
-			* The ability to pass through arguments for a macro defined in a MacroCache element, effectively creating your own custom macros inside XVNML itself as opposed to creating one via a C# Script.
-			* A Unity package with XVNML integrated!
-			* The use of the Variable Control Macros (declare, get, and set).
-		</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

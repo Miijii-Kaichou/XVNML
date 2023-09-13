@@ -59,7 +59,7 @@
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
-    "version": "1.0.2.1-pre-release",
+    "version": "1.0.2.11-pre-release",
     "restore": {
       "projectUniqueName": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\XVNMLStd.csproj",
       "projectName": "XVNML",
