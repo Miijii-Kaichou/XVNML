@@ -10,11 +10,6 @@ namespace XVNML.Utilities.Tags
     [AssociateWithTag("macroCache", new[] { typeof(Source), typeof(Proxy) }, TagOccurance.PragmaOnce)]
     public sealed class MacroCache : TagBase
     {
-        protected override string[]? AllowedParameters { get; set; } =
-        {
-            RootScopeParameterString
-        };
-
         [JsonProperty] private Macro[]? _macros;
         public Macro[]? Macros
         {
@@ -27,8 +22,7 @@ namespace XVNML.Utilities.Tags
                         (macro.TagName!, macro.parentTag?.TagName),
                         macro.symbol!,
                         new[] { (macro.arg, macro.type) }!,
-                        macro.ChildMacros,
-                        macro.RootScope
+                        macro.ChildMacros
                     );
                 }
                 return _macros;

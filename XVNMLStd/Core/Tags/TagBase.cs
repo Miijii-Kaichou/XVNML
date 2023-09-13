@@ -36,7 +36,9 @@ namespace XVNML.Core.Tags
                     return name;
                 }
 
-                return GetType().Name;
+                _tagName ??= TagTypeName;
+
+                return _tagName;
             }
             internal set
             {

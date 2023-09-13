@@ -48,11 +48,11 @@ namespace XVNML.Utilities.Tags
                 // Create ArgDataSets
                 List<(object value, Type type)> argDataSet = new List<(object value, Type type)>();
                 foreach(var arg in _macroArguments) argDataSet.Add((arg.ArgData.Value, arg.ArgData.Type));
-                DefinedMacrosCollection.AddToMacroCache((TagName!,parentTag?.TagName), symbol, argDataSet.ToArray(), null, _rootScope);
+                DefinedMacrosCollection.AddToMacroCache((TagName!,parentTag?.TagName), symbol, argDataSet.ToArray(), null);
                 return;
             }
 
-            DefinedMacrosCollection.AddToMacroCache((TagName, parentTag?.TagName)!, symbol, new[] { (arg, arg.DetermineValueType()) }!, _childMacros, _rootScope);
+            DefinedMacrosCollection.AddToMacroCache((TagName, parentTag?.TagName)!, symbol, new[] { (arg, arg.DetermineValueType()) }!, _childMacros);
         }
     }
 }

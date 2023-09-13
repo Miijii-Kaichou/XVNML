@@ -12,6 +12,36 @@
                 </tags>
         </metadata>
 
+        <macroCache>
+                <macro name::"_think">
+                   <macro arg::500 symbol::"delay"/>
+                   <macro arg::"." symbol::"insert"/>
+                   <macro arg::500 symbol::"delay"/>
+                   <macro arg::"." symbol::"insert"/>
+                   <macro arg::500 symbol::"delay"/>
+                   <macro arg::"." symbol::"insert"/>
+                </macro>
+                <macro name::"_awkwardPause">
+                    <macro arg::500 symbol::"delay"/>
+                    <macro arg::"." symbol::"insert"/>
+                    <macro arg::500 symbol::"delay"/>
+                    <macro arg::"." symbol::"insert"/>
+                    <macro arg::500 symbol::"delay"/>
+                    <macro arg::"." symbol::"insert"/>
+                    <macro arg::500 symbol::"delay"/>
+                    <macro arg::"." symbol::"insert"/>
+                    <macro arg::500 symbol::"delay"/>
+                    <macro arg::"." symbol::"insert"/>
+                    <macro arg::500 symbol::"delay"/>
+                    <macro arg::"." symbol::"insert"/>
+                    <macro arg::1000 symbol::"delay"/>
+                </macro>
+                <macro name::"_defaultTextSpeed">
+                    <macro arg::40 symbol::"set_text_speed"/>
+                    <macro symbol::"pass"/>
+                </macro>
+        </macroCache>
+
         <castDefinitions>
                 <cast name::"Raven"     src::"Raven/Raven.cast.xvnml"       />
                 <cast name::"Maple"     src::"Maple/Maple.cast.xvnml"       />
@@ -42,39 +72,7 @@
                 <keycode name::"_navRight"             vkey::Right          purpose::NAVIGATION_RIGHT/>
         </keycodeDefinitions>
 
-        <macroCache>
-                <macro name::"_runTest" symbol::"declare">
-                    <arg value::"love"/>
-                    <arg value::200/>
-                </macro>
-                <macro name::"_think">
-                   <macro arg::500 symbol::"delay"/>
-                   <macro arg::"." symbol::"insert"/>
-                   <macro arg::500 symbol::"delay"/>
-                   <macro arg::"." symbol::"insert"/>
-                   <macro arg::500 symbol::"delay"/>
-                   <macro arg::"." symbol::"insert"/>
-                </macro>
-                <macro name::"_awkwardPause">
-                    <macro arg::500 symbol::"delay"/>
-                    <macro arg::"." symbol::"insert"/>
-                    <macro arg::500 symbol::"delay"/>
-                    <macro arg::"." symbol::"insert"/>
-                    <macro arg::500 symbol::"delay"/>
-                    <macro arg::"." symbol::"insert"/>
-                    <macro arg::500 symbol::"delay"/>
-                    <macro arg::"." symbol::"insert"/>
-                    <macro arg::500 symbol::"delay"/>
-                    <macro arg::"." symbol::"insert"/>
-                    <macro arg::500 symbol::"delay"/>
-                    <macro arg::"." symbol::"insert"/>
-                    <macro arg::1000 symbol::"delay"/>
-                </macro>
-                <macro name::"_defaultTextSpeed">
-                    <macro arg::40 symbol::"set_text_speed"/>
-                    <macro symbol::"pass"/>
-                </macro>
-        </macroCache>
+        
         <dialogue name::"MainTest" src::"Test/test0.dialogue.xvnml"/>    
         <dialogue name::"Osaka's Dream" src::"Test/test1.dialogue.xvnml"/>
 </proxy>
