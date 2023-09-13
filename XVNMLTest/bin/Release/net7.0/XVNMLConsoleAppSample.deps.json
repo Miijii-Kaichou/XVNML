@@ -8,8 +8,8 @@
     ".NETCoreApp,Version=v7.0": {
       "XVNMLConsoleAppSample/1.0.0": {
         "dependencies": {
-          "XVNML": "1.0.2-pre-release",
-          "XVNML.Reference": "1.0.2.0"
+          "XVNML": "1.0.2.1-pre-release",
+          "XVNML.Reference": "1.0.2.1"
         },
         "runtime": {
           "XVNMLConsoleAppSample.dll": {}
@@ -23,7 +23,7 @@
           }
         }
       },
-      "XVNML/1.0.2-pre-release": {
+      "XVNML/1.0.2.1-pre-release": {
         "dependencies": {
           "Newtonsoft.Json": "13.0.3"
         },
@@ -31,11 +31,11 @@
           "XVNML.dll": {}
         }
       },
-      "XVNML.Reference/1.0.2.0": {
+      "XVNML.Reference/1.0.2.1": {
         "runtime": {
           "XVNML.dll": {
-            "assemblyVersion": "1.0.2.0",
-            "fileVersion": "1.0.2.0"
+            "assemblyVersion": "1.0.2.1",
+            "fileVersion": "1.0.2.1"
           }
         }
       }
@@ -54,12 +54,12 @@
       "path": "newtonsoft.json/13.0.3",
       "hashPath": "newtonsoft.json.13.0.3.nupkg.sha512"
     },
-    "XVNML/1.0.2-pre-release": {
+    "XVNML/1.0.2.1-pre-release": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "XVNML.Reference/1.0.2.0": {
+    "XVNML.Reference/1.0.2.1": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

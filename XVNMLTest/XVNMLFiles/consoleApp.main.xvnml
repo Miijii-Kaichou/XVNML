@@ -75,6 +75,6 @@
                     <macro symbol::"pass"/>
                 </macro>
         </macroCache>
-        <dialogue #override name::"MainTest" src::"Test/test0.dialogue.xvnml" #userDefinedFlag/>    
-        <dialogue #override name::"Osaka's Dream" src::"Test/test1.dialogue.xvnml" userDefinedTag::true/>
+        <dialogue name::"MainTest" src::"Test/test0.dialogue.xvnml"/>    
+        <dialogue name::"Osaka's Dream" src::"Test/test1.dialogue.xvnml"/>
 </proxy>
