@@ -24,7 +24,12 @@ At it's current stage, these are the following states that this project is in:
 
 ## How to Get Started
 You can get started with using XVNML in a variety of ways. Since XVNML was made using C#, you can apply it to any .NET Application you want, whether that'd be on a C# Console, WPF, or ASP.NET application.
-You can even integrated into Unity, and make it part of your workflow. All it takes is adding the XVNML NuGet package to your project, and you're ready to go! For starters, you can reference off a C# Console Application sample [here](https://github.com/Miijii-Kaichou/XVNML/tree/main/XVNMLTest)! You may also want to check out an article I wrote on Medium that walks you through how to install XVNML and integrated in both a C# Console Application and a Unity project [here](https://medium.com/@miijii/get-started-using-xvnml-cc6dc478fc8e)!
+You can even integrated into Unity, and make it part of your workflow. All it takes is adding the XVNML NuGet package to your project, and you're ready to go! For starters, you can reference off a C# Console Application sample [here](https://github.com/Miijii-Kaichou/XVNML/tree/main/XVNMLTest)! You may also want to check out an article I wrote on Medium that walks you through how to install XVNML and integrated in both a C# Console Application and a Unity project [here](https://medium.com/@miijii/get-started-using-xvnml-
+cc6dc478fc8e)!
+
+## Donations
+
+We'll need your help to make this language unlock its slumbering potential! Supporting us makes sure that we have funds to not only incorporate other technologies with XVNML (such as with the Unity Engine), but it'll also make life a lot easier as we're doing it. [Click here](https://www.paypal.com/paypalme/MiijiiKaichou) to send a donation! A little will mark a large difference!
 
 ## How to Use XVNML
 
