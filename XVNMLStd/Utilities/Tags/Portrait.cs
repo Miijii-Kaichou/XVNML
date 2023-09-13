@@ -56,7 +56,7 @@ namespace XVNML.Utilities.Tags
             catch
             {
                 throw new Exception($"Could not find reference called {img?.ToString()!}" +
-                    $": img {imageDefinitions!.tagTypeName}");
+                    $": img {imageDefinitions!._tagName}");
             }
         }
     }

@@ -87,7 +87,7 @@ namespace XVNML.Utilities.Tags
             catch
             {
                 throw new Exception($"Could not find reference called {GetParameter(ImageParameterString)}" +
-                    $"img {source!.tagTypeName}");
+                    $"img {source!._tagName}");
             }
         }
     }

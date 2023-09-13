@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using XVNML.Core.Enums;
 using XVNML.Core.Extensions;
 using XVNML.Core.Parser;
+using XVNML.Core.Tags.UserOverrides;
 
 
 namespace XVNML.Core.Tags
@@ -13,7 +15,16 @@ namespace XVNML.Core.Tags
     {
         protected TagFormRestrictionMode TagFormRestrictionMode { get; } = TagFormRestrictionMode.None;
 
-        public string? tagTypeName;
+        public string? _tagName;
+
+        public string? TagTypeName
+        {
+            get
+            {
+                return GetType().Name;
+            }
+        }
+
         [JsonProperty]
         public string? TagName
         {
@@ -25,10 +36,11 @@ namespace XVNML.Core.Tags
                     return name;
                 }
 
-                return tagTypeName;
-            } internal set
+                return GetType().Name;
+            }
+            internal set
             {
-                tagTypeName = value;
+                _tagName = value;
             }
         }
 
@@ -89,6 +101,11 @@ namespace XVNML.Core.Tags
             "name",
             "altNames",
             "id"
+        };
+
+        private readonly string[] DefaultAllowedFlags = new string[1]
+        {
+            "override"
         };
 
         public object? this[ReadOnlySpan<char> name]
@@ -227,7 +244,7 @@ namespace XVNML.Core.Tags
         /// </summary>
         public virtual void OnResolve(string? fileOrigin)
         {
-            var validTagType = DefinedTagsCollection.ValidTagTypes![tagTypeName!];
+            var validTagType = DefinedTagsCollection.ValidTagTypes![_tagName!];
             var config = validTagType.Item2;
             var appearanceLocation = validTagType.Item3;
             var currentFile = validTagType.Item4 ?? ParserRef!.fileTarget;
@@ -245,7 +262,7 @@ namespace XVNML.Core.Tags
 
                 validTagType.Item3.Add(parentTag!);
                 validTagType.Item4 = ParserRef!.fileTarget!;
-                DefinedTagsCollection.ValidTagTypes[tagTypeName!] = validTagType;
+                DefinedTagsCollection.ValidTagTypes[_tagName!] = validTagType;
             }
 
             if (config.TagOccurance == TagOccurance.PragmaOnce)
@@ -260,14 +277,14 @@ namespace XVNML.Core.Tags
 
                 validTagType.Item3.Add(parentTag!);
                 validTagType.Item4 = ParserRef!.fileTarget!;
-                DefinedTagsCollection.ValidTagTypes[tagTypeName!] = validTagType;
+                DefinedTagsCollection.ValidTagTypes[_tagName!] = validTagType;
             }
 
             //Check that the Parent tag matches the depending tag
             //If there is a parent tag, but doesn't match the depending tag
             if (parentTag != null && config.DependingTags != null && config.DependingTags.Contains(parentTag.GetType().Name) == false)
             {
-                msg = $"Invalid Depending Tag {parentTag}. The tag {tagTypeName} depends on {config.DependingTags.JoinStringArray()}: {ParserRef!.fileTarget}";
+                msg = $"Invalid Depending Tag {parentTag}. The tag {_tagName} depends on {config.DependingTags.JoinStringArray()}: {ParserRef!.fileTarget}";
                 Console.WriteLine(msg);
                 Complain(msg);
                 return;
@@ -276,7 +293,7 @@ namespace XVNML.Core.Tags
             //If there is no parent tag, but it depends on a tag
             if (parentTag == null && config.DependingTags != null)
             {
-                msg = $"The tag {tagTypeName} depends on {config.DependingTags}, but there is nothing.: {ParserRef!.fileTarget}";
+                msg = $"The tag {_tagName} depends on {config.DependingTags}, but there is nothing.: {ParserRef!.fileTarget}";
                 Console.WriteLine(msg);
                 Complain(msg);
                 return;
@@ -320,17 +337,23 @@ namespace XVNML.Core.Tags
                 AllowedParameters = DefaultAllowedParameters;
             }
 
-            for (int i = 0; i < _parameterInfo!.paramters.Keys.Count; i++)
+            for (int i = 0; i < _parameterInfo!.parameters.Keys.Count; i++)
             {
-                var currentSymbol = _parameterInfo.paramters.Keys.ToArray()[i];
+                var currentSymbol = _parameterInfo.parameters.Keys.ToArray()[i];
                 if (AllowedParameters.Contains(currentSymbol) == false
-                    && DefaultAllowedParameters.Contains(currentSymbol) == false)
+                && DefaultAllowedParameters.Contains(currentSymbol) == false)
                 {
+                    Type instanceType = GetType();
+                    if (_parameterInfo!.flagParameters.Contains(DefaultAllowedFlags.First())
+                    && UserOverrideManager.AnyParameterOverrides
+                    && IsTagSubjectedToParameterOverride(currentSymbol, instanceType))
+                        continue;
+
                     Complain($"{currentSymbol} is not an allowed parameter" +
-                        $" for tag \"{TagName}\" (typeof \"{tagTypeName}\")");
+                    $" for tag \"{TagName}\" (typeof \"{TagTypeName}\")");
+
                     return;
                 }
-
             }
         }
 
@@ -341,16 +364,48 @@ namespace XVNML.Core.Tags
             for (int i = 0; i < _parameterInfo!.flagParameters.Count; i++)
             {
                 var currentSymbol = _parameterInfo.flagParameters[i];
-                if (AllowedFlags.Contains(currentSymbol) == false)
+                if (AllowedFlags.Contains(currentSymbol) == false
+                && DefaultAllowedFlags.Contains(currentSymbol) == false)
                 {
+                    Type instanceType = GetType();
+                    if (_parameterInfo!.flagParameters.Contains(DefaultAllowedFlags.First())
+                    && UserOverrideManager.AnyFlagOverrides
+                    && IsTagSubjectedToFlagOverride(currentSymbol, instanceType))
+                        continue;
+
                     Complain($"{currentSymbol} is not an allowed flag" +
-                        $" for tag \"{TagName}\" (typeof \"{tagTypeName}\")");
+                    $" for tag \"{TagName}\" (typeof \"{TagTypeName}\")");
+
                     return;
                 }
             }
             _allowFlagsValidated = true;
         }
 
+
+        private bool IsTagSubjectedToParameterOverride(string? currentSymbol, Type instanceType)
+        {
+            if (UserOverrideManager.AllowParameters.ContainsKey((instanceType, TagName)) == false)
+            {
+                bool DoesGlobalParameterOverrideExists = UserOverrideManager.AllowParameters.ContainsKey((instanceType, instanceType.Name));
+                if (DoesGlobalParameterOverrideExists == false) return DoesGlobalParameterOverrideExists;
+                return UserOverrideManager.AllowParameters[(instanceType, instanceType.Name)]?.Contains(currentSymbol!) == DoesGlobalParameterOverrideExists;
+            }
+
+            return UserOverrideManager.AllowParameters[(instanceType, TagName)]?.Contains(currentSymbol!) == true;
+        }
+
+        private bool IsTagSubjectedToFlagOverride(string? currentSymbol, Type instanceType)
+        {
+            if (UserOverrideManager.AllowFlags.ContainsKey((instanceType, TagName)) == false)
+            {
+                bool DoesGlobalFlagParameterOverrideExists = UserOverrideManager.AllowFlags.ContainsKey((instanceType, instanceType.Name));
+                if (DoesGlobalFlagParameterOverrideExists == false) return DoesGlobalFlagParameterOverrideExists;
+                return UserOverrideManager.AllowFlags[(instanceType, instanceType.Name)]?.Contains(currentSymbol!) == DoesGlobalFlagParameterOverrideExists;
+            }
+
+            return UserOverrideManager.AllowFlags[(instanceType, TagName)]?.Contains(currentSymbol!) == true;
+        }
 
         private void Complain(string msg)
         {

@@ -55,7 +55,7 @@ namespace XVNML.Utilities.Tags
             catch
             {
                 throw new Exception($"Could not find reference called {audio}" +
-                    $"audio {audioDefinitions!.tagTypeName}");
+                    $"audio {audioDefinitions!._tagName}");
             }
         }
     }

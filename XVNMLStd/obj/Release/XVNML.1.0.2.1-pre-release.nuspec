@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>XVNML</id>
+    <version>1.0.2.1-pre-release</version>
+    <title>XVNML</title>
+    <authors>Enjyoii</authors>
+    <license type="file">LICENSE.MD</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <icon>xvnml_file_icon.png</icon>
+    <readme>README.md</readme>
+    <description>A utility tool to interact with XVNML files.</description>
+    <releaseNotes>Pre-Release Version 1.0.2.1 for XVNML is now available! (September 2023 Update)
+
+Let's learn what's new, what's been patched, and everything in between.
+
+September 10th, 2023
+
+New
+* Standard XVNML Tags inside a XVNML file with &lt;proxy&gt; as the root are allowed to be build, and created into a .cache.json file
+
+Improvements
+
+* Changed how the MacroAttribute Functions by allowing multiple attributes on a Method Endpoint.
+* Changed all Constants regarding Parameters, Flags, and Directories as public, assisting end-users with their custom tags.
+* Added Shorthand versions of the following macros:
+ - JumpTo
+  - LeadTo
+ - New Line
+ - Tab
+ - Space
+ - Insert Asterisk
+ - Insert Ampersand
+ - Insert Back-Slash
+ - Insert Forward-Slash
+ - Insert Semicolon
+ - Insert Percent
+ - Insert Question Mark
+ - Insert Copyright
+ - Insert Register Mark
+ - Insert Bullet Style 1
+ - Insert Bullet Style 2
+ - Insert Bullet Style 3
+ - Insert Ellipsis
+ - Insert Section
+ - Insert Degree
+ - insert Plus-Minus Sign
+ - Insert Speaker Name
+ - Set Expression
+ - Set Voice
+
+Bug Fixes
+
+* Patched an issue regarding using the DialogueWriter after playing one dialogue successfully.</releaseNotes>
+    <copyright>2019 Enjyoii</copyright>
+    <tags>C# .NET Standard 2.1 Utility Mark-Up Visual Novel Dialogue System</tags>
+    <repository url="https://github.com/Miijii-Kaichou/XVNML" />
+    <dependencies>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="Newtonsoft.Json" version="13.0.3" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="E:\Documents\Repositories\C#\XVNML\XVNMLStd\bin\Release\netstandard2.1\XVNML.dll" target="lib\netstandard2.1\XVNML.dll" />
+    <file src="C:\Users\tclte\Desktop\LICENSE.MD" target="\LICENSE.MD" />
+    <file src="C:\Users\tclte\Desktop\README.md" target="\README.md" />
+    <file src="C:\Users\tclte\Desktop\xvnml_file_icon.png" target="\xvnml_file_icon.png" />
+  </files>
+</package>

@@ -5,15 +5,15 @@ namespace XVNML.Core.Tags
 {
     public class TagParameterInfo
     {
-        internal Dictionary<string, TagParameter> paramters = new Dictionary<string, TagParameter>();
+        internal Dictionary<string, TagParameter> parameters = new Dictionary<string, TagParameter>();
         internal List<string> flagParameters = new List<string>();
 
-        internal int totalParameters => paramters.Count;
+        internal int totalParameters => parameters.Count;
 
         internal TagParameter? GetParameter(string name)
         {
-            if (paramters.ContainsKey(name) == false) return null;
-            return paramters[name];
+            if (parameters.ContainsKey(name) == false) return null;
+            return parameters[name];
         }
         internal bool HasFlag(string name) => flagParameters.Contains(name);
 
@@ -21,8 +21,8 @@ namespace XVNML.Core.Tags
         {
             get
             {
-                if (paramters.ContainsKey(name!) == false) return null;
-                return paramters[name!].value;
+                if (parameters.ContainsKey(name!) == false) return null;
+                return parameters[name!].value;
             }
         }
     }

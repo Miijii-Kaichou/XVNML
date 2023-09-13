@@ -22,9 +22,6 @@ namespace XVNML.Utilities.Tags
         [JsonProperty] public SyntaxToken?[]? Script { get; private set; }
         [JsonProperty] public string? Name { get; private set; }
         [JsonProperty] public bool DoNotDetain { get; private set; } = false;
-        [JsonProperty] public bool TextSpeedControlledExternally { get; private set; } = false;
-        [JsonProperty] public bool EnableMigration { get; private set; } = false;
-        [JsonProperty] public bool EnableGroupMigration { get; private set; } = false;
 
         [JsonProperty] public Cast[]? includedCasts;
         [JsonProperty] public DialogueScript? dialogueOutput;
@@ -41,10 +38,7 @@ namespace XVNML.Utilities.Tags
 
             AllowedFlags = new[]
             {
-                DontDetainFlagString,
-                TextSpeedControlledExternallyFlagString,
-                EnableMigrationFlagString,
-                EnableGroupMigrationFlagString
+                DontDetainFlagString
             };
 
             base.OnResolve(fileOrigin);
@@ -82,7 +76,6 @@ namespace XVNML.Utilities.Tags
 
             // Flags
             DoNotDetain = HasFlag(DontDetainFlagString);
-            TextSpeedControlledExternally = HasFlag(TextSpeedControlledExternallyFlagString);
 
             AnalyzeDialogue();
         }

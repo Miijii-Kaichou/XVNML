@@ -5,6 +5,8 @@ using XVNML.Utilities.Dialogue;
 using XVNML.Utilities;
 using XVNML.Utilities.Tags;
 using System.Text.RegularExpressions;
+using XVNML.Core.Tags.UserOverrides;
+using Newtonsoft.Json;
 
 static partial class Program
 {
