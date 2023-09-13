@@ -96,14 +96,14 @@ namespace XVNML.StandardMacroLibrary
 
         [Macro("sed")]
         [Macro("strikethrough_end")]
-        private static void StrickThroughEndMacro(MacroCallInfo info)
+        private static void StrikeThroughEndMacro(MacroCallInfo info)
         {
             info.process.Append("</strikethrough>");
         }
 
         [Macro("s")]
         [Macro("strikethrough")]
-        private static void StrickThroughMacro(MacroCallInfo info)
+        private static void StrikeThroughMacro(MacroCallInfo info)
         {
             info.process.Append("<strikethrough>");
         }

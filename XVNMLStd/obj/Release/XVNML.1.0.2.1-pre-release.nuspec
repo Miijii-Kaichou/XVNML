@@ -12,46 +12,36 @@
     <description>A utility tool to interact with XVNML files.</description>
     <releaseNotes>Pre-Release Version 1.0.2.1 for XVNML is now available! (September 2023 Update)
 
-Let's learn what's new, what's been patched, and everything in between.
+			Let's learn what's new, what's been patched, and everything in between.
 
-September 10th, 2023
+			September 13th, 2023
 
-New
-* Standard XVNML Tags inside a XVNML file with &lt;proxy&gt; as the root are allowed to be build, and created into a .cache.json file
+			New
+			* You are allowed to extend the use of pre-built tags using the Override Feature.
+			* New Rich-Text Macro Controls. Those includes the following features:
+			- Bold Macro (bold)
+			- Bold End Macro (bold_end)
+			- Color Macro (color::{string})
+			- Color End Macro (color_end)
+			- Emphasis Macro (emphasis)
+			- Emphasis End Macro (emphasis_end)
+			- Font Macro (font::{string})
+			- Font End Macro (font_end)
+			- Font Size Macro (size::{int})
+			- Font Size End Macro (size_end)
+			- Sprite Macro (sprite::{name})
+			- StrikeThrough Macro (strikethrough)
+			- Strike Through End Macro (strikethrough_end)
+			- Style Macro (style::{string})
+			- Underline Macro (underline)
+			- Underline End Macro (underline_end)
+			* Those were particularly added to support Unity, but should be compatible for any text box in any C# project (WPF, WinForm, UWP, etc.)
 
-Improvements
-
-* Changed how the MacroAttribute Functions by allowing multiple attributes on a Method Endpoint.
-* Changed all Constants regarding Parameters, Flags, and Directories as public, assisting end-users with their custom tags.
-* Added Shorthand versions of the following macros:
- - JumpTo
-  - LeadTo
- - New Line
- - Tab
- - Space
- - Insert Asterisk
- - Insert Ampersand
- - Insert Back-Slash
- - Insert Forward-Slash
- - Insert Semicolon
- - Insert Percent
- - Insert Question Mark
- - Insert Copyright
- - Insert Register Mark
- - Insert Bullet Style 1
- - Insert Bullet Style 2
- - Insert Bullet Style 3
- - Insert Ellipsis
- - Insert Section
- - Insert Degree
- - insert Plus-Minus Sign
- - Insert Speaker Name
- - Set Expression
- - Set Voice
-
-Bug Fixes
-
-* Patched an issue regarding using the DialogueWriter after playing one dialogue successfully.</releaseNotes>
+			Coming Soon
+			* A new parameter for MacroCaches that allows to restrict where they are called.
+			* The ability to pass through arguments for a macro defined in a MacroCache element, effectively creating your own custom macros inside XVNML itself as opposed to creating one via a C# Script.
+			* A Unity package with XVNML integrated!
+			* The use of the Variable Control Macros (declare, get, and set).</releaseNotes>
     <copyright>2019 Enjyoii</copyright>
     <tags>C# .NET Standard 2.1 Utility Mark-Up Visual Novel Dialogue System</tags>
     <repository url="https://github.com/Miijii-Kaichou/XVNML" />
