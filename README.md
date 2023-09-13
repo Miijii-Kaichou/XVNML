@@ -3,6 +3,8 @@
 ![GitHub](https://img.shields.io/github/license/Miijii-Kaichou/XVNML) ![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/XVNML) ![GitHub tag (with filter)](https://img.shields.io/github/v/tag/Miijii-Kaichou/XVNML)
  ![Nuget](https://img.shields.io/nuget/dt/XVNML)
 
+![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)
+
 
 
 XVNML (formally known as X-tensible Visual Novel Markup Language), is an open-source mark-up language that can be easily paired with any game engine that requires a nice and structure way of storing Stored-Based information and dialogue. It puts together the normal mark up languages you may be used to, but adds a couple extra features (like Skriptr) to make it versitale in you game development work flow.

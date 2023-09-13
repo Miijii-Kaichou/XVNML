@@ -22,6 +22,9 @@ static partial class Program
 
     static void Main(string[] args)
     {
+        UserOverrideManager.IncludeAsAllowedFlag<Dialogue>("userDefinedFlag");
+        UserOverrideManager.IncludeAsAllowedParameter<Dialogue>("MainTest", "userDefinedTagValue");
+
         XVNMLObj.Create(@"../../../XVNMLFiles/consoleApp.main.xvnml", dom =>
         {
             if (dom == null) return;
