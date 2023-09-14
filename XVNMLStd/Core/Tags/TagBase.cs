@@ -229,14 +229,14 @@ namespace XVNML.Core.Tags
         public TagParameter? GetParameter(string parameterName)
         {
             if (_parameterInfo == null) return null;
-            if (_allowParametersValidated == false) ValidateAllowedParameters();
+            
             return _parameterInfo.GetParameter(parameterName);
         }
 
         public bool HasFlag(string flagName)
         {
             if (_parameterInfo == null) return false;
-            if (_allowFlagsValidated == false) ValidateAllowedFlags();
+            
             return _parameterInfo.HasFlag(flagName);
         }
 
@@ -246,6 +246,9 @@ namespace XVNML.Core.Tags
         /// </summary>
         public virtual void OnResolve(string? fileOrigin)
         {
+            if (_allowParametersValidated == false) ValidateAllowedParameters();
+            if (_allowFlagsValidated == false)      ValidateAllowedFlags();
+
             var validTagType = DefinedTagsCollection.ValidTagTypes![_tagName!];
             var config = validTagType.Item2;
             var appearanceLocation = validTagType.Item3;
@@ -332,16 +335,20 @@ namespace XVNML.Core.Tags
 
         private void ValidateAllowedParameters()
         {
+            if (_parameterInfo == null) return;
+
             _allowParametersValidated = true;
-            if (AllowedParameters == null ||
-                AllowedParameters.Length == 0)
+
+            if (AllowedParameters == null
+            || AllowedParameters.Length == 0)
             {
                 AllowedParameters = DefaultAllowedParameters;
             }
 
             for (int i = 0; i < _parameterInfo!.parameters.Keys.Count; i++)
             {
-                var currentSymbol = _parameterInfo.parameters.Keys.ToArray()[i];
+                string currentSymbol = _parameterInfo.parameters.Keys.ToArray()[i];
+
                 if (AllowedParameters.Contains(currentSymbol) == false
                 && DefaultAllowedParameters.Contains(currentSymbol) == false)
                 {
@@ -361,11 +368,20 @@ namespace XVNML.Core.Tags
 
         private void ValidateAllowedFlags()
         {
-            if (AllowedFlags == null || AllowedFlags.Length == 0) return;
+            if (_parameterInfo == null) return;
+
+            _allowFlagsValidated = true;
+
+            if (AllowedFlags == null
+            || AllowedFlags.Length == 0)
+            {
+                AllowedFlags = DefaultAllowedFlags;
+            }
 
             for (int i = 0; i < _parameterInfo!.flagParameters.Count; i++)
             {
-                var currentSymbol = _parameterInfo.flagParameters[i];
+                string currentSymbol = _parameterInfo.flagParameters[i];
+                
                 if (AllowedFlags.Contains(currentSymbol) == false
                 && DefaultAllowedFlags.Contains(currentSymbol) == false)
                 {

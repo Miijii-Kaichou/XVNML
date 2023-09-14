@@ -8,11 +8,11 @@ namespace XVNML.Core.Tags.UserOverrides
     /// </summary>
     public static class UserOverrideManager
     {
-        public static SortedDictionary<(Type tagType, string? identifier), List<string>> AllowParameters  { get; internal set; } 
-            = new SortedDictionary<(Type tagType, string? identifier), List<string>>();
+        public static Dictionary<(Type tagType, string? identifier), List<string>> AllowParameters  { get; internal set; } 
+            = new Dictionary<(Type tagType, string? identifier), List<string>>();
 
-        public static SortedDictionary<(Type tagType, string? identifier), List<string>> AllowFlags       { get; internal set; } 
-            = new SortedDictionary<(Type tagType, string? identifier), List<string>>();
+        public static Dictionary<(Type tagType, string? identifier), List<string>> AllowFlags       { get; internal set; } 
+            = new Dictionary<(Type tagType, string? identifier), List<string>>();
 
         public static bool AnyParameterOverrides    => AllowParameters.Count != 0;
         public static bool AnyFlagOverrides         => AllowFlags.Count != 0;

@@ -72,7 +72,9 @@
                 <keycode name::"_navRight"             vkey::Right          purpose::NAVIGATION_RIGHT/>
         </keycodeDefinitions>
 
-        
-        <dialogue name::"MainTest" src::"Test/test0.dialogue.xvnml"/>    
+        <dialogueGroup name::"testGroup">
+            <dialogue name::"SubTest" src::$nil/>
+        </dialogueGroup>
+        <dialogue #override name::"MainTest" src::"Test/test0.dialogue.xvnml" #enableMigration/>    
         <dialogue name::"Osaka's Dream" src::"Test/test1.dialogue.xvnml"/>
 </proxy>

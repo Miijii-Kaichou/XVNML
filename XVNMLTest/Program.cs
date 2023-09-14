@@ -22,7 +22,8 @@ static partial class Program
 
     static void Main(string[] args)
     {
-        UserOverrideManager.IncludeAsAllowedFlag<Dialogue>("userDefinedFlag");
+        //UserOverrideManager.IncludeAsAllowedFlag<Dialogue>("enableMigration");
+        UserOverrideManager.IncludeAsAllowedFlag<DialogueGroup>("enableMigration");
         UserOverrideManager.IncludeAsAllowedParameter<Dialogue>("MainTest", "userDefinedTagValue");
 
         XVNMLObj.Create(@"../../../XVNMLFiles/consoleApp.main.xvnml", dom =>
