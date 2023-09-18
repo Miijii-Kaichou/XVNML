@@ -86,7 +86,9 @@ namespace XVNML.Core.Tags
         public TagBase? parentTag = null;
         public object? value = new object();
         public bool isSelfClosing = false;
+        
         public bool IsResolved { get; internal set; }
+        public string? RootScope {get; internal set;}
         public TagParser? ParserRef { get; internal set; }
 
         internal TagEvaluationState tagState;

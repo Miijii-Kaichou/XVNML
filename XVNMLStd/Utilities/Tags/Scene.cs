@@ -6,6 +6,7 @@ using XVNML.Utilities.Diagnostics;
 
 using static XVNML.ParameterConstants;
 using static XVNML.DirectoryConstants;
+using XVNML.Utilities;
 
 namespace XVNML.Utilities.Tags
 {
@@ -43,6 +44,8 @@ namespace XVNML.Utilities.Tags
 
                     var target = dom?.source?.SearchElement<Scene>(TagName ?? string.Empty);
                     if (target == null) return;
+
+                    RootScope = dom?.Root?.TagName;
 
                     imgRef = target.GetParameter(ImageParameterString);
                     imageTarget = target.imageTarget;

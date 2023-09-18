@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Dialogue.Structs;
+using XVNML.Utilities.Diagnostics;
 using XVNML.Utilities.Dialogue;
 using XVNML.Utilities.Macros;
 
@@ -162,17 +163,30 @@ namespace XVNML.Core.Macros
 
         internal static void Call(string macroName, string? parent, MacroCallInfo info, int index)
         {
-           string? macroParent = parent ?? DefinedMacrosCollection.GetParentOf(macroName);
+            string? macroParent = parent ?? DefinedMacrosCollection.GetParentOf(macroName);
             string? macroRealName = macroName == "macro" ? DefinedMacrosCollection.GetRealNameFromParent(macroParent, index) : macroName;
             var data = DefinedMacrosCollection.CachedMacros?[(macroRealName, macroParent)];
             var callIndex = info.process.cursorIndex;
-            var callInfo = new MacroCallInfo() { callIndex = callIndex, process = info.process };
+            var callInfo = new MacroCallInfo() { callIndex = callIndex, process = info.process, callScope = info.callScope };
+
+
+
+            // Check if the call is within scope
+            
+            
+           if (string.IsNullOrEmpty(data?.rootScope) == false
+            && data?.rootScope?.Equals(callInfo!.callScope) == false)
+            {
+                string msg = $"Call Inconsistency! Call Scope does not match Root Scope: {macroName} ({data?.rootScope}) calling in ({callInfo!.callScope}.)";
+                XVNMLLogger.LogError(msg, callInfo, data);
+                return;
+            }
 
             // Check if macro has macro children.
             if (data?.children != null && data?.children.Length > 0)
             {
                 int i = 0;
-                foreach(var macro in data?.children)
+                foreach(var macro in data?.children!)
                 {
                     Call(macro.TagName!, macro.parentTag?.TagName, callInfo, i++);
                 }

@@ -3,7 +3,7 @@
 	    @ {$_initTextSpeed|$_think}Harvest Time!<
 	</dialogue>
 	<macroCache>
-		<macro name::"_initTextSpeed" arg::100 symbol::"sts"/>
+		<macro name::"_initTextSpeed" arg::10 symbol::"sts"/>
 		<macro name::"_pc">
 			<macro symbol::"pause"/>
 			<macro symbol::"clr"/>

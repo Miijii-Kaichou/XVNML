@@ -17,6 +17,9 @@ namespace XVNML.Utilities.Dialogue
 
     public static class DialogueWriter
     {
+        // Root Scope Identifier
+        public static string?[]? RootScopeIdentifierSet;
+
         public static DialogueWriterCallback?[]? OnLineStart;
         public static DialogueWriterCallback?[]? OnLineSubstringChange;
         public static DialogueWriterCallback?[]? OnLinePause;
@@ -73,6 +76,8 @@ namespace XVNML.Utilities.Dialogue
         {
             totalChannels = totalChannels < SingleChannel ? DefaultTotalChannelsAllocated : totalChannels;
 
+            RootScopeIdentifierSet = new string[totalChannels];
+            
             WriterProcesses = new DialogueWriterProcessor[totalChannels];
 
             OnLineStart = new DialogueWriterCallback[totalChannels];
@@ -96,6 +101,7 @@ namespace XVNML.Utilities.Dialogue
             ProcessStalling = new bool[totalChannels];
             WaitingForUnpauseCue = new bool[totalChannels];
             IsChannelBlocked = new bool[totalChannels];
+
         }
 
         public static void SetThreadInterval(int interval = DefaultInterval)
@@ -315,7 +321,7 @@ namespace XVNML.Utilities.Dialogue
                 if (CheckForRetries(process)) return;
 
                 Next(process);
-                process.currentLine?.ReadPosAndExecute(process);
+                process.currentLine?.ReadPosAndExecute(process, RootScopeIdentifierSet![process.ID]!);
                 Yield(process);
             }
         }

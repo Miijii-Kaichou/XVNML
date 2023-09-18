@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
+using System.Text;
+using XVNML.Core.Enums;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Lexer;
 using XVNML.Core.Parser;
@@ -17,8 +18,6 @@ namespace XVNML.Utilities.Tags
     [Serializable()]
     public sealed class Dialogue : TagBase
     {
-        const string _DialogueDir = DefaultDialogueDirectory;
-
         [JsonProperty] public SyntaxToken?[]? Script { get; private set; }
         [JsonProperty] public string? Name { get; private set; }
         [JsonProperty] public bool DoNotDetain { get; private set; } = false;
@@ -43,7 +42,8 @@ namespace XVNML.Utilities.Tags
 
             base.OnResolve(fileOrigin);
 
-            var source = GetParameterValue<string>(SourceParameterString);
+            DirectoryRelativity rel = GetParameterValue<DirectoryRelativity>(PathRelativityParameterString);
+            string source = GetParameterValue<string>(SourceParameterString);
 
             if (source?.ToLower() == NullParameterString)
             {
@@ -53,22 +53,31 @@ namespace XVNML.Utilities.Tags
 
             if (source != null)
             {
-                XVNMLObj.Create(fileOrigin + _DialogueDir + source!.ToString(), dom =>
+                string sourcePath = rel == DirectoryRelativity.Absolute
+                    ? source
+                    : new StringBuilder()
+                    .Append(fileOrigin)
+                    .Append(DefaultDialogueDirectory)
+                    .Append(source)
+                    .ToString()!;
+
+                XVNMLObj.Create(sourcePath, dom =>
                 {
                     if (dom == null) return;
                     var target = dom?.source?.SearchElement<Dialogue>(TagName ?? string.Empty);
                     if (target == null) return;
                     value = target.value;
                     TagName = target.TagName;
-                    Configure();
+                    RootScope = dom?.Root?.TagName;
+                    ProcessData();
                 });
                 return;
             }
 
-            Configure();
+            ProcessData();
         }
 
-        private void Configure()
+        private void ProcessData()
         {
             if (value == null) return;
             Script = (SyntaxToken[])value!;

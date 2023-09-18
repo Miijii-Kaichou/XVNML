@@ -152,6 +152,7 @@ namespace XVNML.Core.Parser
                     _Current.Type == TokenType.SelfTag;
 
                 if (areTags) EvaluateTags(ref token);
+
                 continue;
             }
 
@@ -243,6 +244,7 @@ namespace XVNML.Core.Parser
                             }
 
                             _tagStackFrame.Push(newTag);
+
                             continue;
                         }
 
@@ -412,6 +414,8 @@ namespace XVNML.Core.Parser
 
             var dirInfo = new DirectoryInfo(fileTarget!);
             var fileOrigin = dirInfo.Parent?.ToString();
+
+            top.RootScope ??= _tagStackFrame.Last().TagName;
             top.ParserRef = this;
             top.OnResolve(fileOrigin);
 

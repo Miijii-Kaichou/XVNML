@@ -36,14 +36,14 @@ namespace XVNML.Core.Dialogue
         [JsonProperty] internal CastInfo? InitialCastInfo { get; set; }
         [JsonProperty] internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
 
-        internal void ReadPosAndExecute(DialogueWriterProcessor process)
+        internal void ReadPosAndExecute(DialogueWriterProcessor process, string rootScope = "")
         {
             lock (process.processLock)
             {
                 macroInvocationList
                 .Where(macro => macro.blockPosition.Equals(process.cursorIndex))
                 .ToList()
-                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.cursorIndex}));
+                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.cursorIndex, callScope = rootScope}));
             }
         }
 

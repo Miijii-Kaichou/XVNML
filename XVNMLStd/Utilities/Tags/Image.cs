@@ -11,7 +11,7 @@ namespace XVNML.Utilities.Tags
     [AssociateWithTag("image", new[] { typeof(Source), typeof(ImageDefinitions) }, TagOccurance.Multiple)]
     public sealed class Image : TagBase
     {
-        [JsonProperty] internal DirectoryRelativity relativity;
+        [JsonProperty] private DirectoryRelativity relativity;
         [JsonProperty] internal string? imagePath;
         [JsonProperty] internal byte[]? data;
 

@@ -6,5 +6,6 @@ namespace XVNML.Utilities.Macros
     {
         public int callIndex;
         public DialogueWriterProcessor process;
+        public string? callScope;
     }
 }

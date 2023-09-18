@@ -1,0 +1,31 @@
+﻿<source name::"Main.Macro.Cache.XVNML">
+	<macroCache name::"main" rootScope::"Test1.Dialogue.XVNML">
+		<macro name::"_think">
+            <macro arg::500 symbol::"delay"/>
+            <macro arg::"." symbol::"insert"/>
+            <macro arg::500 symbol::"delay"/>
+            <macro arg::"." symbol::"insert"/>
+            <macro arg::500 symbol::"delay"/>
+            <macro arg::"." symbol::"insert"/>
+        </macro>
+        <macro name::"_awkwardPause">
+            <macro arg::500 symbol::"delay"/>
+            <macro arg::"." symbol::"insert"/>
+            <macro arg::500 symbol::"delay"/>
+            <macro arg::"." symbol::"insert"/>
+            <macro arg::500 symbol::"delay"/>
+            <macro arg::"." symbol::"insert"/>
+            <macro arg::500 symbol::"delay"/>
+            <macro arg::"." symbol::"insert"/>
+            <macro arg::500 symbol::"delay"/>
+            <macro arg::"." symbol::"insert"/>
+            <macro arg::500 symbol::"delay"/>
+            <macro arg::"." symbol::"insert"/>
+            <macro arg::1000 symbol::"delay"/>
+        </macro>
+        <macro name::"_defaultTextSpeed">
+            <macro arg::100 symbol::"set_text_speed"/>
+            <macro symbol::"pass"/>
+        </macro>
+	</macroCache>
+</source>

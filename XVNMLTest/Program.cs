@@ -1,12 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Text;
+using System.Text.RegularExpressions;
+
 using XVNML.Core.Dialogue;
 using XVNML.Utilities.Dialogue;
-using XVNML.Utilities;
 using XVNML.Utilities.Tags;
-using System.Text.RegularExpressions;
-using XVNML.Core.Tags.UserOverrides;
-using Newtonsoft.Json;
+using XVNML.Utilities;
 
 static partial class Program
 {
@@ -22,10 +21,6 @@ static partial class Program
 
     static void Main(string[] args)
     {
-        //UserOverrideManager.IncludeAsAllowedFlag<Dialogue>("enableMigration");
-        UserOverrideManager.IncludeAsAllowedFlag<DialogueGroup>("enableMigration");
-        UserOverrideManager.IncludeAsAllowedParameter<Dialogue>("MainTest", "userDefinedTagValue");
-
         XVNMLObj.Create(@"../../../XVNMLFiles/consoleApp.main.xvnml", dom =>
         {
             if (dom == null) return;
@@ -71,7 +66,7 @@ static partial class Program
 
         var selectedDialogue = Console.ReadLine();
 
-        RunDialogue(selectedDialogue);
+        RunDialogue(selectedDialogue!);
     }
 
     private static void RunDialogue(string selectedDialogue)
@@ -90,8 +85,11 @@ static partial class Program
 
         Console.Clear();
 
-        DialogueScript script = MainDom.Root?.GetElement<Dialogue>(DialogueList[dialogueIndex])?.dialogueOutput!;
+        Dialogue? dialogueTag = MainDom.Root?.GetElement<Dialogue>(DialogueList[dialogueIndex]);
 
+        DialogueScript script = dialogueTag?.dialogueOutput!;
+        
+        DialogueWriter.RootScopeIdentifierSet![0] = dialogueTag?.RootScope;
         DialogueWriter.OnPrompt![0] = DisplayPrompts;
         DialogueWriter.OnPromptResonse![0] = RespondToPrompt;
         DialogueWriter.OnLineSubstringChange![0] = UpdateConsole;

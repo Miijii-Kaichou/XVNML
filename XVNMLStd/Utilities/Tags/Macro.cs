@@ -17,13 +17,12 @@ namespace XVNML.Utilities.Tags
         [JsonProperty] public string? symbol;
         [JsonProperty] public Type? type;
 
-        [JsonProperty] private readonly string? _rootScope;
-        public string? RootScope => _rootScope;
-
         [JsonProperty] private Macro[]? _childMacros;
         public Macro[]? ChildMacros => _childMacros;
 
         [JsonProperty] private Arg[]? _macroArguments;
+        private (string macroName, string? macroParent) _macroRefKey;
+
         public Arg[]? MacroArguments => _macroArguments;
 
         public override void OnResolve(string? fileOrigin)
@@ -48,11 +47,21 @@ namespace XVNML.Utilities.Tags
                 // Create ArgDataSets
                 List<(object value, Type type)> argDataSet = new List<(object value, Type type)>();
                 foreach(var arg in _macroArguments) argDataSet.Add((arg.ArgData.Value, arg.ArgData.Type));
-                DefinedMacrosCollection.AddToMacroCache((TagName!,parentTag?.TagName), symbol, argDataSet.ToArray(), null);
+                DefinedMacrosCollection.AddToMacroCache((TagName!,parentTag?.TagName), symbol, argDataSet.ToArray(), null, null, out _macroRefKey);
                 return;
             }
 
-            DefinedMacrosCollection.AddToMacroCache((TagName, parentTag?.TagName)!, symbol, new[] { (arg, arg.DetermineValueType()) }!, _childMacros);
+            DefinedMacrosCollection.AddToMacroCache((TagName, parentTag?.TagName)!, symbol, new[] { (arg, arg.DetermineValueType()) }!, _childMacros, null, out _macroRefKey);
+        }
+
+        internal void RestrictToScope(string? rootScope)
+        {
+            var targetCachedMacro = DefinedMacrosCollection.CachedMacros![_macroRefKey];
+            var symbol = targetCachedMacro.symbol;
+            var childMacros = targetCachedMacro.children;
+            var argData = targetCachedMacro.argData;
+
+            DefinedMacrosCollection.CachedMacros![_macroRefKey] = (symbol, argData, childMacros, rootScope);
         }
     }
 }

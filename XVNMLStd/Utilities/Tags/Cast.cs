@@ -47,6 +47,9 @@ namespace XVNML.Utilities.Tags
                     var target = dom?.source?.SearchElement<Cast>(TagName ?? string.Empty);
 
                     if (target == null) return;
+
+                    RootScope = dom?.Root?.TagName;
+
                     _portraitDefinitions = target!._portraitDefinitions;
                     _voiceDefinitions = target!._voiceDefinitions;
 
