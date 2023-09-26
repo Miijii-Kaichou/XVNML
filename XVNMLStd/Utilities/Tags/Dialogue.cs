@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Text;
-using XVNML.Core.Enums;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Lexer;
 using XVNML.Core.Parser;

@@ -4,7 +4,6 @@ using XVNML.Core.Tags;
 using XVNML.Utilities.Diagnostics;
 
 using static XVNML.ParameterConstants;
-using static XVNML.FlagConstants;
 
 namespace XVNML.Utilities.Tags
 {

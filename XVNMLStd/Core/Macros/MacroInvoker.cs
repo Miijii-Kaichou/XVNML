@@ -102,16 +102,16 @@ namespace XVNML.Core.Macros
             if (args == null || args.Length == 0 || args[0].Item1 == null) return Array.Empty<(object, Type)>();
 
             var argTypes = args.Select(a => a.Item2).ToArray();
-            var targetMacro = targetMacros.Count < 2 ? 
-                targetMacros[0] : 
-                targetMacros.Where(m =>
+            var targetMacro = targetMacros.Count < 2 ?
+            targetMacros[0] :
+            targetMacros.Where(m =>
             {
-                if (m!.argumentTypes.Length == 0 && argTypes.Length != 0) return false;
+                if (m!.argumentTypes?.Length == 0 && argTypes.Length != 0) return false;
 
                 for (int i = 0; i < m!.argumentTypes?.Length; i++)
                 {
                     var type = m.argumentTypes[i];
-                    
+
                     if (m.argumentTypes.Length != argTypes.Length) return false;
                     if (type == typeof(int) && argTypes[i] == typeof(uint)) continue;
                     if (ReferenceEquals(type, argTypes[i]) == false) return false;
@@ -169,12 +169,7 @@ namespace XVNML.Core.Macros
             var callIndex = info.process.cursorIndex;
             var callInfo = new MacroCallInfo() { callIndex = callIndex, process = info.process, callScope = info.callScope };
 
-
-
-            // Check if the call is within scope
-            
-            
-           if (string.IsNullOrEmpty(data?.rootScope) == false
+            if (string.IsNullOrEmpty(data?.rootScope) == false
             && data?.rootScope?.Equals(callInfo!.callScope) == false)
             {
                 string msg = $"Call Inconsistency! Call Scope does not match Root Scope: {macroName} ({data?.rootScope}) calling in ({callInfo!.callScope}.)";
@@ -182,11 +177,10 @@ namespace XVNML.Core.Macros
                 return;
             }
 
-            // Check if macro has macro children.
             if (data?.children != null && data?.children.Length > 0)
             {
                 int i = 0;
-                foreach(var macro in data?.children!)
+                foreach (var macro in data?.children!)
                 {
                     Call(macro.TagName!, macro.parentTag?.TagName, callInfo, i++);
                 }

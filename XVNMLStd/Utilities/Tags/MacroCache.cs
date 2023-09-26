@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Text;
-using XVNML.Core.Enums;
 using XVNML.Core.Macros;
 using XVNML.Core.Tags;
 using XVNML.Utilities.Diagnostics;
@@ -16,9 +16,7 @@ namespace XVNML.Utilities.Tags
     {
         protected override string[]? AllowedParameters => new[]
         {
-            SourceParameterString,
-            RootScopeParameterString,
-            PathRelativityParameterString
+            RootScopeParameterString
         };
 
         [JsonProperty] private Macro[]? _macros;
@@ -44,48 +42,61 @@ namespace XVNML.Utilities.Tags
             }
         }
 
+        private DirectoryRelativity PathMode { get; set; } = DirectoryRelativity.Absolute;
+        private string? Source { get; set; }
+
         public override void OnResolve(string? fileOrigin)
         {
             base.OnResolve(fileOrigin);
 
-            DirectoryRelativity rel = GetParameterValue<DirectoryRelativity>(PathRelativityParameterString);
-            string source = GetParameterValue<string>(SourceParameterString);
+            if (GetFileAsSource(fileOrigin, OnSourceDOMCreation)) return;
 
-            if (source?.ToLower() == NullParameterString)
+            _rootScope = GetParameterValue<string>(RootScopeParameterString);
+            ProcessData();
+        }
+
+        private bool GetFileAsSource(string? fileOrigin, Action<XVNMLObj> onDOMCreation)
+        {
+
+            PathMode = GetParameterValue<DirectoryRelativity>(PathRelativityParameterString);
+            Source = GetParameterValue<string>(SourceParameterString);
+
+            if (Source?.ToLower() == NullParameterString)
             {
                 XVNMLLogger.LogWarning($"Macro Cache Source was set to null for {TagName}", this);
-                return;
+                return false;
             }
 
-            if (source != null)
+            if (Source != null)
             {
-                string sourcePath = rel == DirectoryRelativity.Absolute
-                    ? source
+                string sourcePath = PathMode == DirectoryRelativity.Absolute
+                    ? Source
                     : new StringBuilder()
                     .Append(fileOrigin)
                     .Append(DefaultMacroCacheDirectory)
-                    .Append(source)
+                    .Append(Source)
                     .ToString()!;
 
-                XVNMLObj.Create(sourcePath, dom =>
-                {
-                    if (dom == null) return;
-
-                    var target = dom?.source?.SearchElement<MacroCache>(TagName ?? string.Empty);
-                    if (target == null) return;
-
-                    value = target.value;
-                    TagName = target.TagName;
-                    RootScope = dom?.Root?.TagName;
-
-                    _rootScope = target.GetParameterValue<string>(RootScopeParameterString);
-
-                    ProcessData();
-                });
-                return;
+                XVNMLObj.Create(sourcePath, onDOMCreation);
+                return true;
             }
 
-            _rootScope = GetParameterValue<string>(RootScopeParameterString);
+            return false;
+        }
+
+        private void OnSourceDOMCreation(XVNMLObj dom)
+        {
+            if (dom == null) return;
+
+            var target = dom?.source?.SearchElement<MacroCache>(TagName ?? string.Empty);
+            if (target == null) return;
+
+            value = target.value;
+            TagName = target.TagName;
+            RootScope = dom?.Root?.TagName;
+
+            _rootScope = target.GetParameterValue<string>(RootScopeParameterString);
+
             ProcessData();
         }
 

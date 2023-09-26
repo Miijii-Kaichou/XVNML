@@ -2,16 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using XVNML.Core.Enums;
+using XVNML.Core.COMMON.Interfaces;
 using XVNML.Core.Extensions;
 using XVNML.Core.Parser;
 using XVNML.Core.Tags.UserOverrides;
 
+using static XVNML.ParameterConstants;
 
 namespace XVNML.Core.Tags
 {
-    public abstract class TagBase : IResolvable
+    public abstract class TagBase : IResolvable, IParserComplainable
     {
         protected TagFormRestrictionMode TagFormRestrictionMode { get; } = TagFormRestrictionMode.None;
 
@@ -100,14 +100,16 @@ namespace XVNML.Core.Tags
 
         protected TagBase() { }
 
-        private readonly string[] DefaultAllowedParameters = new string[3]
+        private readonly string[] DefaultAllowedParameters = new string[]
         {
-            "name",
-            "altNames",
-            "id"
+            NameParameterString,
+            AlternateNamesParameterString,
+            IDParameterString,
+            SourceParameterString,
+            PathRelativityParameterString
         };
 
-        private readonly string[] DefaultAllowedFlags = new string[1]
+        private readonly string[] DefaultAllowedFlags = new string[]
         {
             "override"
         };
@@ -427,7 +429,7 @@ namespace XVNML.Core.Tags
             return UserOverrideManager.AllowFlags[(instanceType, TagName)]?.Contains(currentSymbol!) == true;
         }
 
-        private void Complain(string msg)
+        public void Complain(string msg)
         {
             TagParser.Abort(msg);
         }

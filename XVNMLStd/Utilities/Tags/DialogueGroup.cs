@@ -1,8 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using XVNML.Core.Tags;
-
-using static XVNML.FlagConstants;
 
 namespace XVNML.Utilities.Tags
 {

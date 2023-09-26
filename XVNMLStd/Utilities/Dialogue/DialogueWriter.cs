@@ -2,11 +2,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Macros;
-using XVNML.Core.Native;
 using XVNML.Utilities.Diagnostics;
 
 using Timer = System.Timers.Timer;

@@ -1,7 +1,5 @@
 ﻿using XVNML.Core.Tags;
 
-using static XVNML.ParameterConstants;
-
 namespace XVNML.Utilities.Tags
 {
     [AssociateWithTag("author", typeof(Metadata), TagOccurance.PragmaOnce)]
