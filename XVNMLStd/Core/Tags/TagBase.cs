@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using XVNML.Core.COMMON.Interfaces;
 using XVNML.Core.Extensions;
+using XVNML.Core.Native;
 using XVNML.Core.Parser;
 using XVNML.Core.Tags.UserOverrides;
 
@@ -132,18 +133,27 @@ namespace XVNML.Core.Tags
             if (elements == null)
                 return null;
 
-            foreach (var currentChildElement in elements)
+            T? element;
+
+            if (RuntimeReferenceTable.Map.ContainsKey(tagName) == false)
             {
-                if (TagMatches(currentChildElement, tagName))
-                    return (T?)currentChildElement;
 
-                T? element = currentChildElement.SearchElement<T>(tagName);
+                foreach (var currentChildElement in elements)
+                {
+                    if (TagMatches(currentChildElement, tagName))
+                        return (T?)currentChildElement;
 
-                if (element != null)
-                    return element;
+                    element = currentChildElement.SearchElement<T>(tagName);
+
+                    if (element != null)
+                        return element;
+                }
+                
+                return null;
             }
 
-            return null;
+            element = (T?)RuntimeReferenceTable.Get(tagName).value;
+            return element;
         }
 
         private bool TagMatches(TagBase tag, string tagName)
@@ -167,8 +177,15 @@ namespace XVNML.Core.Tags
         public T? GetElement<T>(string tagName) where T : TagBase
         {
             if (elements == null) return null;
-            T? element = (T?)elements.Find(e => e.TagName == tagName ||
-                                                (e.AlternativeTagNames?.Length > 0 && e.AlternativeTagNames?.Contains(tagName) == true));
+            T? element;
+            if (RuntimeReferenceTable.Map.ContainsKey(tagName) == false)
+            {
+                element = (T?)elements.Find(e => e.TagName == tagName ||
+                                                    (e.AlternativeTagNames?.Length > 0 && e.AlternativeTagNames?.Contains(tagName) == true));
+                return element;
+            }
+
+            element = (T?)RuntimeReferenceTable.Get(tagName).value;
             return element;
         }
 
@@ -196,7 +213,7 @@ namespace XVNML.Core.Tags
             int i = 0;
 
             //Check if id's are already provided
-            foreach (T? e in elements)
+            foreach (T? e in elements.Cast<T?>())
             {
                 int? id = (int?)e?._parameterInfo?["id"];
                 if (id == null) continue;
@@ -309,12 +326,16 @@ namespace XVNML.Core.Tags
             }
 
             IsResolved = true;
+
+            RuntimeReferenceTable.Set(TagName!, this);
         }
 
         protected T[] Collect<T>() where T : TagBase
         {
             int id = 0;
+
             Construct<List<T>>(out var list);
+
             elements?.ForEach(item =>
             {
                 if (item == null) return;
@@ -329,6 +350,7 @@ namespace XVNML.Core.Tags
                 id = item.TagID.Value;
                 list.Add((T)Convert.ChangeType(item, typeof(T)));
             });
+
             return list.ToArray();
         }
 
@@ -401,9 +423,9 @@ namespace XVNML.Core.Tags
                     return;
                 }
             }
+
             _allowFlagsValidated = true;
         }
-
 
         private bool IsTagSubjectedToParameterOverride(string? currentSymbol, Type instanceType)
         {

@@ -12,14 +12,14 @@ namespace XVNML.StandardMacroLibrary
         [Macro("amper")]
         private static void AmpersandMacro(MacroCallInfo info)
         {
-            info.process.Append("&");
+            info.process.AppendText("&");
         }
 
         [Macro("asterisk")]
         [Macro("aster")]
         private static void AsterisksMacro(MacroCallInfo info)
         {
-            info.process.Append("*");
+            info.process.AppendText("*");
         }
 
         [Macro("at")]
@@ -32,47 +32,47 @@ namespace XVNML.StandardMacroLibrary
         [Macro("blash")]
         private static void BackslashMacro(MacroCallInfo info)
         {
-            info.process.Append("\\");
+            info.process.AppendText("\\");
         }
 
         [Macro("bullet_style_2")]
         [Macro("bul2")]
         private static void Bulle2tMacro(MacroCallInfo info)
         {
-            info.process.Append("\u25e6");
+            info.process.AppendText("\u25e6");
         }
 
         [Macro("bullet_style_3")]
         [Macro("bul3")]
         private static void Bullet3Macro(MacroCallInfo info)
         {
-            info.process.Append("\u2023");
+            info.process.AppendText("\u2023");
         }
 
         [Macro("bullet_style_1")]
         [Macro("bul1")]
         private static void BulletMacro(MacroCallInfo info)
         {
-            info.process.Append("\u2022");
+            info.process.AppendText("\u2022");
         }
 
         [Macro("hat")]
         private static void CircumflexMacro(MacroCallInfo info)
         {
-            info.process.Append("^");
+            info.process.AppendText("^");
         }
 
         [Macro("colon")]
         private static void ColonMacro(MacroCallInfo info)
         {
-            info.process.Append(":");
+            info.process.AppendText(":");
         }
 
         [Macro("copyright")]
         [Macro("copy")]
         private static void CopyrightMacro(MacroCallInfo info)
         {
-            info.process.Append("\u0040");
+            info.process.AppendText("\u0040");
         }
 
         [Macro("curly_end")]
@@ -105,7 +105,7 @@ namespace XVNML.StandardMacroLibrary
         [Macro("ell")]
         private static void EllipsisMacro(MacroCallInfo info)
         {
-            info.process.Append("\u2026");
+            info.process.AppendText("\u2026");
         }
 
         [Macro("paren_end")]
@@ -124,20 +124,20 @@ namespace XVNML.StandardMacroLibrary
         [Macro("slash")]
         private static void ForwardSlashMacro(MacroCallInfo info)
         {
-            info.process.Append("/");
+            info.process.AppendText("/");
         }
 
         [Macro("hash")]
         private static void HashTagMacro(MacroCallInfo info)
         {
-            info.process.Append("#");
+            info.process.AppendText("#");
         }
 
         [Macro("speaker")]
         [Macro("sp")]
         private static void InsertSpeakerNameMacro(MacroCallInfo info)
         {
-            info.process.Append(info.process.CurrentCastInfo?.name!);
+            info.process.AppendText(info.process.CurrentCastInfo?.name!);
         }
         [Macro("new_line")]
         [Macro("nl")]
@@ -189,7 +189,7 @@ namespace XVNML.StandardMacroLibrary
         [Macro("reg")]
         private static void RegisteredMacro(MacroCallInfo info)
         {
-            info.process.Append("\u00ae");
+            info.process.AppendText("\u00ae");
         }
 
         [Macro("section")]
@@ -203,7 +203,7 @@ namespace XVNML.StandardMacroLibrary
         [Macro("semi")]
         private static void SemicolonMacro(MacroCallInfo info)
         {
-            info.process.Append(";");
+            info.process.AppendText(";");
         }
 
         [Macro("brack_end")]
@@ -223,32 +223,32 @@ namespace XVNML.StandardMacroLibrary
         [Macro("t")]
         private static void TabMacro(MacroCallInfo info)
         {
-            info.process.Append("\t");
+            info.process.AppendText("\t");
         }
 
         [Macro("tag_end")]
         private static void TagEndMacro(MacroCallInfo info)
         {
-            info.process.Append(">");
+            info.process.AppendText(">");
         }
 
         [Macro("tag")]
         private static void TagMacro(MacroCallInfo info)
         {
-            info.process.Append("<");
+            info.process.AppendText("<");
         }
 
         [Macro("tilda")]
         private static void TildaMacro(MacroCallInfo info)
         {
-            info.process.Append("~");
+            info.process.AppendText("~");
         }
 
         [Macro("trademark")]
         [Macro("trade")]
         private static void TrademarkMacro(MacroCallInfo info)
         {
-            info.process.Append("\u2122");
+            info.process.AppendText("\u2122");
         }
 
         [Macro("space")]
@@ -256,7 +256,7 @@ namespace XVNML.StandardMacroLibrary
         [Macro("w")]
         private static void WhiteSpaceMacro(MacroCallInfo info)
         {
-            info.process.Append(" ");
+            info.process.AppendText(" ");
         }
     }
 }

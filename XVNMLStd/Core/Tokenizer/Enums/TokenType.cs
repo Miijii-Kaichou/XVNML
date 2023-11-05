@@ -57,6 +57,7 @@ namespace XVNML.Core.Enums
         SelfTag = 1L << 48,
         SkriptrDeclarativeLine = 1L << 49,
         SkriptrInterrogativeLine = 1L << 50,
-        ReferenceIdentifier = 1L << 51
+        ReferenceIdentifier = 1L << 51,
+        BoxContainer = 1L << 52
     }
 }

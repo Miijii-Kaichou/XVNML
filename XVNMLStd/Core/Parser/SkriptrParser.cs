@@ -40,7 +40,7 @@ namespace XVNML.Core.Parser
         public bool FindFirstLine { get; private set; }
 
         private bool _evaluatingCast = false;
-        private static Stack<SkripterLine> ResolveStack = new Stack<SkripterLine>();
+        private static Stack<SkriptrLine> ResolveStack = new Stack<SkriptrLine>();
         private static bool ResolvePending;
 
         public SkriptrParser(SyntaxToken?[] dialogueTokenCache, out DialogueScript? output)
@@ -105,9 +105,9 @@ namespace XVNML.Core.Parser
             var tokenList = TokenCache;
 
             DialogueScript output = new DialogueScript();
-            SkripterLine line = new SkripterLine();
+            SkriptrLine line = new SkriptrLine();
             int linesCollected = -1;
-            Stack<((SkripterLine, int), Stack<string>)>? promptCacheStack = new Stack<((SkripterLine, int), Stack<string>)>(1024);
+            Stack<((SkriptrLine, int), Stack<string>)>? promptCacheStack = new Stack<((SkriptrLine, int), Stack<string>)>(1024);
             Stack<int> responseLengthStack = new Stack<int>(1024);
 
 
@@ -355,7 +355,7 @@ namespace XVNML.Core.Parser
                             DefineCastSignature(castSignatureCollection, CurrentMode, out (string? Character, string? Expression, string? Voice) cachedData, out CastMemberSignature definedSignature);
 
                             //Create a line
-                            line = new SkripterLine()
+                            line = new SkriptrLine()
                             {
                                 data = new LineDataInfo()
                                 {
@@ -415,18 +415,18 @@ namespace XVNML.Core.Parser
             return output;
         }
 
-        private static void PurgeResolveStack(int index, ref Stack<SkripterLine> resolveStack)
+        private static void PurgeResolveStack(int index, ref Stack<SkriptrLine> resolveStack)
         {
             while (resolveStack.Count != 0)
             {
-                SkripterLine line = resolveStack.Pop();
+                SkriptrLine line = resolveStack.Pop();
                 line.CorrectReturnPointOnAllChoices(index);
             }
 
             ResolvePending = false;
         }
 
-        private static void TryPopFromPromptCacheStack(Stack<((SkripterLine, int), Stack<string>)>? promptCacheStack, int lineIndex, ref DialogueScript output)
+        private static void TryPopFromPromptCacheStack(Stack<((SkriptrLine, int), Stack<string>)>? promptCacheStack, int lineIndex, ref DialogueScript output)
         {
             if (promptCacheStack == null) return;
             if (promptCacheStack?.Count != 0 &&

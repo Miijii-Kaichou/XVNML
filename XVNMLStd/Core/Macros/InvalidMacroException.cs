@@ -8,7 +8,7 @@ namespace XVNML.Core.Macros
     [Serializable]
     public class InvalidMacroException : Exception
     {
-        public InvalidMacroException(string message, string symbolName, SkripterLine source) : base(message)
+        public InvalidMacroException(string message, string symbolName, SkriptrLine source) : base(message)
         {
             XVNMLLogger.LogError(message, source, symbolName);
         }

@@ -59,7 +59,7 @@
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
-    "version": "1.0.2.14-pre-release",
+    "version": "1.0.2.16-pre-release",
     "restore": {
       "projectUniqueName": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\XVNMLStd.csproj",
       "projectName": "XVNML",
@@ -120,7 +120,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
       }
     }
   }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using XVNML.Core.Enums;
 using XVNML.Core.Lexer;
+using XVNML.Core.Native;
 
 namespace XVNML.Core.Extensions
 {
@@ -148,7 +149,8 @@ namespace XVNML.Core.Extensions
                 if (token.Text?.ToLower() == "true" || token.Text?.ToLower() == "false") return typeof(bool);
                 return typeof(string);
             }
-                if (token.Type == TokenType.Number)
+            
+            if (token.Type == TokenType.Number)
             {
                 Type numberType = token.Value!.GetType();
                 return numberType;

@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Serialization;
 using System;
 using System.IO;
+using XVNML.Core.COMMON.Interfaces;
 using XVNML.Core.Macros;
 using XVNML.Core.Parser;
 using XVNML.Core.Tags;
@@ -11,7 +12,7 @@ using XVNML.Utilities.Tags;
 
 namespace XVNML.Utilities
 {
-    public class XVNMLObj
+    public class XVNMLObj : IParserComplainable
     {
         public static XVNMLObj? Instance { get; private set; }
         public FileInfo? FileInfo { get; private set; }
@@ -71,6 +72,12 @@ namespace XVNML.Utilities
 
         public static void Create(string fileTarget, Action<XVNMLObj>? onCreation, bool generateCacheFile = false)
         {
+            if (File.Exists(fileTarget) == false)
+            {
+                Instance?.Complain($"The file {fileTarget} doesn't exist.");
+                return;
+            }
+
             DefinedTagsCollection.ManifestTagTypes();
             DefinedMacrosCollection.ManifestMacros();
 
@@ -172,6 +179,11 @@ namespace XVNML.Utilities
             var parentDirectory = dInfo.Parent.FullName;
             fileName = fileInfo.Name + ".cache.json";
             cachePath = parentDirectory;
+        }
+
+        public void Complain(string msg)
+        {
+            XVNMLLogger.LogError(msg, this, this);
         }
     }
 }

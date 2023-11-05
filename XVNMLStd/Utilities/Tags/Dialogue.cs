@@ -63,8 +63,10 @@ namespace XVNML.Utilities.Tags
                 XVNMLObj.Create(sourcePath, dom =>
                 {
                     if (dom == null) return;
+
                     var target = dom?.source?.SearchElement<Dialogue>(TagName ?? string.Empty);
                     if (target == null) return;
+
                     value = target.value;
                     TagName = target.TagName;
                     RootScope = dom?.Root?.TagName;
@@ -79,10 +81,12 @@ namespace XVNML.Utilities.Tags
         private void ProcessData()
         {
             if (value == null) return;
-            Script = (SyntaxToken[])value!;
+
             Name = TagName;
 
-            // Flags
+            if ((value is SyntaxToken[]) == false) return;
+
+            Script = (SyntaxToken[])value!;
             DoNotDetain = HasFlag(DontDetainFlagString);
 
             AnalyzeDialogue();

@@ -10,11 +10,13 @@ using XVNML.Core.Macros;
 using XVNML.Core.Enums;
 using XVNML.Utilities.Macros;
 using XVNML.Core.Extensions;
-using System.Linq.Expressions;
+
+using static XVNML.CharacterConstants;
+using static XVNML.StringConstants;
 
 namespace XVNML.Core.Dialogue
 {
-    public sealed class SkripterLine
+    public sealed class SkriptrLine
     {
         internal string? lastAddedResponse;
         internal Stack<string> LastAddedResponseStack = new Stack<string>();
@@ -22,10 +24,22 @@ namespace XVNML.Core.Dialogue
 
         private SyntaxToken[]? _tokenCache;
 
-        private static SkripterLine? Instance;
+        private static SkriptrLine? Instance;
         private readonly StringBuilder _ContentStringBuilder = new StringBuilder();
 
-        [JsonProperty] public string? Content { get; private set; }
+        private string? _content;
+        [JsonProperty]
+        public string? Content
+        {
+            get
+            {
+                return _content;
+            }
+            private set
+            {
+                _content = value;
+            }
+        }
         [JsonProperty] public Dictionary<string, (int sp, int rp)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
         [JsonProperty] public DialogueLineMode Mode => data.Mode;
 
@@ -43,7 +57,7 @@ namespace XVNML.Core.Dialogue
                 macroInvocationList
                 .Where(macro => macro.blockPosition.Equals(process.cursorIndex))
                 .ToList()
-                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.cursorIndex, callScope = rootScope}));
+                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.cursorIndex, callScope = rootScope }));
             }
         }
 
@@ -89,8 +103,8 @@ namespace XVNML.Core.Dialogue
             // Trim any < and >
             Content = _ContentStringBuilder
                 .ToString()
-                .TrimEnd('<')
-                .Replace(">>", string.Empty);
+                .TrimEnd(LessThanCharacter)
+                .Replace(DoubleGreaterThanString, string.Empty);
 
             for (int i = 0; i < _tokenCache.Length; i++)
             {
@@ -127,8 +141,8 @@ namespace XVNML.Core.Dialogue
 
         private void ConvertToCallBlock(List<SyntaxToken?> tokenList)
         {
-            const string ExpressionCode = "E::";
-            const string VoiceCode = "V::";
+            const string ExpressionCode = ExpressionPrefixString;
+            const string VoiceCode = VoicePrefixString;
 
             int _position = -1;
 
@@ -217,20 +231,20 @@ namespace XVNML.Core.Dialogue
             if (expression != null)
             {
                 blockStringBuilder.Append("|exp::");
-                blockStringBuilder.Append("\"");
+                blockStringBuilder.Append(DoubleQuoteCharacter);
                 blockStringBuilder.Append(expression.ToString());
-                blockStringBuilder.Append("\"");
+                blockStringBuilder.Append(DoubleQuoteCharacter);
             }
 
             if (voice != null)
             {
                 blockStringBuilder.Append("|vo::");
-                blockStringBuilder.Append("\"");
+                blockStringBuilder.Append(DoubleQuoteCharacter);
                 blockStringBuilder.Append(voice.ToString());
-                blockStringBuilder.Append("\"");
+                blockStringBuilder.Append(DoubleQuoteCharacter);
             }
 
-            blockStringBuilder.Append("}");
+            blockStringBuilder.Append(CloseCurlyBracketCharacter);
 
             Content = Content?.ReplaceFirstOccuranceOf(sb.ToString(), blockStringBuilder.ToString());
 
@@ -268,7 +282,7 @@ namespace XVNML.Core.Dialogue
             for (int i = 0; i < Content.Length; i++)
             {
                 var currentCharacter = Content[i];
-                if (currentCharacter != '{') continue;
+                if (currentCharacter != OpenCurlyBracketCharacter) continue;
                 i = AnalysisMacroStructure(i, lastTokenPosition, out lastTokenPosition);
             }
         }
@@ -325,9 +339,9 @@ namespace XVNML.Core.Dialogue
                     continue;
                 }
 
-                if (tokenType == TokenType.String) sb.Append('\"');
+                if (tokenType == TokenType.String) sb.Append(DoubleQuoteCharacter);
                 sb.Append(token.Text);
-                if (tokenType == TokenType.String) sb.Append('\"');
+                if (tokenType == TokenType.String) sb.Append(DoubleQuoteCharacter);
 
                 tokenList.Add(token);
                 macrosTotal += (tokenType == TokenType.Line ? 1 : 0);
@@ -379,8 +393,8 @@ namespace XVNML.Core.Dialogue
 
                         var identifierType = typeof(object);
 
-                        if (currentToken.Text?.ToLower() == "true" ||
-                            currentToken.Text?.ToLower() == "false")
+                        if (currentToken.Text?.ToLower() == TrueString ||
+                            currentToken.Text?.ToLower() == FalseString)
                         {
                             identifierType = typeof(bool);
                         }
@@ -535,7 +549,7 @@ namespace XVNML.Core.Dialogue
             int i = 0;
             while (i < Content.Length)
             {
-                if (Content[i] != '\n')
+                if (Content[i] != NewLineCharacter)
                 {
                     i++;
                     continue;
@@ -547,7 +561,7 @@ namespace XVNML.Core.Dialogue
                 while (!cleared)
                 {
                     peek++;
-                    cleared = !(Content[i + peek] == ' ');
+                    cleared = !(Content[i + peek] == WhiteSpaceCharacter);
                 }
                 i++;
                 var peekValue = peek - 2;
@@ -563,9 +577,9 @@ namespace XVNML.Core.Dialogue
         private void RemoveReturnCarriages()
         {
             if (Content == null) return;
-            Content = Content.Replace("\r", string.Empty)
-                             .Replace("\n", string.Empty)
-                             .Replace("\t", string.Empty);
+            Content = Content.Replace(ReturnCharacter.ToString(), string.Empty)
+                             .Replace(NewLineCharacter.ToString(), string.Empty)
+                             .Replace(TabCharacter.ToString(), string.Empty);
         }
 
         private void EvaluateNumericType(SyntaxToken? token, out Type? resultType)
@@ -575,25 +589,25 @@ namespace XVNML.Core.Dialogue
             var character = text[length - 1];
             if (char.IsLetter(character)) text = text.Remove(length - 1, 1);
 
-            if (char.ToUpper(character) == 'F' || text.Contains('.'))
+            if (char.ToUpper(character) == FloatSuffixCharacter || text.Contains(PeriodCharacter))
             {
                 resultType = typeof(float);
                 return;
             }
 
-            if (char.ToUpper(character) == 'D' || text.Contains('.'))
+            if (char.ToUpper(character) == DoubleSuffixCharacter || text.Contains(PeriodCharacter))
             {
                 resultType = typeof(double);
                 return;
             }
 
-            if (char.ToUpper(character) == 'L')
+            if (char.ToUpper(character) == LongSuffixCharacter)
             {
                 resultType = typeof(long);
                 return;
             }
 
-            if (char.ToUpper(character) == 'I')
+            if (char.ToUpper(character) == IntegerSuffixCharacter)
             {
                 resultType = typeof(int);
                 return;
@@ -601,7 +615,7 @@ namespace XVNML.Core.Dialogue
 
             character = text[0];
 
-            if (character == '-')
+            if (character == DashCharacter)
             {
                 resultType = typeof(int);
                 return;
@@ -613,6 +627,11 @@ namespace XVNML.Core.Dialogue
         internal void SetLineTag(string? identifier)
         {
             Name = identifier;
+        }
+
+        internal void AppendAtPosition(int cursorIndex, string text)
+        {
+            Content = Content?.Insert(cursorIndex, text);
         }
     }
 }

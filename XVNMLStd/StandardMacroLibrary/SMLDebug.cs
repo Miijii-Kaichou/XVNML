@@ -14,7 +14,7 @@ namespace XVNML.StandardMacroLibrary
             var cursorIndex = info.process.cursorIndex;
             XVNMLLogger.Log(cursorIndex.ToString(), info);
             if (!print) return;
-            info.process.Append(cursorIndex.ToString());
+            info.process.AppendText(cursorIndex.ToString());
         }
 
         [Macro("lindex")]
@@ -30,14 +30,14 @@ namespace XVNML.StandardMacroLibrary
             var lineIndex = info.process.lineIndex;
             XVNMLLogger.Log(lineIndex.ToString(), info);
             if (!print) return;
-            info.process.Append(lineIndex.ToString());
+            info.process.AppendText(lineIndex.ToString());
         }
 
         [Macro("process_id")]
         private static void GetProcessIDMacro(MacroCallInfo info, bool print)
         {
             if (!print) return;
-            info.process.Append(info.process.ID.ToString());
+            info.process.AppendText(info.process.ID.ToString());
         }
         [Macro("pid")]
         private static void GetProcessIDMacroShortHand(MacroCallInfo info, bool print)

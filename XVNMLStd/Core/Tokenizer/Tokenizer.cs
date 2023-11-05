@@ -4,16 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using XVNML.Core.Enums;
+using XVNML.Utilities.Diagnostics;
+using static XVNML.CharacterConstants;
+using static XVNML.StringConstants;
 
 namespace XVNML.Core.Lexer
 {
     public static class Tokenizer
     {
-        private static readonly int bufferSize = 8192;
+        private static readonly int BufferSize = 8192;
 
         private static int _position = 0;
 
-        private static char _Current
+        private static char CurrentCharacter
         {
             get
             {
@@ -28,12 +31,12 @@ namespace XVNML.Core.Lexer
 
         private const int DefaultCapacity = 0xFFFF;
 
-        private static int _Line
+        private static int CurrentLine
         {
             get
             {
-                Regex returns = new Regex("\r");
-                string substring = SourceText?[.._position]!;
+                Regex returns = new Regex(ReturnCharacter.ToString());
+                string? substring = SourceText?[.._position]!;
                 return substring == string.Empty ? 1 : returns.Matches(substring).Count() + 1;
             }
         }
@@ -44,16 +47,12 @@ namespace XVNML.Core.Lexer
         {
             AllowForComplexStructure = complicate;
             SourceText = sourceText;
-            switch (state)
+            return state switch
             {
-                case TokenizerReadState.Local:
-                    return TokenizeLocally(capacity);
-
-                case TokenizerReadState.IO:
-                    return ReadAndTokenize(capacity);
-            }
-
-            return null;
+                TokenizerReadState.Local => TokenizeLocally(capacity),
+                TokenizerReadState.IO => ReadAndTokenize(capacity),
+                _ => null,
+            };
         }
 
         internal static List<SyntaxToken?> ReadAndTokenize(int capacity)
@@ -61,22 +60,22 @@ namespace XVNML.Core.Lexer
             var sourceText = SourceText;
             SourceText = string.Empty;
 
-            using (StreamReader sr = new StreamReader(sourceText))
+            using StreamReader sr = new StreamReader(sourceText);
+
+            long fileSize = new FileInfo(sourceText).Length;
+            StringBuilder sb = new StringBuilder((int)fileSize);
+
+            char[] buffer = new char[BufferSize];
+            int bytesRead;
+
+            while ((bytesRead = sr.ReadBlock(buffer, 0, BufferSize)) > 0)
             {
-                long fileSize = new FileInfo(sourceText).Length;
-                StringBuilder sb = new StringBuilder((int)fileSize); // Set expectedTextLength to an appropriate value
-
-                char[] buffer = new char[bufferSize];
-                int bytesRead;
-
-                while ((bytesRead = sr.ReadBlock(buffer, 0, bufferSize)) > 0)
-                {
-                    sb.Append(buffer, 0, bytesRead);
-                }
-                SourceText = sb.ToString();
-
-                return TokenizeLocally(capacity);
+                sb.Append(buffer, 0, bytesRead);
             }
+
+            SourceText = sb.ToString();
+
+            return TokenizeLocally(capacity);
         }
 
         internal static List<SyntaxToken?> RemoveRedundantTokens(List<SyntaxToken?> list)
@@ -93,12 +92,11 @@ namespace XVNML.Core.Lexer
 
         internal static List<SyntaxToken?> TokenizeLocally(int capacity)
         {
-            var definedTokens = new  List<SyntaxToken?>(capacity);
-
-            // Tokenize the entire markup text
             _position = 0;
 
+            var definedTokens = new List<SyntaxToken?>(capacity);
             SyntaxToken token = new SyntaxToken(default, -1, -1, null, null);
+
             while (token.Type != TokenType.EOF && !WasThereConflict)
             {
                 token = NextToken();
@@ -119,20 +117,20 @@ namespace XVNML.Core.Lexer
         {
             if (_position >= SourceText?.Length)
             {
-                return new SyntaxToken(TokenType.EOF, _Line, _position, null, null);
+                return new SyntaxToken(TokenType.EOF, CurrentLine, _position, null, null);
             }
 
-            if ((_Current == '-' && char.IsDigit(SourceText![_position + 1])) || char.IsDigit(_Current))
+            if ((CurrentCharacter == DashCharacter && char.IsDigit(SourceText![_position + 1])) || char.IsDigit(CurrentCharacter))
             {
                 var start = _position;
 
-                while (char.IsDigit(_Current) ||
-                      _Current == '.' ||
-                      _Current == '-' ||
-                      char.ToUpper(_Current) == 'F' ||
-                      char.ToUpper(_Current) == 'D' ||
-                      char.ToUpper(_Current) == 'L' ||
-                      char.ToUpper(_Current) == 'I')
+                while (char.IsDigit(CurrentCharacter) ||
+                      CurrentCharacter == PeriodCharacter ||
+                      CurrentCharacter == DashCharacter ||
+                      char.ToUpper(CurrentCharacter) == FloatSuffixCharacter ||
+                      char.ToUpper(CurrentCharacter) == DoubleSuffixCharacter ||
+                      char.ToUpper(CurrentCharacter) == LongSuffixCharacter ||
+                      char.ToUpper(CurrentCharacter) == IntegerSuffixCharacter)
                     Next();
 
 
@@ -144,211 +142,214 @@ namespace XVNML.Core.Lexer
 
                 var finalValueString = valueString != string.Empty ? valueString : text;
                 char upperVariant = char.ToUpper(suffix);
-                
-                if (upperVariant == 'F' || text!.Contains('.'))
+
+                if (upperVariant == FloatSuffixCharacter || text!.Contains(PeriodCharacter))
                 {
                     float.TryParse(finalValueString, out float floatValue);
-                    return new SyntaxToken(TokenType.Number, _Line, start, text, floatValue);
+                    return new SyntaxToken(TokenType.Number, CurrentLine, start, text, floatValue);
                 }
 
-                if (upperVariant == 'D')
+                if (upperVariant == DoubleSuffixCharacter)
                 {
                     double.TryParse(finalValueString, out double doubleValue);
-                    return new SyntaxToken(TokenType.Number, _Line, start, text, doubleValue);
+                    return new SyntaxToken(TokenType.Number, CurrentLine, start, text, doubleValue);
                 }
 
-                if (upperVariant == 'L')
+                if (upperVariant == LongSuffixCharacter)
                 {
                     long.TryParse(finalValueString, out long longValue);
-                    return new SyntaxToken(TokenType.Number, _Line, start, text, longValue);
+                    return new SyntaxToken(TokenType.Number, CurrentLine, start, text, longValue);
                 }
 
-                if (text?[0] == '-' || upperVariant == 'I')
+                if (text?[0] == DashCharacter || upperVariant == IntegerSuffixCharacter)
                 {
                     int.TryParse(finalValueString, out int intValue);
-                    return new SyntaxToken(TokenType.Number, _Line, start, text, intValue);
+                    return new SyntaxToken(TokenType.Number, CurrentLine, start, text, intValue);
                 }
 
                 uint.TryParse(finalValueString, out uint uIntValue);
-                return new SyntaxToken(TokenType.Number, _Line, start, text, uIntValue);
+                return new SyntaxToken(TokenType.Number, CurrentLine, start, text, uIntValue);
             }
 
-            if (char.IsWhiteSpace(_Current))
+            if (char.IsWhiteSpace(CurrentCharacter))
             {
                 var start = _position;
 
-                while (char.IsWhiteSpace(_Current))
+                while (char.IsWhiteSpace(CurrentCharacter))
                     Next();
 
-                var text = SourceText?[start.._position];
+                string? text = SourceText?[start.._position];
 
-                return new SyntaxToken(TokenType.WhiteSpace, _Line, start, text, null);
+                return new SyntaxToken(TokenType.WhiteSpace, CurrentLine, start, text, null);
             }
 
-            if (char.IsLetter(_Current))
+            if (char.IsLetter(CurrentCharacter))
             {
-                var start = _position;
-                while (char.IsLetter(_Current) ||
-                    _Current == '_' ||
-                    char.IsNumber(_Current))
+                int start = _position;
+                while (char.IsLetter(CurrentCharacter) ||
+                    CurrentCharacter == UnderscoreCharacter ||
+                    char.IsNumber(CurrentCharacter))
                     Next();
 
-                string text = SourceText?[start.._position];
+                string? text = SourceText?[start.._position];
 
-                return new SyntaxToken(TokenType.Identifier, _Line, start, text, text);
+                return new SyntaxToken(TokenType.Identifier, CurrentLine, start, text, text);
             }
 
-            if (_Current == '_')
+            if (CurrentCharacter == UnderscoreCharacter)
             {
-                var start = _position;
-                while (char.IsLetter(_Current) ||
-                    _Current == '_' ||
-                    char.IsNumber(_Current))
+                int start = _position;
+                while (char.IsLetter(CurrentCharacter) ||
+                    CurrentCharacter == UnderscoreCharacter ||
+                    char.IsNumber(CurrentCharacter))
                     Next();
 
-                string text = SourceText?[start.._position];
+                string? text = SourceText?[start.._position];
 
-                return new SyntaxToken(TokenType.Identifier, _Line, start, text, text);
+                return new SyntaxToken(TokenType.Identifier, CurrentLine, start, text, text);
             }
 
             //Comments
-            if (Peek(_position, "$>"))
+            if (Peek(_position, SingleLineCommentString))
             {
                 JumpPosition(2);
 
-                var start = _position;
+                int start = _position;
 
-                while (_Current != '\n')
+                while (CurrentCharacter != NewLineCharacter)
                     Next();
 
-                var text = SourceText?[start.._position];
-                text = text?.Trim(' ', '\n', '\r', '\t');
+                string? text = SourceText?[start.._position];
+                text = text?.Trim(WhiteSpaceCharacter, NewLineCharacter, ReturnCharacter, TabCharacter);
 
-                return new SyntaxToken(TokenType.SingleLineComment, _Line, start, text, text);
+                return new SyntaxToken(TokenType.SingleLineComment, CurrentLine, start, text, text);
             }
 
             //Reference Identifier
-            if (_Current == '$' && AllowForComplexStructure == false)
+            if (CurrentCharacter == DollarSignCharacter && AllowForComplexStructure == false)
             {
                 Next();
                 var start = _position;
-                while (char.IsLetter(_Current) ||
-                    _Current == '_' ||
-                    char.IsNumber(_Current))
+                while (char.IsLetter(CurrentCharacter) ||
+                    CurrentCharacter == UnderscoreCharacter ||
+                    char.IsNumber(CurrentCharacter))
                     Next();
 
-                string text = SourceText?[start.._position];
+                string? text = SourceText?[start.._position];
 
-                return new SyntaxToken(TokenType.ReferenceIdentifier, _Line, start, text, text);
+                return new SyntaxToken(TokenType.ReferenceIdentifier, CurrentLine, start, text, text);
             }
 
             //#Region
-            if (Peek(_position, "//#"))
+            if (Peek(_position, RegionString))
             {
                 JumpPosition(2);
 
                 var start = _position;
 
-                while (_Current != '\n')
+                while (CurrentCharacter != NewLineCharacter)
                     Next();
 
                 var text = SourceText?[start.._position];
-                text = text?.Trim(' ', '\n', '\r', '\t');
+                text = text?.Trim(WhiteSpaceCharacter, NewLineCharacter, ReturnCharacter, TabCharacter);
 
-                return new SyntaxToken(TokenType.SingleLineComment, _Line, start, text, text);
+                return new SyntaxToken(TokenType.SingleLineComment, CurrentLine, start, text, text);
             }
 
             //Multiline Comments
-            if (Peek(_position, "$/"))
+            if (Peek(_position, MultiLineOpenCommentString))
             {
                 JumpPosition(2);
 
                 var start = _position;
 
-                while (Peek(_position, "/$") == false)
+                while (Peek(_position, MultiLineCloseCommentString) == false)
                     Next();
 
                 var text = SourceText?[start.._position];
-                text = text?.Trim(' ', '\n', '\r', '\t');
+                text = text?.Trim(WhiteSpaceCharacter, NewLineCharacter, ReturnCharacter, TabCharacter);
 
                 JumpPosition(2);
 
-                return new SyntaxToken(TokenType.MultilineComment, _Line, start, text, text);
+                return new SyntaxToken(TokenType.MultilineComment, CurrentLine, start, text, text);
             }
 
             //DoubleColon (Equivalent to = for tags)
-            if (Peek(_position, "::"))
+            if (Peek(_position, DoubleColonString))
             {
                 var start = _position;
                 JumpPosition(2);
-                return new SyntaxToken(TokenType.DoubleColon, _Line, start, "::", null);
+                return new SyntaxToken(TokenType.DoubleColon, CurrentLine, start, DoubleColonString, null);
             }
 
             //Check for DoubleOpenBrackets
-            if (Peek(_position, "<<"))
+            if (Peek(_position, DoubleLessThanString))
             {
                 var start = _position;
                 JumpPosition(2);
-                return new SyntaxToken(TokenType.DoubleOpenBracket, _Line, start, "<<", null);
+                return new SyntaxToken(TokenType.DoubleOpenBracket, CurrentLine, start, DoubleLessThanString, null);
             }
 
             //Check for DoubleCloseBrackets
-            if (Peek(_position, ">>"))
+            if (Peek(_position, DoubleGreaterThanString))
             {
                 var start = _position;
                 JumpPosition(2);
-                return new SyntaxToken(TokenType.DoubleCloseBracket, _Line, start, ">>", null);
+                return new SyntaxToken(TokenType.DoubleCloseBracket, CurrentLine, start, DoubleGreaterThanString, null);
             }
 
-            if (Peek(_position, "???"))
+            if (Peek(_position, AnonymousString))
             {
                 var start = _position;
                 JumpPosition(3);
-                return new SyntaxToken(TokenType.AnonymousCastSymbol, _Line, start, "???", null);
+                return new SyntaxToken(TokenType.AnonymousCastSymbol, CurrentLine, start, AnonymousString, null);
             }
 
             //Find EmptyString
-            if (Peek(_position, "\"\""))
+            if (Peek(_position, EmptyString))
             {
                 //This is an empty string
                 var start = _position;
                 JumpPosition(2);
-                return new SyntaxToken(TokenType.EmptyString, _Line, start, string.Empty, string.Empty);
+                return new SyntaxToken(TokenType.EmptyString, CurrentLine, start, string.Empty, string.Empty);
             }
 
             // Find normal string
-            if (_Current == '\"')
+            // TODO: Handle the worse case scenario when it never finds the ending quotation mark.
+            if (CurrentCharacter == DoubleQuoteCharacter)
             {
                 Next();
 
                 var start = _position;
                 var end = start;
-                while (end == 0 || _Current != '\"')
+
+                while (end == 0 || CurrentCharacter != DoubleQuoteCharacter)
                 {
                     Next();
                     end++;
                 }
 
+
                 var text = SourceText?[start..end];
 
-                return new SyntaxToken(TokenType.String, _Line, _position++, text, text);
+                return new SyntaxToken(TokenType.String, CurrentLine, _position++, text, text);
             }
 
             #region Unique Tokens
-            if (_Current == '<' && AllowForComplexStructure == false)
+            if (CurrentCharacter == LessThanCharacter && AllowForComplexStructure == false)
             {
                 var isSelfClosing = false;
 
                 Next();
 
-                var isClosingTag = _Current == '/';
+                var isClosingTag = CurrentCharacter == ForwardSlashCharacter;
 
                 var start = _position;
                 var end = start;
-                while (end == 0 || _Current != '>')
+                while (end == 0 || CurrentCharacter != GreaterThanCharacter)
                 {
                     Next();
-                    if (_Current == '/') isSelfClosing = true;
+                    if (CurrentCharacter == ForwardSlashCharacter) isSelfClosing = true;
                     end++;
                 }
 
@@ -357,34 +358,34 @@ namespace XVNML.Core.Lexer
                 var text = SourceText?[start..end];
 
                 if (isClosingTag)
-                    return new SyntaxToken(TokenType.CloseTag, _Line, _position, text, null);
+                    return new SyntaxToken(TokenType.CloseTag, CurrentLine, _position, text, null);
 
                 if (isSelfClosing)
-                    return new SyntaxToken(TokenType.SelfTag, _Line, _position, text, null);
+                    return new SyntaxToken(TokenType.SelfTag, CurrentLine, _position, text, null);
 
-                return new SyntaxToken(TokenType.OpenTag, _Line, _position++, text, null);
+                return new SyntaxToken(TokenType.OpenTag, CurrentLine, _position++, text, null);
             }
 
-            if (_Current == '@' && AllowForComplexStructure == false)
+            if (CurrentCharacter == AtCharacter && AllowForComplexStructure == false)
             {
                 StringBuilder sb = new StringBuilder();
-                string endingCharacter = "<";
+                string endingCharacter = LessThanCharacter.ToString();
 
-                sb.Append(_Current);
+                sb.Append(CurrentCharacter);
 
                 Next();
 
                 var start = _position;
                 var end = start;
-                while (end == 0 || (_Current != '<' && !Peek(_position, "<<")))
+                while (end == 0 || (CurrentCharacter != LessThanCharacter && !Peek(_position, DoubleLessThanString)))
                 {
                     Next();
                     end++;
                 }
 
-                if (Peek(_position, "<<"))
+                if (Peek(_position, DoubleLessThanString))
                 {
-                    endingCharacter = "<<";
+                    endingCharacter = DoubleLessThanString;
                     Next();
                 };
 
@@ -395,21 +396,21 @@ namespace XVNML.Core.Lexer
                 sb.Append(text);
                 sb.Append(endingCharacter);
 
-                return new SyntaxToken(TokenType.SkriptrDeclarativeLine, _Line, _position++, sb.ToString(),null);
+                return new SyntaxToken(TokenType.SkriptrDeclarativeLine, CurrentLine, _position++, sb.ToString(), null);
             }
 
-            if (_Current == '?' && AllowForComplexStructure == false)
+            if (CurrentCharacter == QuestionMarkCharacter && AllowForComplexStructure == false)
             {
                 StringBuilder sb = new StringBuilder();
-                string endingCharacter = ">>";
+                string endingCharacter = DoubleGreaterThanString;
 
-                sb.Append(_Current);
+                sb.Append(CurrentCharacter);
 
                 Next();
 
                 var start = _position;
                 var end = start;
-                while (end == 0 || !Peek(_position, ">>"))
+                while (end == 0 || !Peek(_position, endingCharacter))
                 {
                     Next();
                     end++;
@@ -422,45 +423,76 @@ namespace XVNML.Core.Lexer
                 sb.Append(text);
                 sb.Append(endingCharacter);
 
-                return new SyntaxToken(TokenType.SkriptrInterrogativeLine, _Line, _position++, sb.ToString(), null);
+                return new SyntaxToken(TokenType.SkriptrInterrogativeLine, CurrentLine, _position++, sb.ToString(), null);
             }
             #endregion
 
             // Any Punctuations
-            if (_Current == '\'' || _Current == '’') return new SyntaxToken(TokenType.Apostraphe, _Line, _position++, "'", null);
-            if (_Current == '<' || _Current == '＜') return new SyntaxToken(TokenType.OpenBracket, _Line, _position++, "<", null);
-            if (_Current == '>' || _Current == '＞') return new SyntaxToken(TokenType.CloseBracket, _Line, _position++, ">", null);
-            if (_Current == ',' || _Current == '、') return new SyntaxToken(TokenType.Comma, _Line, _position++, ",", null);
-            if (_Current == '|' || _Current == '｜') return new SyntaxToken(TokenType.Line, _Line, _position++, "|", null);
-            if (_Current == '[' || _Current == '「') return new SyntaxToken(TokenType.OpenSquareBracket, _Line, _position++, "[", null);
-            if (_Current == ']' || _Current == '」') return new SyntaxToken(TokenType.CloseSquareBracket, _Line, _position++, "]", null);
-            if (_Current == '{' || _Current == '｛') return new SyntaxToken(TokenType.OpenCurlyBracket, _Line, _position++, "{", null);
-            if (_Current == '}' || _Current == '｝') return new SyntaxToken(TokenType.CloseCurlyBracket, _Line, _position++, "}", null);
-            if (_Current == ':' || _Current == '：') return new SyntaxToken(TokenType.Colon, _Line, _position++, ":", null);
-            if (_Current == '(' || _Current == '（') return new SyntaxToken(TokenType.OpenParentheses, _Line, _position++, "(", null);
-            if (_Current == ')' || _Current == '）') return new SyntaxToken(TokenType.CloseParentheses, _Line, _position++, ")", null);
-            if (_Current == '/' || _Current == '・') return new SyntaxToken(TokenType.ForwardSlash, _Line, _position++, "/", null);
-            if (_Current == '\\') return new SyntaxToken(TokenType.BackwardSlash, _Line, _position++, "\\", null);
-            if (_Current == '#' || _Current == '＃') return new SyntaxToken(TokenType.Pound, _Line, _position++, "#", null);
-            if (_Current == '@' || _Current == '＠') return new SyntaxToken(TokenType.At, _Line, _position++, "@", null);
-            if (_Current == '?' || _Current == '？') return new SyntaxToken(TokenType.Prompt, _Line, _position++, "?", null);
-            if (_Current == '$' || _Current == '＄' || _Current == '￥') return new SyntaxToken(TokenType.DollarSign, _Line, _position++, "$", null);
-            if (_Current == '!' || _Current == '！') return new SyntaxToken(TokenType.Exclamation, _Line, _position++, "!", null);
-            if (_Current == '*' || _Current == '＊') return new SyntaxToken(TokenType.Star, _Line, _position++, "*", null);
-            if (_Current == '.' || _Current == '。') return new SyntaxToken(TokenType.Period, _Line, _position++, ".", null);
-            if (_Current == ';' || _Current == '；') return new SyntaxToken(TokenType.SemiColon, _Line, _position++, ";", null);
-            if (_Current == '-' || _Current == 'ー') return new SyntaxToken(TokenType.Dash, _Line, _position++, "-", null);
-            if (_Current == '_' || _Current == '＿') return new SyntaxToken(TokenType.Equal, _Line, _position++, "_", null);
-            if (_Current == '~' || _Current == '～') return new SyntaxToken(TokenType.Tilda, _Line, _position++, "_", null);
-            if (_Current == '`' || _Current == '｀') return new SyntaxToken(TokenType.InverseComma, _Line, _position++, "_", null);
-            if (_Current == '%' || _Current == '％') return new SyntaxToken(TokenType.Percent, _Line, _position++, "_", null);
-            if (_Current == '^' || _Current == '＾') return new SyntaxToken(TokenType.Peak, _Line, _position++, "_", null);
-            if (_Current == '&' || _Current == '＆') return new SyntaxToken(TokenType.Ampersand, _Line, _position++, "_", null);
-            if (_Current == '+' || _Current == '＋') return new SyntaxToken(TokenType.Plus, _Line, _position++, "_", null);
-            if (_Current == '=' || _Current == '＝') return new SyntaxToken(TokenType.Equal, _Line, _position++, "_", null);
+            if (CurrentCharacter == '\'' || CurrentCharacter == '’')
+                return new SyntaxToken(TokenType.Apostraphe, CurrentLine, _position++, "'", null);
+            if (CurrentCharacter == '<' || CurrentCharacter == '＜')
+                return new SyntaxToken(TokenType.OpenBracket, CurrentLine, _position++, "<", null);
+            if (CurrentCharacter == '>' || CurrentCharacter == '＞')
+                return new SyntaxToken(TokenType.CloseBracket, CurrentLine, _position++, ">", null);
+            if (CurrentCharacter == ',' || CurrentCharacter == '、')
+                return new SyntaxToken(TokenType.Comma, CurrentLine, _position++, ",", null);
+            if (CurrentCharacter == '|' || CurrentCharacter == '｜')
+                return new SyntaxToken(TokenType.Line, CurrentLine, _position++, "|", null);
+            if (CurrentCharacter == '[' || CurrentCharacter == '「')
+                return new SyntaxToken(TokenType.OpenSquareBracket, CurrentLine, _position++, "[", null);
+            if (CurrentCharacter == ']' || CurrentCharacter == '」')
+                return new SyntaxToken(TokenType.CloseSquareBracket, CurrentLine, _position++, "]", null);
+            if (CurrentCharacter == '{' || CurrentCharacter == '｛')
+                return new SyntaxToken(TokenType.OpenCurlyBracket, CurrentLine, _position++, "{", null);
+            if (CurrentCharacter == '}' || CurrentCharacter == '｝')
+                return new SyntaxToken(TokenType.CloseCurlyBracket, CurrentLine, _position++, "}", null);
+            if (CurrentCharacter == ':' || CurrentCharacter == '：')
+                return new SyntaxToken(TokenType.Colon, CurrentLine, _position++, ":", null);
+            if (CurrentCharacter == '(' || CurrentCharacter == '（')
+                return new SyntaxToken(TokenType.OpenParentheses, CurrentLine, _position++, "(", null);
+            if (CurrentCharacter == ')' || CurrentCharacter == '）')
+                return new SyntaxToken(TokenType.CloseParentheses, CurrentLine, _position++, ")", null);
+            if (CurrentCharacter == '/' || CurrentCharacter == '・')
+                return new SyntaxToken(TokenType.ForwardSlash, CurrentLine, _position++, "/", null);
+            if (CurrentCharacter == '\\')
+                return new SyntaxToken(TokenType.BackwardSlash, CurrentLine, _position++, "\\", null);
+            if (CurrentCharacter == '#' || CurrentCharacter == '＃')
+                return new SyntaxToken(TokenType.Pound, CurrentLine, _position++, "#", null);
+            if (CurrentCharacter == '@' || CurrentCharacter == '＠')
+                return new SyntaxToken(TokenType.At, CurrentLine, _position++, "@", null);
+            if (CurrentCharacter == '?' || CurrentCharacter == '？')
+                return new SyntaxToken(TokenType.Prompt, CurrentLine, _position++, "?", null);
+            if (CurrentCharacter == '$' || CurrentCharacter == '＄' || CurrentCharacter == '￥')
+                return new SyntaxToken(TokenType.DollarSign, CurrentLine, _position++, "$", null);
+            if (CurrentCharacter == '!' || CurrentCharacter == '！')
+                return new SyntaxToken(TokenType.Exclamation, CurrentLine, _position++, "!", null);
+            if (CurrentCharacter == '*' || CurrentCharacter == '＊')
+                return new SyntaxToken(TokenType.Star, CurrentLine, _position++, "*", null);
+            if (CurrentCharacter == '.' || CurrentCharacter == '。')
+                return new SyntaxToken(TokenType.Period, CurrentLine, _position++, ".", null);
+            if (CurrentCharacter == ';' || CurrentCharacter == '；')
+                return new SyntaxToken(TokenType.SemiColon, CurrentLine, _position++, ";", null);
+            if (CurrentCharacter == '-' || CurrentCharacter == 'ー')
+                return new SyntaxToken(TokenType.Dash, CurrentLine, _position++, "-", null);
+            if (CurrentCharacter == UnderscoreCharacter || CurrentCharacter == '＿')
+                return new SyntaxToken(TokenType.Underscore, CurrentLine, _position++, "_", null);
+            if (CurrentCharacter == '~' || CurrentCharacter == '～')
+                return new SyntaxToken(TokenType.Tilda, CurrentLine, _position++, "~", null);
+            if (CurrentCharacter == '`' || CurrentCharacter == '｀')
+                return new SyntaxToken(TokenType.InverseComma, CurrentLine, _position++, "`", null);
+            if (CurrentCharacter == '%' || CurrentCharacter == '％')
+                return new SyntaxToken(TokenType.Percent, CurrentLine, _position++, "%", null);
+            if (CurrentCharacter == '^' || CurrentCharacter == '＾')
+                return new SyntaxToken(TokenType.Peak, CurrentLine, _position++, "^", null);
+            if (CurrentCharacter == '&' || CurrentCharacter == '＆')
+                return new SyntaxToken(TokenType.Ampersand, CurrentLine, _position++, "&", null);
+            if (CurrentCharacter == '+' || CurrentCharacter == '＋')
+                return new SyntaxToken(TokenType.Plus, CurrentLine, _position++, "+", null);
+            if (CurrentCharacter == '=' || CurrentCharacter == '＝')
+                return new SyntaxToken(TokenType.Equal, CurrentLine, _position++, "=", null);
 
             WasThereConflict = true;
-            return new SyntaxToken(TokenType.Invalid, _Line, _position++, SourceText?.Substring(_position - 1, 1), null);
+            return new SyntaxToken(TokenType.Invalid, CurrentLine, _position++, SourceText?.Substring(_position - 1, 1), null);
         }
 
         private static bool Peek(int position, string stringSet)

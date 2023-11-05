@@ -38,7 +38,6 @@ namespace XVNML.Utilities.Tags
             symbol = GetParameterValue<string>(SymbolParameterString);
 
             _macroArguments = Collect<Arg>();
-
             _childMacros = Collect<Macro>();
 
             if (_macroArguments?.Length > 0)

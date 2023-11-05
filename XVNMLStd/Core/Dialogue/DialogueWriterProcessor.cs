@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Timers;
+
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Macros;
-using XVNML.Utilities.Diagnostics;
 using XVNML.Utilities.Dialogue;
 using XVNML.Utilities.Macros;
 
@@ -30,7 +29,20 @@ namespace XVNML.Core.Dialogue
         }
 
         public string? Response { get; internal set; }
-        public bool AtEnd => lineIndex > lineProcesses.Count - 1;
+
+        private bool _atEnd;
+        public bool AtEnd
+        {
+            get
+            {
+                return lineIndex > lineProcesses.Count - 1;
+            }
+            private set
+            {
+                _atEnd = value;
+            }
+        }
+
         public bool WasControlledPause { get; private set; }
         public uint ProcessRate { get; internal set; } = 60;
         public bool IsPaused { get; internal set; }
@@ -38,8 +50,8 @@ namespace XVNML.Core.Dialogue
 
         public static bool IsStagnant => Instance?.lineProcesses.Count == 0;
 
-        internal ConcurrentBag<SkripterLine> lineProcesses = new ConcurrentBag<SkripterLine>();
-        internal SkripterLine? currentLine;
+        internal ConcurrentBag<SkriptrLine> lineProcesses = new ConcurrentBag<SkriptrLine>();
+        internal SkriptrLine? currentLine;
         internal int lineIndex = -1;
         internal int cursorIndex;
 
@@ -111,7 +123,23 @@ namespace XVNML.Core.Dialogue
             ProcessRate = rate;
         }
 
-        internal void Append(string text)
+        public void RequestForAppension(string text)
+        {
+            RequestForAppension(text, appendDirectly: false);
+        }
+
+        public void RequestForAppension(string text, bool appendDirectly)
+        {
+            if (appendDirectly)
+            {
+                AppendTextDirectly(text);
+                return;
+            }
+
+            AppendText(text);
+        }
+
+        internal void AppendText(string text)
         {
             lock (processLock)
             {
@@ -125,6 +153,15 @@ namespace XVNML.Core.Dialogue
             lock (processLock)
             {
                 _processBuilder.Append(letter);
+                DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
+            }
+        }
+
+        internal void AppendTextDirectly(string text)
+        {
+            lock (processLock)
+            {
+                currentLine?.AppendAtPosition(cursorIndex, text);
                 DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
             }
         }
@@ -209,7 +246,7 @@ namespace XVNML.Core.Dialogue
             Instance = new DialogueWriterProcessor()
             {
                 ID = id,
-                lineProcesses = new ConcurrentBag<SkripterLine>(),
+                lineProcesses = new ConcurrentBag<SkriptrLine>(),
                 _processBuilder = new StringBuilder(),
                 currentLine = null,
                 CurrentLetter = null,
@@ -218,11 +255,17 @@ namespace XVNML.Core.Dialogue
                 processLock = new object(),
             };
 
+            if (input == null)
+            {
+                Instance!.AtEnd = true;
+                return null;
+            }
+
             var reversedList = input.Lines?.ToArray().Reverse();
 
             for (int i = 0; i < reversedList.Count(); i++)
             {
-                SkripterLine line = reversedList.ElementAt(i);
+                SkriptrLine line = reversedList.ElementAt(i);
 
                 if (line.data.parentLine != null && line.data.isClosingLine)
                 {

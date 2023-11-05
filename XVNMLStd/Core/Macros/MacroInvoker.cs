@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using XVNML.Core.Dialogue;
 using XVNML.Core.Dialogue.Structs;
+using XVNML.Core.Native;
 using XVNML.Utilities.Diagnostics;
 using XVNML.Utilities.Dialogue;
 using XVNML.Utilities.Macros;
@@ -99,26 +100,34 @@ namespace XVNML.Core.Macros
         {
             correctMacro = targetMacros[0];
 
-            if (args == null || args.Length == 0 || args[0].Item1 == null) return Array.Empty<(object, Type)>();
+            if (args == null || args.Length == 0 || args[0].Item1 == null)
+                return Array.Empty<(object, Type)>();
 
-            var argTypes = args.Select(a => a.Item2).ToArray();
+            var argTypes = args
+                .Select(a => a.Item2)
+                .ToArray();
+
             var targetMacro = targetMacros.Count < 2 ?
-            targetMacros[0] :
-            targetMacros.Where(m =>
-            {
-                if (m!.argumentTypes?.Length == 0 && argTypes.Length != 0) return false;
-
-                for (int i = 0; i < m!.argumentTypes?.Length; i++)
+                targetMacros[0] :
+                targetMacros.Where(m =>
                 {
-                    var type = m.argumentTypes[i];
+                    if (m!.argumentTypes?.Length == 0 && argTypes.Length != 0)
+                        return false;
 
-                    if (m.argumentTypes.Length != argTypes.Length) return false;
-                    if (type == typeof(int) && argTypes[i] == typeof(uint)) continue;
-                    if (ReferenceEquals(type, argTypes[i]) == false) return false;
-                }
+                    for (int i = 0; i < m!.argumentTypes?.Length; i++)
+                    {
+                        var type = m.argumentTypes[i];
 
-                return true;
-            }).FirstOrDefault();
+                        if (m.argumentTypes.Length != argTypes.Length)
+                            return false;
+                        if (type == typeof(int) && argTypes[i] == typeof(uint))
+                            continue;
+                        if (ReferenceEquals(type, argTypes[i]) == false)
+                            return false;
+                    }
+
+                    return true;
+                }).FirstOrDefault();
 
             correctMacro = targetMacro;
 
@@ -126,6 +135,8 @@ namespace XVNML.Core.Macros
             {
                 object? currentArg = args[i].Item1;
                 Type? requiredArg = targetMacro?.argumentTypes?[i];
+
+                object? opposingArg = args[i].Item2;
 
                 if (args[i].Item2 == typeof(uint) && requiredArg == typeof(int))
                 {
@@ -136,16 +147,38 @@ namespace XVNML.Core.Macros
 
                 if (ReferenceEquals(requiredArg, args[i].Item2) == false && requiredArg != typeof(object))
                 {
-                    throw new Exception($"Argument {i} for the macro \"{targetMacro?.macroName}\"" +
-                        $" requires a value of type {requiredArg?.Name}.\n" +
-                        $"The Value passed into Argument {i} is a(n) {args[i].Item2.Name}");
+                    CheckForArgValidation(args, targetMacro, i, requiredArg);
                 }
+
+                currentArg = args[i].Item1;
 
                 // TODO: Convert to whatever type the attribute has
                 args[i].Item1 = Convert.ChangeType(currentArg, requiredArg);
             }
 
             return args;
+        }
+
+        private static void CheckForArgValidation((object, Type)[] args, MacroAttribute? targetMacro, int i, Type? requiredArg)
+        {
+            var invalid = true;
+
+            if (args[i].Item2 == typeof(object))
+            {
+                invalid = !RuntimeReferenceTable.Map.ContainsKey(args[i].Item1.ToString());
+
+                var value = RuntimeReferenceTable.Get(args[i].Item1.ToString());
+                invalid = !ReferenceEquals(requiredArg, value.type);
+
+                args[i] = (value.value, requiredArg)!;
+            }
+
+            if (invalid)
+            {
+                throw new Exception($"Argument {i} for the macro \"{targetMacro?.macroName}\"" +
+                    $" requires a value of type {requiredArg?.Name}.\n" +
+                    $"The Value passed into Argument {i} is a(n) {args[i].Item2.Name}");
+            }
         }
 
         internal static void Call(this MacroBlockInfo blockInfo, MacroCallInfo callInfo)
@@ -196,10 +229,15 @@ namespace XVNML.Core.Macros
         {
             lock (process.processLock)
             {
-                if (RetryQueues == null) return;
-                if (RetryQueues[process.ID] == null) return;
-                if (RetryQueues[process.ID].IsEmpty) return;
+                if (RetryQueues == null) 
+                    return;
+                if (RetryQueues[process.ID] == null) 
+                    return;
+                if (RetryQueues[process.ID].IsEmpty) 
+                    return;
+
                 RetryQueues[process.ID].TryDequeue(out var call);
+
                 Call(call.Item1, call.Item2, call.Item3, call.Item4, call.Item5);
                 UpdateRetryQueuedFlags(process);
             }

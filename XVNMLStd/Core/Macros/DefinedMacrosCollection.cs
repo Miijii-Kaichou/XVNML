@@ -41,6 +41,7 @@ namespace XVNML.Core.Macros
                 var countOfExistingMacro = CachedMacros.Where(t => t.Key.Item1.Contains(macroRef.macroName) && t.Key.Item1.Contains("[unnamed]") && t.Key.Item2 == macroRef.macroParent).Count();
                 macroRef.macroName = $"{macroRef.macroName}({countOfExistingMacro})[unnamed]";
             };
+
             macroRefKey = macroRef;
             CachedMacros!.Add(macroRef, (validSymbol, argDataSet, children, rootScope)!);
         }
