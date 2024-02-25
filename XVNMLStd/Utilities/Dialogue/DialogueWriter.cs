@@ -144,8 +144,10 @@ namespace XVNML.Utilities.Dialogue
 
             var newProcess = DialogueWriterProcessor.Initialize(script, channel);
             if (newProcess == null) { return; }
+
             newProcess.processLock = new object();
             if (IsInitialized == false) Initialize();
+            
             WriterProcesses![channel] = newProcess;
             WriterProcessesCache = null;
         }
@@ -218,8 +220,7 @@ namespace XVNML.Utilities.Dialogue
             IsInitialized = true;
             _writingThread = new Thread(new ParameterizedThreadStart(WriterThread))
             {
-                Priority = ThreadPriority.BelowNormal,
-                IsBackground = true
+                Priority = ThreadPriority.AboveNormal
             };
 
             MacroInvoker.Init();
