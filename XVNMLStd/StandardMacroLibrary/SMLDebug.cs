@@ -1,7 +1,9 @@
 ﻿#pragma warning disable IDE0051 // Remove unused private members
 
+using XVNML.Core.Macros;
 using XVNML.Utilities.Diagnostics;
 using XVNML.Utilities.Macros;
+using XVNML.Utilities.Tags;
 
 namespace XVNML.StandardMacroLibrary
 {

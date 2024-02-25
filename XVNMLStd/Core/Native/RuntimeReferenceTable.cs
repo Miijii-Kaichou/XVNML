@@ -31,6 +31,7 @@ namespace XVNML.Core.Native
                         initialType == typeof(float) ? (float)default :
                         initialType == typeof(double) ? (double)default :
                         initialType == typeof(uint) ? (uint)default :
+                        initialType == typeof(bool) ? (bool)default :
                         Activator.CreateInstance(initialType);
 
             Map.Add(identifier, (value, initialType));

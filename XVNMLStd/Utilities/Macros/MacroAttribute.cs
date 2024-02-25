@@ -23,8 +23,8 @@ namespace XVNML.Utilities.Macros
         public void ValidateMethodParameters(out bool result)
         {
             ParameterInfo[]? methodParameterInfo = method!.GetParameters();
-
             argumentTypes = new Type[methodParameterInfo!.Length - 1];
+
             for (int i = 0; i < methodParameterInfo.Length; i++)
             {
                 var argType = methodParameterInfo[i].ParameterType;

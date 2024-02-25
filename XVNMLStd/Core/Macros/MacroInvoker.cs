@@ -2,9 +2,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+
 using XVNML.Core.Dialogue;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Native;
+
 using XVNML.Utilities.Diagnostics;
 using XVNML.Utilities.Dialogue;
 using XVNML.Utilities.Macros;
@@ -38,8 +40,6 @@ namespace XVNML.Core.Macros
                     return;
                 }
 
-                MacroAttribute? correctMacro;
-
                 if (isRef)
                 {
                     Call(macroSymbol, parent, info, 0);
@@ -48,7 +48,7 @@ namespace XVNML.Core.Macros
 
                 var targetMacros = DefinedMacrosCollection.ValidMacros?[macroSymbol];
 
-                args = ResolveMacroArgumentTypes(targetMacros!, args, out correctMacro);
+                args = ResolveMacroArgumentTypes(targetMacros!, args, out MacroAttribute? correctMacro);
 
                 object[] finalArgs = FinalizeArgumentData(args, info);
                 correctMacro?.method?.Invoke(info, finalArgs);
@@ -103,8 +103,22 @@ namespace XVNML.Core.Macros
             if (args == null || args.Length == 0 || args[0].Item1 == null)
                 return Array.Empty<(object, Type)>();
 
+            int pos = 0;
+
             var argTypes = args
-                .Select(a => a.Item2)
+                .Select(a =>
+                {
+                    if (a.Item2 == typeof(object) &&  RuntimeReferenceTable.Map.ContainsKey(a.Item1.ToString()))
+                    {
+                        var value = RuntimeReferenceTable.Get(a.Item1.ToString());
+
+                        a.Item1 = value.value!;
+                        a.Item2 = value.type;
+                        args[pos] = value!;
+                    }
+                    pos++;
+                    return a.Item2;
+                })
                 .ToArray();
 
             var targetMacro = targetMacros.Count < 2 ?
@@ -122,7 +136,7 @@ namespace XVNML.Core.Macros
                             return false;
                         if (type == typeof(int) && argTypes[i] == typeof(uint))
                             continue;
-                        if (ReferenceEquals(type, argTypes[i]) == false)
+                        if (type != typeof(object) && ReferenceEquals(type, argTypes[i]) == false)
                             return false;
                     }
 
@@ -161,14 +175,14 @@ namespace XVNML.Core.Macros
 
         private static void CheckForArgValidation((object, Type)[] args, MacroAttribute? targetMacro, int i, Type? requiredArg)
         {
-            var invalid = true;
+            var invalid = false;
 
             if (args[i].Item2 == typeof(object))
             {
-                invalid = !RuntimeReferenceTable.Map.ContainsKey(args[i].Item1.ToString());
-
+                invalid = RuntimeReferenceTable.Map.ContainsKey(args[i].Item1.ToString());
+                
                 var value = RuntimeReferenceTable.Get(args[i].Item1.ToString());
-                invalid = !ReferenceEquals(requiredArg, value.type);
+                invalid = !ReferenceEquals(requiredArg, requiredArg == typeof(string) ? requiredArg : value.type);
 
                 args[i] = (value.value, requiredArg)!;
             }

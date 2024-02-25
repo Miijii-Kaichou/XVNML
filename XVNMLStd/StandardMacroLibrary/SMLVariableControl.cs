@@ -1,10 +1,8 @@
 ﻿#pragma warning disable IDE0051 // Remove unused private members
 
 using System;
-using System.Collections.Generic;
-using XVNML.Core.Extensions;
+
 using XVNML.Core.Native;
-using XVNML.Utilities.Dialogue;
 using XVNML.Utilities.Macros;
 
 namespace XVNML.StandardMacroLibrary
@@ -27,6 +25,7 @@ namespace XVNML.StandardMacroLibrary
                     case "float": variableType = typeof(float); break;
                     case "double": variableType = typeof(double); break;
                     case "uint": variableType = typeof(uint); break;
+                    case "bool": variableType = typeof(bool); break;
                 }
             }
 
@@ -42,9 +41,9 @@ namespace XVNML.StandardMacroLibrary
 
         [Macro("set")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
-        private static void SetVariableMacro(MacroCallInfo info, object identifier, object newValue)
+        private static void SetVariableMacro(MacroCallInfo info, string identifier, object newValue)
         {
-            RuntimeReferenceTable.Set(identifier.ToString(), newValue);
+            RuntimeReferenceTable.Set(identifier, newValue);
         }
     }
 }
