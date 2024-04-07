@@ -54,6 +54,7 @@ namespace XVNML.Core.Dialogue
         internal SkriptrLine? currentLine;
         internal int lineIndex = -1;
         internal int cursorIndex;
+        internal int cursorIndexCorrection = 0;
 
         private int previousLinePosition;
         internal bool IsOnDelay => delayTimer != null;
@@ -162,6 +163,7 @@ namespace XVNML.Core.Dialogue
             lock (processLock)
             {
                 currentLine?.AppendAtPosition(cursorIndex, text);
+                RaiseCorrection(text.Length);
                 DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
             }
         }
@@ -169,6 +171,7 @@ namespace XVNML.Core.Dialogue
         internal void Clear()
         {
             _processBuilder.Clear();
+            ClearCorrection();
             DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
         }
 
@@ -192,7 +195,24 @@ namespace XVNML.Core.Dialogue
             lock (processLock)
             {
                 _processBuilder.Append(CurrentLetter);
+                LowerCorrection();
             }
+        }
+
+        private void RaiseCorrection(int length)
+        {
+            cursorIndexCorrection += length;
+        }
+
+        private void LowerCorrection()
+        {
+            if (cursorIndexCorrection == 0) return;
+            cursorIndexCorrection--;
+        }
+
+        private void ClearCorrection()
+        {
+            cursorIndexCorrection = 0;
         }
 
         internal void Wait(uint milliseconds)

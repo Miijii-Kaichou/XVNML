@@ -54,10 +54,11 @@ namespace XVNML.Core.Dialogue
         {
             lock (process.processLock)
             {
+                var finalCallIndex = process.cursorIndex + process.cursorIndexCorrection;
                 macroInvocationList
-                .Where(macro => macro.blockPosition.Equals(process.cursorIndex))
+                .Where(macro => (macro.blockPosition + process.cursorIndexCorrection).Equals(finalCallIndex))
                 .ToList()
-                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.cursorIndex, callScope = rootScope }));
+                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = finalCallIndex, callScope = rootScope }));
             }
         }
 
