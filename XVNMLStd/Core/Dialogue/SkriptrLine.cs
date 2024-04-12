@@ -54,11 +54,10 @@ namespace XVNML.Core.Dialogue
         {
             lock (process.processLock)
             {
-                var finalCallIndex = process.cursorIndex + process.cursorIndexCorrection;
                 macroInvocationList
-                .Where(macro => (macro.blockPosition + process.cursorIndexCorrection).Equals(finalCallIndex))
+                .Where(macro => (macro.blockPosition).Equals(process.cursorIndex))
                 .ToList()
-                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = finalCallIndex, callScope = rootScope }));
+                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.cursorIndex, callScope = rootScope }));
             }
         }
 
@@ -633,6 +632,19 @@ namespace XVNML.Core.Dialogue
         internal void AppendAtPosition(int cursorIndex, string text)
         {
             Content = Content?.Insert(cursorIndex, text);
+        }
+
+        internal void ShiftMacroCalls(int start, int length)
+        {
+            for (int i = 0; i < macroInvocationList.Count; i++)
+            {
+                var macro = macroInvocationList[i];
+                if (macro.blockPosition == start) continue;
+
+                macro.blockPosition += length;
+
+                macroInvocationList[i] = macro;
+            }
         }
     }
 }
