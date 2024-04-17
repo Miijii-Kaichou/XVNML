@@ -12,9 +12,12 @@ using XVNML.Utilities.Tags;
 
 namespace XVNML.Utilities
 {
+    [System.Serializable]
     public class XVNMLObj : IParserComplainable
     {
         public static XVNMLObj? Instance { get; private set; }
+
+        [JsonIgnore]
         public FileInfo? FileInfo { get; private set; }
 
         [JsonIgnore]
@@ -70,7 +73,7 @@ namespace XVNML.Utilities
             }
         }
 
-        public static void Create(string fileTarget, Action<XVNMLObj>? onCreation, bool generateCacheFile = false)
+        public static void Create(string fileTarget, Action<XVNMLObj>? onCreation, bool generateCacheFile = false, string? destinationPath = null)
         {
             if (File.Exists(fileTarget) == false)
             {
@@ -80,7 +83,7 @@ namespace XVNML.Utilities
 
             DefinedTagsCollection.ManifestTagTypes();
             DefinedMacrosCollection.ManifestMacros();
-
+            
             var xvnmlParser = new TagParser();
             xvnmlParser.SetTarget(fileTarget);
             xvnmlParser.Parse(() =>
@@ -88,20 +91,24 @@ namespace XVNML.Utilities
                 Instance = new XVNMLObj(xvnmlParser) { FileInfo = new FileInfo(fileTarget) };
                 Instance!.onDOMCreated = onCreation;
 
-                if (generateCacheFile) GenerateCache(fileTarget);
+                if (generateCacheFile)
+                {
+                    DefinedMacrosCollection.CacheCollectionState(fileTarget, destinationPath);
+                    GenerateCache(fileTarget, destinationPath);
+                }
 
-                XVNMLLogger.Log($"XVNMLObj [{Instance.FileInfo.Name}] successfully created...", Instance);
                 Instance.onDOMCreated?.Invoke(Instance);
             });
         }
 
-        public static void UseOrCreate(string fileTarget, Action<XVNMLObj?> onCreation)
+        public static void UseOrCreate(string fileTarget, Action<XVNMLObj?> onCreation, string? destinationPath = null)
         {
-            if (CheckCacheData(fileTarget, out string cachePath))
+            if (CheckCacheData(fileTarget, out string cachePath, destinationPath))
             {
                 DefinedTagsCollection.ManifestTagTypes();
                 DefinedMacrosCollection.ManifestMacros();
-
+                DefinedMacrosCollection.LoadCollectionCache(fileTarget, destinationPath);
+                
                 var json = File.ReadAllText(cachePath);
 
                 JsonSerializerSettings settings = new JsonSerializerSettings()
@@ -119,6 +126,7 @@ namespace XVNML.Utilities
                 };
 
                 Instance = JsonConvert.DeserializeObject<XVNMLObj>(json, settings);
+
                 Instance!.onDOMCreated = onCreation;
                 Instance.onDOMCreated?.Invoke(Instance);
                 return;
@@ -128,27 +136,28 @@ namespace XVNML.Utilities
             {
                 Instance = dom;
                 onCreation?.Invoke(Instance);
-            }, true);
+            }, true, destinationPath);
         }
 
-        private static bool CheckCacheData(string fileTarget, out string cachePath)
+        private static bool CheckCacheData(string fileTarget, out string cachePath, string? destinationPath = null)
         {
             string fileName;
-            GenerateDataDirectoryFromPath(fileTarget, out fileName, out cachePath);
+            GenerateDataDirectoryFromPath(fileTarget, out fileName, out cachePath, destinationPath);
 
             var fullCachePath = Path.Combine(cachePath, fileName);
 
             cachePath = fullCachePath;
+
             return File.Exists(fullCachePath);
         }
 
-        private static void GenerateCache(string fileTarget)
+        private static void GenerateCache(string fileTarget, string? destinationPath = null)
         {
             if (Instance == null) return;
             if (Instance.proxy == null) return;
 
             string fileName, cachePath;
-            GenerateDataDirectoryFromPath(fileTarget, out fileName, out cachePath);
+            GenerateDataDirectoryFromPath(fileTarget, out fileName, out cachePath, destinationPath);
             Directory.CreateDirectory(cachePath);
 
             var fullCachePath = Path.Combine(cachePath, fileName);
@@ -172,11 +181,11 @@ namespace XVNML.Utilities
             File.WriteAllText(fullCachePath, json);
         }
 
-        private static void GenerateDataDirectoryFromPath(string fileTarget, out string fileName, out string cachePath)
+        private static void GenerateDataDirectoryFromPath(string fileTarget, out string fileName, out string cachePath, string? destinationPath)
         {
             DirectoryInfo dInfo = new DirectoryInfo(fileTarget);
             FileInfo fileInfo = new FileInfo(fileTarget);
-            var parentDirectory = dInfo.Parent.FullName;
+            var parentDirectory = destinationPath == null ? dInfo.Parent.FullName : destinationPath;
             fileName = fileInfo.Name + ".cache.json";
             cachePath = parentDirectory;
         }

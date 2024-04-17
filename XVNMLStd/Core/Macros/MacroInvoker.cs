@@ -217,7 +217,8 @@ namespace XVNML.Core.Macros
             var callInfo = new MacroCallInfo() { callIndex = callIndex, process = info.process, callScope = info.callScope };
 
             if (string.IsNullOrEmpty(data?.rootScope) == false
-            && data?.rootScope?.Equals(callInfo!.callScope) == false)
+            && data?.rootScope?.Equals(callInfo!.callScope) == false &&
+            callInfo!.callScope != null)
             {
                 string msg = $"Call Inconsistency! Call Scope does not match Root Scope: {macroName} ({data?.rootScope}) calling in ({callInfo!.callScope}.)";
                 XVNMLLogger.LogError(msg, callInfo, data);

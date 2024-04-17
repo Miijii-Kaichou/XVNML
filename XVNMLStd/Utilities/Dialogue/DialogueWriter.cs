@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using XVNML.Core.Dialogue;
+using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Macros;
 using XVNML.Utilities.Diagnostics;
 

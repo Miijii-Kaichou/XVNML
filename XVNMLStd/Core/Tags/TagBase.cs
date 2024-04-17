@@ -12,6 +12,8 @@ using static XVNML.ParameterConstants;
 
 namespace XVNML.Core.Tags
 {
+    internal delegate void ReferenceLinkerHandler(TagBase? sender, TagBase? referencingTag, Type type);
+
     public abstract class TagBase : IResolvable, IParserComplainable
     {
         protected TagFormRestrictionMode TagFormRestrictionMode { get; } = TagFormRestrictionMode.None;

@@ -10,6 +10,12 @@
     <icon>xvnml_file_icon.png</icon>
     <readme>README.md</readme>
     <description>A utility tool to interact with XVNML files.</description>
+    <releaseNotes>- New Variable Control Macros (declare, initialize, and set) that's backed and powered by the RuntimeReferenceTable static class.
+- Reference these variables in XVNML with the "$" prefix.
+- Macro Caches can now be limited by scope using the "rootScope" parameter.
+- Have access to variables using the Runtime Reference Model pattern.
+- Adjusted thread setting for when the DialogueWriter is active.
+- Patched an issue where the timing of macros after the "insd" or "insert_directly" macro is out of sync.</releaseNotes>
     <copyright>2019 Enjyoii</copyright>
     <tags>C# .NET Standard 2.1 Utility Mark-Up Visual Novel Dialogue System</tags>
     <repository url="https://github.com/Miijii-Kaichou/XVNML" />

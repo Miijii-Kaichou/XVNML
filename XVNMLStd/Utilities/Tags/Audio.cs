@@ -32,7 +32,7 @@ namespace XVNML.Utilities.Tags
 
             var rel = GetParameterValue<DirectoryRelativity>(PathRelativityParameterString);
             string src = GetParameterValue<string>(SourceParameterString);
-            relativity = rel == null ? default : rel;
+            relativity = rel;
             var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + "Audio\\" + src : src;
             //var pathFlow = relativity == DirectoryRelativity.Relative ? fileOrigin + @"\" + XVNMLConfig.RelativePath["Audio"] + src : src;
             if (pathFlow == string.Empty) return;

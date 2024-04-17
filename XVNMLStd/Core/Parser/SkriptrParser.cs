@@ -6,11 +6,8 @@ using XVNML.Core.Dialogue;
 using XVNML.Core.Dialogue.Enums;
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
-using XVNML.Core.Tags;
 using XVNML.Core.Enums;
 using System.Text;
-
-internal delegate void ReferenceLinkerHandler(TagBase? sender, TagBase? referencingTag, Type type);
 
 namespace XVNML.Core.Parser
 {
@@ -18,7 +15,7 @@ namespace XVNML.Core.Parser
     {
         private static SkriptrParser? Instance;
 
-        public SyntaxToken?[] TokenCache { get; private set; }
+        public SyntaxToken?[]? TokenCache { get; private set; }
 
         private DialogueParserMode CurrentMode;
 
