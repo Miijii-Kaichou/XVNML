@@ -22,6 +22,7 @@ namespace XVNML.Utilities.Tags
         [JsonProperty] private Arg[]? _macroArguments;
         private (string macroName, string? macroParent) _macroRefKey;
 
+        [JsonProperty]
         public Arg[]? MacroArguments => _macroArguments;
 
         public override void OnResolve(string? fileOrigin)

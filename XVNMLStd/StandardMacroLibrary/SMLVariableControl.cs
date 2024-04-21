@@ -36,7 +36,7 @@ namespace XVNML.StandardMacroLibrary
         private static void InitializeVariableMacro(MacroCallInfo info, string identifier, object _typeof, object initialValue)
         {
             DeclareVariableMacro(info, identifier, _typeof);
-            SetVariableMacro(info, identifier.ToString(), initialValue);
+            SetVariableMacro(info, identifier, initialValue);
         }
 
         [Macro("set")]

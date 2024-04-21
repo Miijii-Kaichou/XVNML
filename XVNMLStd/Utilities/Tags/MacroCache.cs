@@ -22,6 +22,7 @@ namespace XVNML.Utilities.Tags
         [JsonProperty] private Macro[]? _macros;
         [JsonProperty] private string? _rootScope;
 
+        [JsonProperty]
         public Macro[]? Macros
         {
             get
@@ -42,7 +43,10 @@ namespace XVNML.Utilities.Tags
             }
         }
 
+        [JsonProperty]
         private DirectoryRelativity PathMode { get; set; } = DirectoryRelativity.Absolute;
+
+        [JsonProperty]
         private string? Source { get; set; }
 
         public override void OnResolve(string? fileOrigin)

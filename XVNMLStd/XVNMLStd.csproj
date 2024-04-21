@@ -32,7 +32,8 @@
 		<RootAllApplicationAssemblies>true</RootAllApplicationAssemblies>
 		<PackageIcon>xvnml_file_icon.png</PackageIcon>
 		<PackageTags>C#;.NET Standard 2.1;Utility;Mark-Up;Visual Novel;Dialogue System</PackageTags>
-		<PackageReleaseNotes>- Fixed issue regarding saving cached data of XVNML proxy file.</PackageReleaseNotes>
+		<PackageReleaseNotes>- We've released a patch where data for XVNML macros doesn't remain persistent when generating a cache file.
+- We've also allowed for the user to set a destination path for all cached data (for the XVNML Object and the Cached Macros that it depends on). </PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

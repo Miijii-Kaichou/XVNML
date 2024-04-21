@@ -10,7 +10,8 @@
     <icon>xvnml_file_icon.png</icon>
     <readme>README.md</readme>
     <description>A utility tool to interact with XVNML files.</description>
-    <releaseNotes>- Fixed issue regarding saving cached data of XVNML proxy file.</releaseNotes>
+    <releaseNotes>- We've released a patch where data for XVNML macros doesn't remain persistent when generating a cache file.
+- We've also allowed for the user to set a destination path for all cached data (for the XVNML Object and the Cached Macros that it depends on).</releaseNotes>
     <copyright>2019 Enjyoii</copyright>
     <tags>C# .NET Standard 2.1 Utility Mark-Up Visual Novel Dialogue System</tags>
     <repository url="https://github.com/Miijii-Kaichou/XVNML" />

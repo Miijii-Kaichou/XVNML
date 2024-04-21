@@ -136,6 +136,7 @@ namespace XVNML.Core.Tags
                 return null;
 
             T? element;
+            Type type = typeof(T);
 
             if (RuntimeReferenceTable.Map.ContainsKey(tagName) == false)
             {
