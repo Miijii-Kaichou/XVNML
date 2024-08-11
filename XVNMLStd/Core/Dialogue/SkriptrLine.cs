@@ -50,6 +50,9 @@ namespace XVNML.Core.Dialogue
         [JsonProperty] internal CastInfo? InitialCastInfo { get; set; }
         [JsonProperty] internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
 
+        // Simply to save the state before the list was modified/changed from certain macro calls.
+        private IList<MacroBlockInfo>? _cachedMIL = new List<MacroBlockInfo>();
+
         internal void ReadPosAndExecute(DialogueWriterProcessor process, string rootScope = "")
         {
             lock (process.processLock)
@@ -120,6 +123,9 @@ namespace XVNML.Core.Dialogue
             CleanOutExcessWhiteSpaces();
             RemoveReturnCarriages();
             ExtractMacroBlocks();
+
+            // Cache origianl macroInvocationList
+            _cachedMIL ??= macroInvocationList;
         }
 
         private void ParsePauseControlCharacter(int startIndex)
@@ -164,7 +170,7 @@ namespace XVNML.Core.Dialogue
 
                 SyntaxToken? token = Peek(0, true);
 
-                sb.Append(token.Text);
+                sb.Append(token?.Text);
                 pauseSyntaxTokens.Add(token);
 
                 if (token?.Type == TokenType.CloseBracket)
@@ -645,6 +651,11 @@ namespace XVNML.Core.Dialogue
 
                 macroInvocationList[i] = macro;
             }
+        }
+
+        internal void RenewMacroCalls()
+        {
+            macroInvocationList = _cachedMIL.ToList();
         }
     }
 }
