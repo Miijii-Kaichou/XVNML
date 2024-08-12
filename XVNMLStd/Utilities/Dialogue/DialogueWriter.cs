@@ -165,6 +165,7 @@ namespace XVNML.Utilities.Dialogue
         {
             lock (process.processLock)
             {
+                process.currentLine?.Purify();
                 process.ResetPass();
                 if (process.WasControlledPause)
                 {
@@ -289,7 +290,6 @@ namespace XVNML.Utilities.Dialogue
                     if (CheckForRetries(process)) return;
                     if (IsRestricting(process)) return;
 
-
                     WriterProcesses![id] = process;
                     OnLineSubstringChange?[id]?.Invoke(process);
 
@@ -403,7 +403,6 @@ namespace XVNML.Utilities.Dialogue
         {
             lock (process.processLock)
             {
-                //process.previousLine = process.currentLine;
                 process.currentLine = null;
                 process.CurrentLetter = null;
                 process.cursorIndex = NoDefinedIndex;

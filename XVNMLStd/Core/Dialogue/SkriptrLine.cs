@@ -28,6 +28,7 @@ namespace XVNML.Core.Dialogue
         private readonly StringBuilder _ContentStringBuilder = new StringBuilder();
 
         private string? _content;
+
         [JsonProperty]
         public string? Content
         {
@@ -40,6 +41,22 @@ namespace XVNML.Core.Dialogue
                 _content = value;
             }
         }
+
+        private bool _modified = false;
+
+        [JsonProperty]
+        public bool Modified
+        {
+            get
+            {
+                return _modified;
+            }
+            private set
+            {
+                _modified = value;
+            }
+        }
+        
         [JsonProperty] public Dictionary<string, (int sp, int rp)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
         [JsonProperty] public DialogueLineMode Mode => data.Mode;
 
@@ -51,7 +68,9 @@ namespace XVNML.Core.Dialogue
         [JsonProperty] internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
 
         // Simply to save the state before the list was modified/changed from certain macro calls.
-        private IList<MacroBlockInfo>? _cachedMIL = new List<MacroBlockInfo>();
+        private List<MacroBlockInfo>? _cachedMIL = new List<MacroBlockInfo>();
+        private string? _originalContent;
+        private List<MacroBlockInfo> _originalMacroList;
 
         internal void ReadPosAndExecute(DialogueWriterProcessor process, string rootScope = "")
         {
@@ -123,9 +142,6 @@ namespace XVNML.Core.Dialogue
             CleanOutExcessWhiteSpaces();
             RemoveReturnCarriages();
             ExtractMacroBlocks();
-
-            // Cache origianl macroInvocationList
-            _cachedMIL ??= macroInvocationList;
         }
 
         private void ParsePauseControlCharacter(int startIndex)
@@ -637,11 +653,16 @@ namespace XVNML.Core.Dialogue
 
         internal void AppendAtPosition(int cursorIndex, string text)
         {
+            _originalContent ??= Content;
             Content = Content?.Insert(cursorIndex, text);
         }
 
         internal void ShiftMacroCalls(int start, int length)
         {
+            if (_modified == true) return;
+
+            _originalMacroList = macroInvocationList;
+
             for (int i = 0; i < macroInvocationList.Count; i++)
             {
                 var macro = macroInvocationList[i];
@@ -651,11 +672,16 @@ namespace XVNML.Core.Dialogue
 
                 macroInvocationList[i] = macro;
             }
+           
+            _modified = true;
         }
 
-        internal void RenewMacroCalls()
+        internal void Purify()
         {
-            macroInvocationList = _cachedMIL.ToList();
+            if (_modified != true) return;
+
+            Content = _originalContent;
+            macroInvocationList = _originalMacroList;
         }
     }
 }

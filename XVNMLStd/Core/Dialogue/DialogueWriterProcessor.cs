@@ -70,6 +70,7 @@ namespace XVNML.Core.Dialogue
         private bool _lastProcessWasClosing;
 
         private int _jumpIndexValue = -1;
+        private List<MacroBlockInfo>? currentLineMacroCache;
 
         //Cast Data
         public CastInfo? CurrentCastInfo
@@ -163,14 +164,18 @@ namespace XVNML.Core.Dialogue
             {
                 currentLine?.AppendAtPosition(cursorIndex, text);
                 currentLine?.ShiftMacroCalls(cursorIndex, text.Length);
+                currentLineMacroCache = currentLine?.macroInvocationList!;
                 DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
             }
         }
 
         internal void Clear()
         {
-            _processBuilder.Clear();
-            DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
+            lock (processLock)
+            {
+                _processBuilder.Clear();
+                DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
+            }
         }
 
         internal void Pause()
