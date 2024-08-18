@@ -165,7 +165,6 @@ namespace XVNML.Utilities.Dialogue
         {
             lock (process.processLock)
             {
-                process.currentLine?.Purify();
                 process.ResetPass();
                 if (process.WasControlledPause)
                 {
@@ -177,6 +176,7 @@ namespace XVNML.Utilities.Dialogue
                 if (process.IsPaused == false) return;
                 process.IsPaused = false;
 
+                process.currentLine?.Purify();
                 OnNextLine?[process.ID]?.Invoke(process);
                 ResetProcess(process);
             }

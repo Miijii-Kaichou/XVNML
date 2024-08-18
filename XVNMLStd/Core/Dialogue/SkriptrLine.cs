@@ -70,7 +70,7 @@ namespace XVNML.Core.Dialogue
         // Simply to save the state before the list was modified/changed from certain macro calls.
         private List<MacroBlockInfo>? _cachedMIL = new List<MacroBlockInfo>();
         private string? _originalContent;
-        private List<MacroBlockInfo> _originalMacroList;
+        private List<MacroBlockInfo>? _originalMacroList;
 
         internal void ReadPosAndExecute(DialogueWriterProcessor process, string rootScope = "")
         {
@@ -661,11 +661,12 @@ namespace XVNML.Core.Dialogue
         {
             if (_modified == true) return;
 
-            _originalMacroList = macroInvocationList;
+            _originalMacroList = new List<MacroBlockInfo>();
 
             for (int i = 0; i < macroInvocationList.Count; i++)
             {
                 var macro = macroInvocationList[i];
+                _originalMacroList.Add(macro);
                 if (macro.blockPosition == start) continue;
 
                 macro.blockPosition += length;
@@ -681,7 +682,8 @@ namespace XVNML.Core.Dialogue
             if (_modified != true) return;
 
             Content = _originalContent;
-            macroInvocationList = _originalMacroList;
+            macroInvocationList = _originalMacroList!;
+            _modified = false;
         }
     }
 }
