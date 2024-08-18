@@ -15,11 +15,11 @@
 		<Copyright>2019 Enjyoii</Copyright>
 		<Description>A utility tool to interact with XVNML files.</Description>
 		<IncludeSymbols>False</IncludeSymbols>
-		<AssemblyVersion>1.0.3.02</AssemblyVersion>
+		<AssemblyVersion>1.0.3.03</AssemblyVersion>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<FileVersion>1.0.3.02-pre-release</FileVersion>
+		<FileVersion>1.0.3.03-pre-release</FileVersion>
 		<PackAsTool>False</PackAsTool>
-		<Version>1.0.3.02-pre-release</Version>
+		<Version>1.0.3.03-pre-release</Version>
 		<PackageLicenseFile>LICENSE.MD</PackageLicenseFile>
 		<AssemblyOriginatorKeyFile>C:\Users\tclte\Desktop\xvsnk.snk</AssemblyOriginatorKeyFile>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
