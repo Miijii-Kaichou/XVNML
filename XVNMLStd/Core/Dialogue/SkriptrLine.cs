@@ -13,6 +13,7 @@ using XVNML.Core.Extensions;
 
 using static XVNML.CharacterConstants;
 using static XVNML.StringConstants;
+using XVNML.Utilities.Diagnostics;
 
 namespace XVNML.Core.Dialogue
 {
@@ -68,7 +69,6 @@ namespace XVNML.Core.Dialogue
         [JsonProperty] internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
 
         // Simply to save the state before the list was modified/changed from certain macro calls.
-        private List<MacroBlockInfo>? _cachedMIL = new List<MacroBlockInfo>();
         private string? _originalContent;
         private List<MacroBlockInfo>? _originalMacroList;
 
@@ -395,11 +395,9 @@ namespace XVNML.Core.Dialogue
                 if (currentToken?.Type == TokenType.WhiteSpace)
                     continue;
 
-                if (!expectingType.Value.HasFlag(currentToken?.Type))
-                {
-                    Console.WriteLine("Doesn't Contain Flags...");
+                bool hasFlag = (expectingType.Value & currentToken?.Type).Equals(currentToken?.Type);
+                if (!hasFlag)
                     return;
-                }
 
                 switch (currentToken?.Type)
                 {
@@ -453,7 +451,7 @@ namespace XVNML.Core.Dialogue
 
                     case TokenType.Comma:
                         if (!multiArgs)
-                            return;
+                            return; ;
                         expectingType = TokenType.Number |
                                         TokenType.String |
                                         TokenType.EmptyString |

@@ -7,6 +7,7 @@ using XVNML.Core.Tags;
 using XVNML.Utilities.Diagnostics;
 
 using static XVNML.ParameterConstants;
+using static XVNML.FlagConstants;
 using static XVNML.DirectoryConstants;
 
 namespace XVNML.Utilities.Tags
@@ -17,6 +18,11 @@ namespace XVNML.Utilities.Tags
         protected override string[]? AllowedParameters => new[]
         {
             RootScopeParameterString
+        };
+
+        protected override string[]? AllowedFlags => new[]
+        {
+            PassFlagString
         };
 
         [JsonProperty] private Macro[]? _macros;

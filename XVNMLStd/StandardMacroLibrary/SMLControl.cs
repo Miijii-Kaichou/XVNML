@@ -96,27 +96,6 @@ namespace XVNML.StandardMacroLibrary
         {
             info.process.SetProcessRate(level == 0 ? level : 1000 / level);
         }
-
-        [Macro("is_prime")]
-        private static void IsPrimeMacro(MacroCallInfo info, uint value)
-        {
-            for (int i = 1; i < value; i++)
-            {
-                if (i != 1 && i < value && (value%i) == 0)
-                {
-                    info.process.AppendTextDirectly("false");
-                    return;
-                }
-            }
-
-            info.process.AppendTextDirectly("true");
-        }
-
-        [Macro("test")]
-        private static void TestMacro(MacroCallInfo info, string name, int value)
-        {
-            info.process.AppendTextDirectly($"{name} has the value of [{value}]");
-        }
     }
 }
 #pragma warning restore IDE0051 // Remove unused private members

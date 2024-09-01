@@ -10,5 +10,6 @@
         public const string CollectFilesFlagString = "collectFlags";
         public const string EnableMigrationFlagString = "enableMigration";
         public const string EnableGroupMigrationFlagString = "enableGroupMigration";
+        public const string PassFlagString = "pass";
     }
 }
