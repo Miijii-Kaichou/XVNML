@@ -9,15 +9,16 @@ namespace XVNML.Core.Native
 {
     public static class RuntimeReferenceTable
     {
+        private const string ReferenceExpression = @";[A-Za-z0-9_-]+;";
         internal static SortedDictionary<string, (object? value, Type type)> Map = new SortedDictionary<string, (object?, Type)>();
 
         public static void ProcessVariableExpression(string input, Action<object?> onSuccess, Action onFail)
         {
-            if (Regex.IsMatch(input, @";[A-Za-z0-9_-]+;"))
+            if (Regex.IsMatch(input, ReferenceExpression))
             {
                 var identifier = input.Split(';', StringSplitOptions.RemoveEmptyEntries)[0];
-                var variable = Get(identifier);
-                onSuccess(variable.value);
+                var (value, _) = Get(identifier);
+                onSuccess(value);
                 return;
             }
 

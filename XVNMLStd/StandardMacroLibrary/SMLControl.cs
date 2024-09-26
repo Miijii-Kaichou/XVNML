@@ -66,9 +66,16 @@ namespace XVNML.StandardMacroLibrary
         [Macro("jump_to")]
         private static void JumpToMacro(MacroCallInfo info, string tagName)
         {
-            if (info.process.lineProcesses.Where(sl => sl.Name == tagName.ToString()).Any() == false) return;
-
-            info.process.JumpTo(tagName.ToString());
+            RuntimeReferenceTable.ProcessVariableExpression(tagName, _myVariable =>
+            {
+                if (info.process.lineProcesses.Where(sl => sl.Name == _myVariable?.ToString()).Any() == false) return;
+                tagName = _myVariable!.ToString();
+                info.process.JumpTo(tagName.ToString());
+            }, () =>
+            {
+                if (info.process.lineProcesses.Where(sl => sl.Name == tagName.ToString()).Any() == false) return;
+                info.process.JumpTo(tagName.ToString());
+            });
         }
 
         [Macro("ldt")]
