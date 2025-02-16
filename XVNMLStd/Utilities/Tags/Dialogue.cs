@@ -10,6 +10,7 @@ using XVNML.Utilities.Diagnostics;
 using static XVNML.ParameterConstants;
 using static XVNML.FlagConstants;
 using static XVNML.DirectoryConstants;
+using XVNML.Utilities.Object;
 
 namespace XVNML.Utilities.Tags
 {
