@@ -10,7 +10,7 @@ using XVNML.Utilities.Diagnostics;
 using XVNML.Utilities.Tags;
 
 
-namespace XVNML.Utilities
+namespace XVNML.Utilities.Object
 {
     [System.Serializable]
     public class XVNMLObj : IParserComplainable
