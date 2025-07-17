@@ -7,9 +7,9 @@ using XVNML.Core.Lexer;
 using XVNML.Core.Parser.Enums;
 using XVNML.Core.Tags;
 using XVNML.Core.Enums;
-using XVNML.Utility.Diagnostics;
+using XVNML.Utilities.Diagnostics;
 using System.Numerics;
-using XVNML.XVNMLUtility.Tags;
+using XVNML.Utilities.Tags;
 using XVNML.Core.Macros;
 using System.Linq;
 using System.Diagnostics;
@@ -152,6 +152,7 @@ namespace XVNML.Core.Parser
                     _Current.Type == TokenType.SelfTag;
 
                 if (areTags) EvaluateTags(ref token);
+
                 continue;
             }
 
@@ -230,7 +231,7 @@ namespace XVNML.Core.Parser
                         {
                             //This means that we are creating a tag
                             var newTag = TagConverter.ConvertToTagInstance(current.Text!);
-                            newTag!.tagTypeName = current.Text;
+                            newTag!._tagName = current.Text;
                             _cacheTagTypeName = current.Text;
 
                             //If top is still open, it means we're nesting
@@ -243,6 +244,7 @@ namespace XVNML.Core.Parser
                             }
 
                             _tagStackFrame.Push(newTag);
+
                             continue;
                         }
 
@@ -271,7 +273,7 @@ namespace XVNML.Core.Parser
 
                         _cachedTagName = newParameter?.name;
 
-                        _cachedTagParameterInfo.paramters.Add(_cachedTagName!, newParameter!);
+                        _cachedTagParameterInfo.parameters.Add(_cachedTagName!, newParameter!);
                         continue;
 
                     case TokenType.EOF:
@@ -279,7 +281,7 @@ namespace XVNML.Core.Parser
                         return;
 
                     case TokenType.DoubleColon:
-                        var parameterName = _cachedTagParameterInfo!.paramters[_cachedTagName!].name;
+                        var parameterName = _cachedTagParameterInfo!.parameters[_cachedTagName!].name;
                         var expected = Peek(1);
 
                         if (expected?.Type! == TokenType.Char ||
@@ -289,15 +291,15 @@ namespace XVNML.Core.Parser
                             expected?.Type! == TokenType.Identifier)
                         {
                             Next();
-                            _cachedTagParameterInfo.paramters[_cachedTagName!].value = current?.Value;
+                            _cachedTagParameterInfo.parameters[_cachedTagName!].value = current?.Value;
                             continue;
                         }
 
                         if (expected?.Type == TokenType.ReferenceIdentifier)
                         {
                             Next();
-                            _cachedTagParameterInfo.paramters[_cachedTagName!].value = current?.Value;
-                            _cachedTagParameterInfo.paramters[_cachedTagName!].isReferencing = true;
+                            _cachedTagParameterInfo.parameters[_cachedTagName!].value = current?.Value;
+                            _cachedTagParameterInfo.parameters[_cachedTagName!].isReferencing = true;
 
                             continue;
                         }
@@ -336,7 +338,7 @@ namespace XVNML.Core.Parser
                     var nextToken = this.Peek(1);
                     var nextTokenType = nextToken?.Type;
 
-                    var rootName = TopOfStack.tagTypeName;
+                    var rootName = TopOfStack._tagName;
 
                     if (nextTokenType == TokenType.OpenTag ||
                         nextTokenType == TokenType.SelfTag) return;
@@ -412,6 +414,8 @@ namespace XVNML.Core.Parser
 
             var dirInfo = new DirectoryInfo(fileTarget!);
             var fileOrigin = dirInfo.Parent?.ToString();
+
+            top.RootScope ??= _tagStackFrame.Last().TagName;
             top.ParserRef = this;
             top.OnResolve(fileOrigin);
 
@@ -447,9 +451,9 @@ namespace XVNML.Core.Parser
                     }
 
                     //Expect matching name
-                    if (_Current.Text != TopOfStack?.tagTypeName)
+                    if (_Current.Text != TopOfStack?._tagName)
                     {
-                        Abort($"Tag Leveling for {TopOfStack?.tagTypeName} does not match with closing tag " +
+                        Abort($"Tag Leveling for {TopOfStack?._tagName} does not match with closing tag " +
                             $"{_Current.Text}");
                         return;
                     }
@@ -477,7 +481,7 @@ namespace XVNML.Core.Parser
                 {
                     //This means that we are creating a tag
                     var newTag = TagConverter.ConvertToTagInstance(_Current.Text!);
-                    newTag!.tagTypeName = _Current.Text;
+                    newTag!._tagName = _Current.Text;
 
                     //If top is still open, it means we're nesting
                     if (TopOfStack != null &&
@@ -557,12 +561,12 @@ namespace XVNML.Core.Parser
 
             _cachedTagName = newParameter?.name;
 
-            _cachedTagParameterInfo.paramters.Add(_cachedTagName!, newParameter!);
+            _cachedTagParameterInfo.parameters.Add(_cachedTagName!, newParameter!);
         }
 
         private void HandleDoubleColon()
         {
-            var parameterName = _cachedTagParameterInfo!.paramters[_cachedTagName!].name;
+            var parameterName = _cachedTagParameterInfo!.parameters[_cachedTagName!].name;
             var expected = Peek(1);
 
             if (expected?.Type! == TokenType.Char ||
@@ -572,7 +576,7 @@ namespace XVNML.Core.Parser
                 expected?.Type! == TokenType.Identifier)
             {
                 Next();
-                _cachedTagParameterInfo.paramters[_cachedTagName!].value = _Current?.Value;
+                _cachedTagParameterInfo.parameters[_cachedTagName!].value = _Current?.Value;
                 return;
             }
 
@@ -590,8 +594,8 @@ namespace XVNML.Core.Parser
 
                 Next();
 
-                _cachedTagParameterInfo.paramters[_cachedTagName!].value = _Current?.Value;
-                _cachedTagParameterInfo.paramters[_cachedTagName!].isReferencing = true;
+                _cachedTagParameterInfo.parameters[_cachedTagName!].value = _Current?.Value;
+                _cachedTagParameterInfo.parameters[_cachedTagName!].isReferencing = true;
 
                 return;
             }

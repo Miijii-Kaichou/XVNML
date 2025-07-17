@@ -1,6 +1,9 @@
-﻿internal enum Role
+﻿namespace XVNML.Core.Dialogue.Enums
 {
-    Undefined = -1,
-    Declarative,
-    Interrogative
+    internal enum Role
+    {
+        Undefined = -1,
+        Declarative,
+        Interrogative
+    }
 }

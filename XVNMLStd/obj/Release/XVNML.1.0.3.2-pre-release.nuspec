@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>XVNML</id>
+    <version>1.0.3.2-pre-release</version>
+    <title>XVNML</title>
+    <authors>Enjyoii</authors>
+    <license type="file">LICENSE.MD</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <icon>xvnml_file_icon.png</icon>
+    <readme>README.md</readme>
+    <description>A utility tool to interact with XVNML files.</description>
+    <releaseNotes>- We had patched an issue regarding using the "insert_directly"macro when used with the prompt feature.</releaseNotes>
+    <copyright>2019 Enjyoii</copyright>
+    <tags>C# .NET Standard 2.1 Utility Mark-Up Visual Novel Dialogue System</tags>
+    <repository url="https://github.com/Miijii-Kaichou/XVNML" />
+    <dependencies>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="Newtonsoft.Json" version="13.0.3" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="E:\Documents\Repositories\C#\XVNML\XVNMLStd\bin\Release\netstandard2.1\XVNML.dll" target="lib\netstandard2.1\XVNML.dll" />
+    <file src="C:\Users\tclte\Desktop\LICENSE.MD" target="\LICENSE.MD" />
+    <file src="C:\Users\tclte\Desktop\README.md" target="\README.md" />
+    <file src="C:\Users\tclte\Desktop\xvnml_file_icon.png" target="\xvnml_file_icon.png" />
+  </files>
+</package>

@@ -1,5 +1,12 @@
 # XVNML
 
+![GitHub](https://img.shields.io/github/license/Miijii-Kaichou/XVNML) ![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/XVNML) ![GitHub tag (with filter)](https://img.shields.io/github/v/tag/Miijii-Kaichou/XVNML)
+ ![Nuget](https://img.shields.io/nuget/dt/XVNML)
+
+![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)
+
+
+
 XVNML (formally known as X-tensible Visual Novel Markup Language), is an open-source mark-up language that can be easily paired with any game engine that requires a nice and structure way of storing Stored-Based information and dialogue. It puts together the normal mark up languages you may be used to, but adds a couple extra features (like Skriptr) to make it versitale in you game development work flow.
 
 ![Screenshot_20221205_234724](https://user-images.githubusercontent.com/46007223/217719313-597ad1ae-2ee0-4348-abe5-19ba43b8445f.png)
@@ -17,7 +24,12 @@ At it's current stage, these are the following states that this project is in:
 
 ## How to Get Started
 You can get started with using XVNML in a variety of ways. Since XVNML was made using C#, you can apply it to any .NET Application you want, whether that'd be on a C# Console, WPF, or ASP.NET application.
-You can even integrated into Unity, and make it part of your workflow. All it takes is adding the XVNML NuGet package to your project, and you're ready to go! For starters, you can reference off a C# Console Application sample [here](https://github.com/Miijii-Kaichou/XVNML/tree/main/XVNMLTest)! You may also want to check out an article I wrote on Medium that walks you through how to install XVNML and integrated in both a C# Console Application and a Unity project [here](https://medium.com/@miijii/get-started-using-xvnml-cc6dc478fc8e)!
+You can even integrated into Unity, and make it part of your workflow. All it takes is adding the XVNML NuGet package to your project, and you're ready to go! For starters, you can reference off a C# Console Application sample [here](https://github.com/Miijii-Kaichou/XVNML/tree/main/XVNMLTest)! You may also want to check out an article I wrote on Medium that walks you through how to install XVNML and integrated in both a C# Console Application and a Unity project [here](https://medium.com/@miijii/get-started-using-xvnml-
+cc6dc478fc8e)!
+
+## Donations
+
+We'll need your help to make this language unlock its slumbering potential! Supporting us makes sure that we have funds to not only incorporate other technologies with XVNML (such as with the Unity Engine), but it'll also make life a lot easier as we're doing it. [Click here](https://www.paypal.com/paypalme/MiijiiKaichou) to send a donation! A little will mark a large difference!
 
 ## How to Use XVNML
 
@@ -27,6 +39,7 @@ All of your XVNML content are represented by an object called XVNMLObj. You inst
 
 ### Pre-Built Tags
 By default, you have a total of 28 pre-built tags that can be parsed by the XVNML utility.
+  * Args
   * Audio
   * AudioDefinition
   * Author
@@ -43,6 +56,8 @@ By default, you have a total of 28 pre-built tags that can be parsed by the XVNM
   * ImageDefinitions
   * Keycode
   * KeycodeDefinitions
+  * MacroCache
+  * Macro
   * Metadata
   * Portrait
   * PortraitDefinitions
@@ -59,9 +74,9 @@ By default, you have a total of 28 pre-built tags that can be parsed by the XVNM
 Out of all of these valid tags, Proxy and Source are Root Tags. This means whenever you type your XVNMLObj instance and access the root, it'll either be Proxy or Source, depending on how the file was structured.
 A Proxy file is always your main file, and is always read first. However, a Source is a file that can be used to introduce modularity into your projects. For example, the screenshot below shows that we’re creating a Cast element called Hana, and the source of that data is in “Hana\Hana.cast.xvnml”
 
-![Screenshot 2023-06-25 151133](https://github.com/Miijii-Kaichou/XVNML/assets/46007223/6dafc1c1-4072-4934-9d24-125372b8b734)
+![Screenshot 2023-06-25 151133](https://user-images.githubusercontent.com/46007223/249027161-6dafc1c1-4072-4934-9d24-125372b8b734.png)
 
-![Screenshot 2023-06-25 151258](https://github.com/Miijii-Kaichou/XVNML/assets/46007223/5a2f9c56-0191-4543-a827-64e6e5f50137)
+![Screenshot 2023-06-25 151258](https://user-images.githubusercontent.com/46007223/249027223-5a2f9c56-0191-4543-a827-64e6e5f50137.png)
 
 By utilizing Source files, you can reduce the number of lines in your proxy file. It’s one of the most important best practices of using XVNML in your development process.
 

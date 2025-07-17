@@ -9,7 +9,7 @@ namespace XVNML.Core.Dialogue.Structs
         [JsonProperty] internal int returnPoint;
         [JsonProperty] internal bool isPartOfResponse;
         [JsonProperty] internal string? fromResponse;
-        [JsonProperty] internal SkripterLine? parentLine;
+        [JsonProperty] internal SkriptrLine? parentLine;
         [JsonProperty] internal bool isClosingLine;
         [JsonProperty] internal string? responseString;
 

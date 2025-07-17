@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Timers;
+
 using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Macros;
-using XVNML.Utility.Dialogue;
-using XVNML.Utility.Macros;
+using XVNML.Utilities.Dialogue;
+using XVNML.Utilities.Macros;
 
 namespace XVNML.Core.Dialogue
 {
@@ -28,7 +29,20 @@ namespace XVNML.Core.Dialogue
         }
 
         public string? Response { get; internal set; }
-        public bool AtEnd => lineIndex > lineProcesses.Count - 1;
+
+        private bool _atEnd;
+        public bool AtEnd
+        {
+            get
+            {
+                return lineIndex > lineProcesses.Count - 1;
+            }
+            private set
+            {
+                _atEnd = value;
+            }
+        }
+
         public bool WasControlledPause { get; private set; }
         public uint ProcessRate { get; internal set; } = 60;
         public bool IsPaused { get; internal set; }
@@ -36,8 +50,8 @@ namespace XVNML.Core.Dialogue
 
         public static bool IsStagnant => Instance?.lineProcesses.Count == 0;
 
-        internal ConcurrentBag<SkripterLine> lineProcesses = new ConcurrentBag<SkripterLine>();
-        internal SkripterLine? currentLine;
+        internal ConcurrentBag<SkriptrLine> lineProcesses = new ConcurrentBag<SkriptrLine>();
+        internal SkriptrLine? currentLine;
         internal int lineIndex = -1;
         internal int cursorIndex;
 
@@ -55,8 +69,8 @@ namespace XVNML.Core.Dialogue
         private CastInfo? _currentCastInfo;
         private bool _lastProcessWasClosing;
 
-        private SceneInfo? _currentSceneInfo = null;
         private int _jumpIndexValue = -1;
+        private List<MacroBlockInfo>? currentLineMacroCache;
 
         //Cast Data
         public CastInfo? CurrentCastInfo
@@ -91,29 +105,6 @@ namespace XVNML.Core.Dialogue
             }
         }
 
-        // Scene Data
-        public SceneInfo? CurrentSceneInfo
-        {
-            get
-            {
-                return _currentSceneInfo;
-            }
-            set
-            {
-                var previous = _currentSceneInfo;
-
-                _currentSceneInfo = value;
-
-                if (_currentSceneInfo == null) return;
-                if (previous?.name == _currentSceneInfo?.name) return;
-
-                if (_currentSceneInfo!.Value.name?.Equals(previous?.name) == false)
-                {
-                    DialogueWriter.OnSceneChange?[ID]?.Invoke(this);
-                }
-            }
-        }
-
         internal char? CurrentLetter
         {
             get
@@ -133,7 +124,23 @@ namespace XVNML.Core.Dialogue
             ProcessRate = rate;
         }
 
-        internal void Append(string text)
+        public void RequestForAppension(string text)
+        {
+            RequestForAppension(text, appendDirectly: false);
+        }
+
+        public void RequestForAppension(string text, bool appendDirectly)
+        {
+            if (appendDirectly)
+            {
+                AppendTextDirectly(text);
+                return;
+            }
+
+            AppendText(text);
+        }
+
+        internal void AppendText(string text)
         {
             lock (processLock)
             {
@@ -151,10 +158,24 @@ namespace XVNML.Core.Dialogue
             }
         }
 
+        internal void AppendTextDirectly(string text)
+        {
+            lock (processLock)
+            {
+                currentLine?.AppendAtPosition(cursorIndex, text);
+                currentLine?.ShiftMacroCalls(cursorIndex, text.Length);
+                currentLineMacroCache = currentLine?.macroInvocationList!;
+                DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
+            }
+        }
+
         internal void Clear()
         {
-            _processBuilder.Clear();
-            DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
+            lock (processLock)
+            {
+                _processBuilder.Clear();
+                DialogueWriter.OnLineSubstringChange?[ID]?.Invoke(this);
+            }
         }
 
         internal void Pause()
@@ -197,6 +218,7 @@ namespace XVNML.Core.Dialogue
             delayTimer = null;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         internal void ChangeCastVoice(MacroCallInfo info, string voiceName)
         {
             CurrentCastInfo = new CastInfo()
@@ -207,6 +229,7 @@ namespace XVNML.Core.Dialogue
             };
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         internal void ChangeCastExpression(MacroCallInfo info, string expressionName)
         {
             CurrentCastInfo = new CastInfo()
@@ -229,19 +252,26 @@ namespace XVNML.Core.Dialogue
             Instance = new DialogueWriterProcessor()
             {
                 ID = id,
-                lineProcesses = new ConcurrentBag<SkripterLine>(),
+                lineProcesses = new ConcurrentBag<SkriptrLine>(),
                 _processBuilder = new StringBuilder(),
                 currentLine = null,
                 CurrentLetter = null,
                 cursorIndex = -1,
                 IsPaused = false,
+                processLock = new object(),
             };
+
+            if (input == null)
+            {
+                Instance!.AtEnd = true;
+                return null;
+            }
 
             var reversedList = input.Lines?.ToArray().Reverse();
 
             for (int i = 0; i < reversedList.Count(); i++)
             {
-                SkripterLine line = reversedList.ElementAt(i);
+                SkriptrLine line = reversedList.ElementAt(i);
 
                 if (line.data.parentLine != null && line.data.isClosingLine)
                 {
@@ -289,8 +319,8 @@ namespace XVNML.Core.Dialogue
         {
             if (currentLine == null) return;
             inPrompt = false;
-            var prompt = currentLine.PromptContent[response];
-            lineIndex = prompt.sp - 1;
+            var (sp, _) = currentLine.PromptContent[response];
+            lineIndex = sp - 1;
             Response = response;
         }
 
@@ -352,6 +382,17 @@ namespace XVNML.Core.Dialogue
         {
             if (currentLine?.data.Mode == Enums.DialogueLineMode.Prompt) return;
             IsPass = true;
+        }
+
+        internal void Wipe()
+        {
+            _processBuilder.Clear();
+            IsPass = false;
+            currentLine = null;
+            cursorIndex = -1;
+            lineProcesses.Clear();
+            CurrentLetter = null;
+            IsPaused = false;
         }
     }
 }

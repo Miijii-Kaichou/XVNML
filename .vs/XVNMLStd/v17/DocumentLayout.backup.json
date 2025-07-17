@@ -1,0 +1,545 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\Documents\\Repositories\\C#\\XVNML\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\core\\macros\\macroinvoker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\core\\macros\\macroinvoker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\core\\macros\\invalidmacroexception.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\core\\macros\\invalidmacroexception.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\macrocache.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\macrocache.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\dialogue\\dialoguewriter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\dialogue\\dialoguewriter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\core\\dialogue\\dialoguewriterprocessor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\core\\dialogue\\dialoguewriterprocessor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\image.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\image.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\dialoguegroup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\dialoguegroup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\dialogue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\dialogue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\description.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\description.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\dependencydefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\dependencydefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\cast.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\cast.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\scene.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\scene.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\proxy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\proxy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\portrait.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\portrait.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\portraitdefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\portraitdefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\audio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\audio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\audiodefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\audiodefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\author.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\author.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\voice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\voice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\voicedefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\voicedefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\tags.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\tags.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\date.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\date.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\arg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\arg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\scenedefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\scenedefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\castdefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\castdefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\macro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\macro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\copyright.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\copyright.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\imagedefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\imagedefinitions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\keycode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\keycode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\tags\\userdefined.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\tags\\userdefined.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\utilities\\common\\xvnmlobj.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\utilities\\common\\xvnmlobj.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|e:\\documents\\repositories\\c#\\xvnml\\xvnmlstd\\core\\dialogue\\enums\\castevaluationmode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{863107BF-242E-4D5A-89AB-00BAB6F1110D}|XVNMLStd\\XVNMLStd.csproj|solutionrelative:xvnmlstd\\core\\dialogue\\enums\\castevaluationmode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 278,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MacroInvoker.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Core\\Macros\\MacroInvoker.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Core\\Macros\\MacroInvoker.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Core\\Macros\\MacroInvoker.cs",
+              "RelativeToolTip": "XVNMLStd\\Core\\Macros\\MacroInvoker.cs",
+              "ViewState": "AgIAAMwAAAAAAAAAAAAMwPoAAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-22T15:16:25.235Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "InvalidMacroException.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Core\\Macros\\InvalidMacroException.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Core\\Macros\\InvalidMacroException.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Core\\Macros\\InvalidMacroException.cs",
+              "RelativeToolTip": "XVNMLStd\\Core\\Macros\\InvalidMacroException.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-22T15:16:21.858Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DialogueWriter.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Dialogue\\DialogueWriter.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Dialogue\\DialogueWriter.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Dialogue\\DialogueWriter.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Dialogue\\DialogueWriter.cs",
+              "ViewState": "AQIAALgAAAAAAAAAAAAAALgAAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T03:03:32.906Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DialogueGroup.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\DialogueGroup.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\DialogueGroup.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\DialogueGroup.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\DialogueGroup.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:57:12.364Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Description.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Description.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Description.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Description.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Description.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:52:14.614Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Image.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Image.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Image.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Image.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Image.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACUAAAAkAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:51:58.032Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "DependencyDefinitions.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\DependencyDefinitions.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\DependencyDefinitions.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\DependencyDefinitions.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\DependencyDefinitions.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:56:51.389Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Dialogue.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Dialogue.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Dialogue.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Dialogue.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Dialogue.cs",
+              "ViewState": "AQIAAA8AAAAAAAAAAAAawB0AAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:52:03.635Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Proxy.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Proxy.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Proxy.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Proxy.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Proxy.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACQAAABQAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-01T03:09:33.878Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Portrait.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Portrait.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Portrait.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Portrait.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Portrait.cs",
+              "ViewState": "AQIAAA8AAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:55:40.647Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Audio.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Audio.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Audio.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Audio.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Audio.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:54:25.607Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Scene.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Scene.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Scene.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Scene.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Scene.cs",
+              "ViewState": "AQIAAAoAAAAAAAAAAAAAACAAAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:54:16.202Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Cast.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Cast.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Cast.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Cast.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Cast.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:55:21.332Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MacroCache.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\MacroCache.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\MacroCache.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\MacroCache.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\MacroCache.cs",
+              "ViewState": "AQIAABkAAAAAAAAAAAAAACcAAAAwAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:52:29.258Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DialogueWriterProcessor.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Core\\Dialogue\\DialogueWriterProcessor.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Core\\Dialogue\\DialogueWriterProcessor.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Core\\Dialogue\\DialogueWriterProcessor.cs",
+              "RelativeToolTip": "XVNMLStd\\Core\\Dialogue\\DialogueWriterProcessor.cs",
+              "ViewState": "AQIAABMBAAAAAAAAAAAAACcAAAAXAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T03:06:20.246Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "AudioDefinitions.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\AudioDefinitions.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\AudioDefinitions.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\AudioDefinitions.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\AudioDefinitions.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:54:23.608Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "PortraitDefinitions.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\PortraitDefinitions.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\PortraitDefinitions.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\PortraitDefinitions.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\PortraitDefinitions.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:51:47.477Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "Author.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Author.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Author.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Author.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Author.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:54:22.844Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "Voice.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Voice.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Voice.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Voice.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Voice.cs",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAAACQAAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:55:02.311Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "VoiceDefinitions.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\VoiceDefinitions.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\VoiceDefinitions.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\VoiceDefinitions.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\VoiceDefinitions.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:55:00.456Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "Date.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Date.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Date.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Date.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Date.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:54:35.981Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "Arg.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Arg.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Arg.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Arg.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Arg.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:54:30.432Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "Tags.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Tags.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Tags.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Tags.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Tags.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:49:39.93Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "SceneDefinitions.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\SceneDefinitions.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\SceneDefinitions.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\SceneDefinitions.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\SceneDefinitions.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:54:13.779Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "CastDefinitions.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\CastDefinitions.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\CastDefinitions.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\CastDefinitions.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\CastDefinitions.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABEAAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:53:39.816Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "Copyright.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Copyright.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Copyright.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Copyright.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Copyright.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:52:07.605Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "Macro.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Macro.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Macro.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Macro.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Macro.cs",
+              "ViewState": "AQIAABIAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:51:49.969Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "ImageDefinitions.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\ImageDefinitions.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\ImageDefinitions.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\ImageDefinitions.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\ImageDefinitions.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:51:56.018Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "Keycode.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Keycode.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\Keycode.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\Keycode.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\Keycode.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:51:53.562Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "UserDefined.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\UserDefined.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\Tags\\UserDefined.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\Tags\\UserDefined.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\Tags\\UserDefined.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:49:29.511Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "XVNMLObj.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\COMMON\\XVNMLObj.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Utilities\\COMMON\\XVNMLObj.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Utilities\\COMMON\\XVNMLObj.cs",
+              "RelativeToolTip": "XVNMLStd\\Utilities\\COMMON\\XVNMLObj.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACoAAAAWAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:38:15.167Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "CastEvaluationMode.cs",
+              "DocumentMoniker": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Core\\Dialogue\\Enums\\CastEvaluationMode.cs",
+              "RelativeDocumentMoniker": "XVNMLStd\\Core\\Dialogue\\Enums\\CastEvaluationMode.cs",
+              "ToolTip": "E:\\Documents\\Repositories\\C#\\XVNML\\XVNMLStd\\Core\\Dialogue\\Enums\\CastEvaluationMode.cs",
+              "RelativeToolTip": "XVNMLStd\\Core\\Dialogue\\Enums\\CastEvaluationMode.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-11T02:26:19.686Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

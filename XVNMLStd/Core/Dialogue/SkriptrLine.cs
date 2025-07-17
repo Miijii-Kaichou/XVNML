@@ -8,13 +8,16 @@ using XVNML.Core.Dialogue.Structs;
 using XVNML.Core.Lexer;
 using XVNML.Core.Macros;
 using XVNML.Core.Enums;
-using XVNML.Utility.Macros;
+using XVNML.Utilities.Macros;
 using XVNML.Core.Extensions;
-using System.Linq.Expressions;
+
+using static XVNML.CharacterConstants;
+using static XVNML.StringConstants;
+using XVNML.Utilities.Diagnostics;
 
 namespace XVNML.Core.Dialogue
 {
-    public sealed class SkripterLine
+    public sealed class SkriptrLine
     {
         internal string? lastAddedResponse;
         internal Stack<string> LastAddedResponseStack = new Stack<string>();
@@ -22,10 +25,39 @@ namespace XVNML.Core.Dialogue
 
         private SyntaxToken[]? _tokenCache;
 
-        private static SkripterLine? Instance;
+        private static SkriptrLine? Instance;
         private readonly StringBuilder _ContentStringBuilder = new StringBuilder();
 
-        [JsonProperty] public string? Content { get; private set; }
+        private string? _content;
+
+        [JsonProperty]
+        public string? Content
+        {
+            get
+            {
+                return _content;
+            }
+            private set
+            {
+                _content = value;
+            }
+        }
+
+        private bool _modified = false;
+
+        [JsonProperty]
+        public bool Modified
+        {
+            get
+            {
+                return _modified;
+            }
+            private set
+            {
+                _modified = value;
+            }
+        }
+        
         [JsonProperty] public Dictionary<string, (int sp, int rp)> PromptContent { get; private set; } = new Dictionary<string, (int, int)>();
         [JsonProperty] public DialogueLineMode Mode => data.Mode;
 
@@ -36,14 +68,18 @@ namespace XVNML.Core.Dialogue
         [JsonProperty] internal CastInfo? InitialCastInfo { get; set; }
         [JsonProperty] internal List<MacroBlockInfo> macroInvocationList = new List<MacroBlockInfo>();
 
-        internal void ReadPosAndExecute(DialogueWriterProcessor process)
+        // Simply to save the state before the list was modified/changed from certain macro calls.
+        private string? _originalContent;
+        private List<MacroBlockInfo>? _originalMacroList;
+
+        internal void ReadPosAndExecute(DialogueWriterProcessor process, string rootScope = "")
         {
             lock (process.processLock)
             {
                 macroInvocationList
-                .Where(macro => macro.blockPosition.Equals(process.cursorIndex))
+                .Where(macro => (macro.blockPosition).Equals(process.cursorIndex))
                 .ToList()
-                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.cursorIndex}));
+                .ForEach(macro => macro.Call(new MacroCallInfo() { process = process, callIndex = process.cursorIndex, callScope = rootScope }));
             }
         }
 
@@ -89,8 +125,8 @@ namespace XVNML.Core.Dialogue
             // Trim any < and >
             Content = _ContentStringBuilder
                 .ToString()
-                .TrimEnd('<')
-                .Replace(">>", string.Empty);
+                .TrimEnd(LessThanCharacter)
+                .Replace(DoubleGreaterThanString, string.Empty);
 
             for (int i = 0; i < _tokenCache.Length; i++)
             {
@@ -127,8 +163,8 @@ namespace XVNML.Core.Dialogue
 
         private void ConvertToCallBlock(List<SyntaxToken?> tokenList)
         {
-            const string ExpressionCode = "E::";
-            const string VoiceCode = "V::";
+            const string ExpressionCode = ExpressionPrefixString;
+            const string VoiceCode = VoicePrefixString;
 
             int _position = -1;
 
@@ -150,7 +186,7 @@ namespace XVNML.Core.Dialogue
 
                 SyntaxToken? token = Peek(0, true);
 
-                sb.Append(token.Text);
+                sb.Append(token?.Text);
                 pauseSyntaxTokens.Add(token);
 
                 if (token?.Type == TokenType.CloseBracket)
@@ -217,20 +253,20 @@ namespace XVNML.Core.Dialogue
             if (expression != null)
             {
                 blockStringBuilder.Append("|exp::");
-                blockStringBuilder.Append("\"");
+                blockStringBuilder.Append(DoubleQuoteCharacter);
                 blockStringBuilder.Append(expression.ToString());
-                blockStringBuilder.Append("\"");
+                blockStringBuilder.Append(DoubleQuoteCharacter);
             }
 
             if (voice != null)
             {
                 blockStringBuilder.Append("|vo::");
-                blockStringBuilder.Append("\"");
+                blockStringBuilder.Append(DoubleQuoteCharacter);
                 blockStringBuilder.Append(voice.ToString());
-                blockStringBuilder.Append("\"");
+                blockStringBuilder.Append(DoubleQuoteCharacter);
             }
 
-            blockStringBuilder.Append("}");
+            blockStringBuilder.Append(CloseCurlyBracketCharacter);
 
             Content = Content?.ReplaceFirstOccuranceOf(sb.ToString(), blockStringBuilder.ToString());
 
@@ -268,7 +304,7 @@ namespace XVNML.Core.Dialogue
             for (int i = 0; i < Content.Length; i++)
             {
                 var currentCharacter = Content[i];
-                if (currentCharacter != '{') continue;
+                if (currentCharacter != OpenCurlyBracketCharacter) continue;
                 i = AnalysisMacroStructure(i, lastTokenPosition, out lastTokenPosition);
             }
         }
@@ -325,9 +361,9 @@ namespace XVNML.Core.Dialogue
                     continue;
                 }
 
-                if (tokenType == TokenType.String) sb.Append('\"');
+                if (tokenType == TokenType.String) sb.Append(DoubleQuoteCharacter);
                 sb.Append(token.Text);
-                if (tokenType == TokenType.String) sb.Append('\"');
+                if (tokenType == TokenType.String) sb.Append(DoubleQuoteCharacter);
 
                 tokenList.Add(token);
                 macrosTotal += (tokenType == TokenType.Line ? 1 : 0);
@@ -359,11 +395,9 @@ namespace XVNML.Core.Dialogue
                 if (currentToken?.Type == TokenType.WhiteSpace)
                     continue;
 
-                if (!expectingType.Value.HasFlag(currentToken?.Type))
-                {
-                    Console.WriteLine("Doesn't Contain Flags...");
+                bool hasFlag = (expectingType.Value & currentToken?.Type).Equals(currentToken?.Type);
+                if (!hasFlag)
                     return;
-                }
 
                 switch (currentToken?.Type)
                 {
@@ -379,8 +413,8 @@ namespace XVNML.Core.Dialogue
 
                         var identifierType = typeof(object);
 
-                        if (currentToken.Text?.ToLower() == "true" ||
-                            currentToken.Text?.ToLower() == "false")
+                        if (currentToken.Text?.ToLower() == TrueString ||
+                            currentToken.Text?.ToLower() == FalseString)
                         {
                             identifierType = typeof(bool);
                         }
@@ -402,6 +436,7 @@ namespace XVNML.Core.Dialogue
                                         TokenType.String |
                                         TokenType.EmptyString |
                                         TokenType.Identifier |
+                                        TokenType.DollarSign |
                                         TokenType.OpenParentheses;
                         continue;
 
@@ -410,16 +445,18 @@ namespace XVNML.Core.Dialogue
                         expectingType = TokenType.Number |
                                         TokenType.String |
                                         TokenType.EmptyString |
-                                        TokenType.Identifier;
+                                        TokenType.Identifier |
+                                        TokenType.DollarSign;
                         continue;
 
                     case TokenType.Comma:
                         if (!multiArgs)
-                            return;
+                            return; ;
                         expectingType = TokenType.Number |
                                         TokenType.String |
                                         TokenType.EmptyString |
-                                        TokenType.Identifier;
+                                        TokenType.Identifier |
+                                        TokenType.DollarSign;
                         continue;
 
                     case TokenType.CloseParentheses:
@@ -431,7 +468,10 @@ namespace XVNML.Core.Dialogue
 
                     case TokenType.DollarSign:
                         if (macroName != null)
-                            return;
+                        {
+                            expectingType = TokenType.Identifier;
+                            continue;
+                        }
                         SetAsReference(newBlock, macroCount);
                         expectingType = TokenType.Identifier;
                         continue;
@@ -529,7 +569,7 @@ namespace XVNML.Core.Dialogue
             int i = 0;
             while (i < Content.Length)
             {
-                if (Content[i] != '\n')
+                if (Content[i] != NewLineCharacter)
                 {
                     i++;
                     continue;
@@ -541,19 +581,25 @@ namespace XVNML.Core.Dialogue
                 while (!cleared)
                 {
                     peek++;
-                    cleared = !(Content[i + peek] == ' ');
+                    cleared = !(Content[i + peek] == WhiteSpaceCharacter);
                 }
                 i++;
-                Content = Content.Remove(i, peek - 1);
+                var peekValue = peek - 2;
+                if (peekValue < 0)
+                {
+                    Content = Content.Remove(i, peek - 1);
+                    return;
+                }
+                Content = Content.Remove(i, peekValue);
             }
         }
 
         private void RemoveReturnCarriages()
         {
             if (Content == null) return;
-            Content = Content.Replace("\r", string.Empty)
-                             .Replace("\n", string.Empty)
-                             .Replace("\t", string.Empty);
+            Content = Content.Replace(ReturnCharacter.ToString(), string.Empty)
+                             .Replace(NewLineCharacter.ToString(), string.Empty)
+                             .Replace(TabCharacter.ToString(), string.Empty);
         }
 
         private void EvaluateNumericType(SyntaxToken? token, out Type? resultType)
@@ -563,25 +609,25 @@ namespace XVNML.Core.Dialogue
             var character = text[length - 1];
             if (char.IsLetter(character)) text = text.Remove(length - 1, 1);
 
-            if (char.ToUpper(character) == 'F' || text.Contains('.'))
+            if (char.ToUpper(character) == FloatSuffixCharacter || text.Contains(PeriodCharacter))
             {
                 resultType = typeof(float);
                 return;
             }
 
-            if (char.ToUpper(character) == 'D' || text.Contains('.'))
+            if (char.ToUpper(character) == DoubleSuffixCharacter || text.Contains(PeriodCharacter))
             {
                 resultType = typeof(double);
                 return;
             }
 
-            if (char.ToUpper(character) == 'L')
+            if (char.ToUpper(character) == LongSuffixCharacter)
             {
                 resultType = typeof(long);
                 return;
             }
 
-            if (char.ToUpper(character) == 'I')
+            if (char.ToUpper(character) == IntegerSuffixCharacter)
             {
                 resultType = typeof(int);
                 return;
@@ -589,7 +635,7 @@ namespace XVNML.Core.Dialogue
 
             character = text[0];
 
-            if (character == '-')
+            if (character == DashCharacter)
             {
                 resultType = typeof(int);
                 return;
@@ -601,6 +647,41 @@ namespace XVNML.Core.Dialogue
         internal void SetLineTag(string? identifier)
         {
             Name = identifier;
+        }
+
+        internal void AppendAtPosition(int cursorIndex, string text)
+        {
+            _originalContent ??= Content;
+            Content = Content?.Insert(cursorIndex, text);
+        }
+
+        internal void ShiftMacroCalls(int start, int length)
+        {
+            if (_modified == true) return;
+
+            _originalMacroList = new List<MacroBlockInfo>();
+
+            for (int i = 0; i < macroInvocationList.Count; i++)
+            {
+                var macro = macroInvocationList[i];
+                _originalMacroList.Add(macro);
+                if (macro.blockPosition == start) continue;
+
+                macro.blockPosition += length;
+
+                macroInvocationList[i] = macro;
+            }
+           
+            _modified = true;
+        }
+
+        internal void Purify()
+        {
+            if (_modified != true) return;
+
+            Content = _originalContent;
+            macroInvocationList = _originalMacroList!;
+            _modified = false;
         }
     }
 }

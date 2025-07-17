@@ -9,13 +9,13 @@ namespace XVNML.Core.Dialogue
     /// </summary>
     public sealed class DialogueScript
     {
-        [JsonProperty] public List<SkripterLine>? Lines { get; set; } = new List<SkripterLine>();
+        [JsonProperty] public List<SkriptrLine>? Lines { get; set; } = new List<SkriptrLine>();
 
-        public SkripterLine GetLine(int index) => Lines?[index]!;
-        public void ComposeNewLine(SkripterLine? line)
+        public SkriptrLine GetLine(int index) => Lines?[index]!;
+        public void ComposeNewLine(SkriptrLine? line)
         {
             if (line == null) return;
-            Lines.Add(line);
+            Lines?.Add(line);
         }
     }
 }

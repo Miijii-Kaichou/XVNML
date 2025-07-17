@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using XVNML.Utility.Diagnostics;
+using XVNML.Utilities.Diagnostics;
 
 namespace XVNML.Core.Assemblies
 {

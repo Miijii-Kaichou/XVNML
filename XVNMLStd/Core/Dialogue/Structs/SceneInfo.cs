@@ -4,5 +4,6 @@
     {
         public string? name;
         public string? transition;
+        public int layer;
     }
 }
