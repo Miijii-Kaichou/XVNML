@@ -61,4 +61,12 @@
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Utilities\Tags\Macro\SMLVariableControl\" />
+	  <Folder Include="Utilities\Tags\Macro\SMLRichText\" />
+	  <Folder Include="Utilities\Tags\Macro\SMLPrint\" />
+	  <Folder Include="Utilities\Tags\Macro\SMLDebug\" />
+	  <Folder Include="Utilities\Tags\Macro\SMLControl\" />
+	</ItemGroup>
 </Project>

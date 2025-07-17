@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("2019 Enjyoii")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("A utility tool to interact with XVNML files.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.3.04-pre-release")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.3.04-pre-release+b2cc6b3abb83cf65781c34c163dd69b052fa279c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.3.04-pre-release+0c3fd2d5ffb7f3a2156293f539acc0bddf5ad4f9")]
 [assembly: System.Reflection.AssemblyProductAttribute("XVNML")]
 [assembly: System.Reflection.AssemblyTitleAttribute("XVNML")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.3.04")]
