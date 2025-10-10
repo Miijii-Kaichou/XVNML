@@ -9,6 +9,5 @@ namespace XVNML.Core.Tags
         public string[]? DependingTags { get; internal set; }
         public TagOccurance? TagOccurance { get; internal set; }
         public bool UserDefined { get; internal set; }
-        public string? FromNamespace { get; internal set; }
     }
 }

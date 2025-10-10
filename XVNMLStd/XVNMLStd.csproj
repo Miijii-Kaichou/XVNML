@@ -63,10 +63,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Utilities\Tags\Macro\SMLVariableControl\" />
-	  <Folder Include="Utilities\Tags\Macro\SMLRichText\" />
-	  <Folder Include="Utilities\Tags\Macro\SMLPrint\" />
-	  <Folder Include="Utilities\Tags\Macro\SMLDebug\" />
-	  <Folder Include="Utilities\Tags\Macro\SMLControl\" />
+	  <Folder Include="Utilities\Tags\Macros\SMLVariableControl\" />
+	  <Folder Include="Utilities\Tags\Macros\SMLRichText\" />
+	  <Folder Include="Utilities\Tags\Macros\SMLPrint\" />
+	  <Folder Include="Utilities\Tags\Macros\SMLDebug\" />
+	  <Folder Include="Utilities\Tags\Macros\SMLControl\" />
 	</ItemGroup>
 </Project>

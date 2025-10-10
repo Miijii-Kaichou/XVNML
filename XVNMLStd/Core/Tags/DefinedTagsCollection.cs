@@ -57,7 +57,6 @@ namespace XVNML.Core.Tags
             }
 
             AssociateWithTagAttribute? attribute = (AssociateWithTagAttribute)type.GetCustomAttribute(typeof(AssociateWithTagAttribute));
-            TagNamespaceAttribute? tagNamespaceAttribute = (TagNamespaceAttribute)type.GetCustomAttribute(typeof(TagNamespaceAttribute));
 
             if (attribute == null) return;
 
@@ -70,8 +69,7 @@ namespace XVNML.Core.Tags
                 LinkedTag = attribute.Tag,
                 DependingTags = attribute.ParentTags?.Names(),
                 TagOccurance = attribute.Occurance,
-                UserDefined = attribute.IsUserDefined,
-                FromNamespace = tagNamespaceAttribute.Name
+                UserDefined = attribute.IsUserDefined
             };
 
             ValidTagTypes?.Add(attribute.Tag, (type, tagConfig, new List<TagBase>(), null)!);
