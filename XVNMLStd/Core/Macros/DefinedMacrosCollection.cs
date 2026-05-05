@@ -8,7 +8,7 @@ using Newtonsoft.Json.Serialization;
 using XVNML.Core.Assemblies;
 using XVNML.Utilities.Diagnostics;
 using XVNML.Utilities.Macros;
-using XVNML.Utilities.Tags;
+using XVNML.Utilities.Tags.Common;
 
 namespace XVNML.Core.Macros
 {

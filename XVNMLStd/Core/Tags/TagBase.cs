@@ -6,6 +6,7 @@ using XVNML.Core.COMMON.Interfaces;
 using XVNML.Core.Extensions;
 using XVNML.Core.Native;
 using XVNML.Core.Parser;
+using XVNML.Core.Tags.Attributes;
 using XVNML.Core.Tags.UserOverrides;
 
 using static XVNML.ParameterConstants;

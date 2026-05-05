@@ -7,7 +7,7 @@ using XVNML.Core.Macros;
 using XVNML.Core.Parser;
 using XVNML.Core.Tags;
 using XVNML.Utilities.Diagnostics;
-using XVNML.Utilities.Tags;
+using XVNML.Utilities.Tags.Common;
 
 
 namespace XVNML.Utilities.Object

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using XVNML.Core.Assemblies;
 using XVNML.Core.Extensions;
+using XVNML.Core.Tags.Attributes;
 
 namespace XVNML.Core.Tags
 {
@@ -59,6 +60,10 @@ namespace XVNML.Core.Tags
 
             if (attribute == null) return;
 
+            // Having a Tag Namespace Attribute is optional, so even
+            // if it's null, we can still process it. It just won't be added
+            // to the Tag being definined.
+            // Not adding a Namespace to your tag however may result in ambiguity.
             var tagConfig = new TagConfiguration
             {
                 LinkedTag = attribute.Tag,

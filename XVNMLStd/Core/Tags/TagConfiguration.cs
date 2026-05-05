@@ -1,4 +1,7 @@
-﻿namespace XVNML.Core.Tags
+﻿using System.Dynamic;
+using XVNML.Core.Tags.Attributes;
+
+namespace XVNML.Core.Tags
 {
     public struct TagConfiguration
     {
